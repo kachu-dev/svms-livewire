@@ -13,6 +13,7 @@ class Violation extends Model
         'remarks',
         'violated_at',
     ];
+
     protected $casts = [
         'violated_at' => 'datetime',
     ];

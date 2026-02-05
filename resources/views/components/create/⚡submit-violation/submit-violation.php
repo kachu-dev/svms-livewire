@@ -1,20 +1,18 @@
 <?php
 
-use Livewire\Component;
+use App\Models\Student;
+use App\Models\ViolationRemark;
+use App\Models\ViolationType;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
-use App\Models\Student;
-use App\Models\ViolationType;
-use App\Models\ViolationRemark;
+use Livewire\Component;
 
 new class extends Component
 {
     public $studentId;
     public $notFound = false;
-
     public $selectedTypeId;
     public $selectedTypeLabel;
-
     public $selectedRemarkId;
     public $selectedRemarkLabel;
 
@@ -92,7 +90,7 @@ new class extends Component
             'selectedTypeId',
             'selectedTypeLabel',
             'selectedRemarkId',
-            'selectedRemarkLabel'
+            'selectedRemarkLabel',
         ]);
 
         $this->resetValidation();

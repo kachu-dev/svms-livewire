@@ -19,7 +19,7 @@ return new class extends Migration
                 'Minor',
                 'Major - Suspension',
                 'Major - Dismissal',
-                'Major - Expulsion'
+                'Major - Expulsion',
             ])->index();
             $table->timestamps();
         });

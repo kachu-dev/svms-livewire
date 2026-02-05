@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\ViolationType;
 use App\Models\ViolationRemark;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\ViolationType;
 use Illuminate\Database\Seeder;
 
 class ViolationRemarkSeeder extends Seeder
@@ -88,7 +87,7 @@ class ViolationRemarkSeeder extends Seeder
         foreach ($data as $code => $remarks) {
             $violation = ViolationType::where('code', $code)->first();
 
-            if (!$violation) {
+            if (! $violation) {
                 continue;
             }
 

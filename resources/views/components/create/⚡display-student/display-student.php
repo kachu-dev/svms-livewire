@@ -1,13 +1,14 @@
 <?php
 
-use Livewire\Component;
+use App\Models\Student;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
-use App\Models\Student;
+use Livewire\Component;
 
 new class extends Component
 {
     public $studentId;
+
     public $notFound = false;
 
     #[Computed]

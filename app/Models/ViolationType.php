@@ -14,8 +14,11 @@ class ViolationType extends Model
     ];
 
     const CLASSIFICATION_MINOR = 'Minor';
+
     const CLASSIFICATION_SUSPENSION = 'Major - Suspension';
+
     const CLASSIFICATION_DISMISSAL = 'Major - Dismissal';
+
     const CLASSIFICATION_EXPULSION = 'Major - Expulsion';
 
     public function remarks(): HasMany
