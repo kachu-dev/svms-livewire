@@ -10,10 +10,15 @@ use Livewire\Component;
 new class extends Component
 {
     public $studentId;
+
     public $notFound = false;
+
     public $selectedTypeId;
+
     public $selectedTypeLabel;
+
     public $selectedRemarkId;
+
     public $selectedRemarkLabel;
 
     protected $rules = [

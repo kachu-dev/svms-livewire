@@ -1,39 +1,3 @@
-<?php
-
-use App\Models\ViolationRemark;
-use App\Models\ViolationType;
-use Livewire\Attributes\Computed;
-use Livewire\Attributes\On;
-use Livewire\Component;
-
-new class extends Component {
-    public $selectedTypeId;
-
-    #[Computed]
-    public function violationRemarks()
-    {
-        if (!$this->selectedTypeId) {
-            return collect();
-        }
-
-        return ViolationType::find($this->selectedTypeId)
-            ->remarks;
-    }
-
-    #[On('type-selected')]
-    public function setType($violationId): void
-    {
-        $this->selectedTypeId = $violationId;
-    }
-
-    public function setRemark(?int $id): void
-    {
-        $this->dispatch('remark-selected', remarkId: $id);
-        $this->modal('set-remark')->close();
-    }
-};
-?>
-
 <flux:modal name="set-remark" class="w-full max-w-md sm:max-w-96 md:max-w-3xl">
     <div class="space-y-6">
 
