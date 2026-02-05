@@ -4,11 +4,12 @@
             wire:model="studentId"
             label="Student ID"
             placeholder="Input Student ID or Scan RFID"
+            size="lg"
             autocomplete="off"
             autofocus
         />
 
-        <div class="flex mt-4 gap-2">
+        <div class="mt-4 flex gap-2">
             <flux:button
                 type="submit"
                 variant="primary"

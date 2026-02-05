@@ -1,12 +1,12 @@
 @blaze
 
 @php
-$attributes = $attributes->merge([
-    'variant' => 'subtle',
-    'class' => '-me-1',
-    'square' => true,
-    'size' => null,
-]);
+    $attributes = $attributes->merge([
+        'variant' => 'subtle',
+        'class' => '-me-1',
+        'square' => true,
+        'size' => null,
+    ]);
 @endphp
 
 <flux:button

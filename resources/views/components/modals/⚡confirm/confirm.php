@@ -21,7 +21,7 @@ new class extends Component
     }
 
     #[On('to-confirm')]
-    public function confirm($studentId, $violationType, $violationRemark)
+    public function confirm($studentId, $violationType, $violationRemark): void
     {
         $this->studentId = $studentId;
         $this->selectedTypeLabel = $violationType;
@@ -30,7 +30,7 @@ new class extends Component
         $this->modal('confirm-violation')->show();
     }
 
-    public function save()
+    public function save(): void
     {
         Violation::create([
             'student_id' => $this->studentId,

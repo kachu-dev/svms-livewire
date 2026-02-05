@@ -1,6 +1,5 @@
 <flux:modal name="set-violation" class="w-full max-w-md sm:max-w-96 md:max-w-3xl">
     <div class="space-y-6">
-
         <div>
             <flux:heading size="lg">Choose Violation Type</flux:heading>
             <flux:subheading>Search and select from the list of violations</flux:subheading>
@@ -12,25 +11,25 @@
             icon="magnifying-glass"
         />
 
-        <div class="max-h-125 overflow-y-auto space-y-4 pr-2">
+        <div class="max-h-125 space-y-4 overflow-y-auto pr-2">
             @forelse($this->filteredTypes as $category => $types)
                 <div>
-                    <flux:subheading class="sticky rounded-lg shadow mb-3 top-0 bg-white dark:bg-zinc-900 p-4 mt-2">
+                    <flux:subheading class="sticky top-0 mb-3 mt-2 rounded-lg bg-white p-4 shadow dark:bg-zinc-900">
                         {{ $category }}
                     </flux:subheading>
 
                     <div class="space-y-2">
-                        @foreach($types as $type)
+                        @foreach ($types as $type)
                             <button
                                 type="button"
                                 wire:click="setType({{ $type->id }})"
-                                class="w-full text-left p-4 rounded-lg border-2 border-zinc-200 dark:border-zinc-700 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-all group"
+                                class="group w-full rounded-lg border-2 border-zinc-200 p-4 text-left transition-all hover:border-blue-500 hover:bg-blue-50 dark:border-zinc-700 dark:hover:bg-blue-950/30"
                             >
                                 <div class="flex items-start gap-3">
-                                    <div class="font-bold text-sm text-blue-600 dark:text-blue-400 min-w-15">
+                                    <div class="min-w-15 text-sm font-bold text-blue-600 dark:text-blue-400">
                                         {{ $type->code }}
                                     </div>
-                                    <div class="text-sm text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 flex-1">
+                                    <div class="flex-1 text-sm text-zinc-600 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-zinc-100">
                                         {{ $type->name }}
                                     </div>
                                 </div>
@@ -39,15 +38,15 @@
                     </div>
                 </div>
             @empty
-                <div class="text-center py-12">
-                    <flux:icon name="magnifying-glass" class="size-12 mx-auto mb-4 text-zinc-400" />
+                <div class="py-12 text-center">
+                    <flux:icon name="magnifying-glass" class="mx-auto mb-4 size-12 text-zinc-400" />
                     <flux:subheading>No violations found</flux:subheading>
                     <flux:text>Try searching with different keywords</flux:text>
                 </div>
             @endforelse
         </div>
 
-        <div class="flex gap-2 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+        <div class="flex gap-2 border-t border-zinc-200 pt-4 dark:border-zinc-700">
             <flux:spacer />
             <flux:modal.close>
                 <flux:button variant="ghost">Cancel</flux:button>

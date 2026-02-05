@@ -1,6 +1,6 @@
 <div>
 
-   {{-- <div class="space-y-6">
+    {{-- <div class="space-y-6">
         <x-card header="Student Violations" icon="exclamation-triangle">
             <div class="space-y-4 mb-6">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -119,14 +119,14 @@
                                         <div>
                                             <p class="text-gray-600 font-medium">No violations found</p>
                                             <p class="text-sm text-gray-500 mt-1">
-                                                @if($search || $statusFilter || $violationTypeFilter)
+                                                @if ($search || $statusFilter || $violationTypeFilter)
                                                     Try adjusting your filters or search terms
                                                 @else
                                                     No violations have been recorded yet
                                                 @endif
                                             </p>
                                         </div>
-                                        @if($search || $statusFilter || $violationTypeFilter)
+                                        @if ($search || $statusFilter || $violationTypeFilter)
                                             <flux:button size="sm" variant="ghost" wire:click="resetFilters" icon="arrow-path">
                                                 Reset Filters
                                             </flux:button>
@@ -140,7 +140,7 @@
             </div>
 
 
-            @if($total > 0)
+            @if ($total > 0)
                 <div class="mt-2 flex items-center justify-between">
                     <div class="text-sm text-gray-600">
                         Showing {{ $from }} to {{ $to }} of {{ $total }} results
@@ -187,6 +187,6 @@
                 </div>
             @endif
         </x-card>
-    </div>--}}
+    </div> --}}
 
 </div>

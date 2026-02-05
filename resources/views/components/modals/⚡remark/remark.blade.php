@@ -6,31 +6,31 @@
             <flux:subheading>Select or make custom remarks</flux:subheading>
         </div>
 
-        <div class="max-h-125 overflow-y-auto space-y-4 pr-2">
+        <div class="max-h-125 space-y-4 overflow-y-auto pr-2">
             <div>
                 <div class="space-y-2">
                     <button
                         type="button"
                         wire:click="setRemark(null)"
-                        class="w-full text-left p-4 rounded-lg border-2 border-zinc-200 dark:border-zinc-700 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-all group"
+                        class="group w-full rounded-lg border-2 border-zinc-200 p-4 text-left transition-all hover:border-blue-500 hover:bg-blue-50 dark:border-zinc-700 dark:hover:bg-blue-950/30"
                     >
                         <div class="flex items-start gap-3">
                             <div
-                                class="text-sm text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 flex-1">
+                                class="flex-1 text-sm text-zinc-600 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-zinc-100">
                                 None (No specific remarks)
                             </div>
                         </div>
                     </button>
 
-                    @foreach($this->violationRemarks as $remark)
+                    @foreach ($this->violationRemarks as $remark)
                         <button
                             type="button"
                             wire:click="setRemark({{ $remark->id }})"
-                            class="w-full text-left p-4 rounded-lg border-2 border-zinc-200 dark:border-zinc-700 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-all group"
+                            class="group w-full rounded-lg border-2 border-zinc-200 p-4 text-left transition-all hover:border-blue-500 hover:bg-blue-50 dark:border-zinc-700 dark:hover:bg-blue-950/30"
                         >
                             <div class="flex items-start gap-3">
                                 <div
-                                    class="text-sm text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 flex-1">
+                                    class="flex-1 text-sm text-zinc-600 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-zinc-100">
                                     {{ $remark->label }}
                                 </div>
                             </div>
@@ -40,8 +40,8 @@
             </div>
         </div>
 
-        <div class="flex gap-2 pt-4 border-t border-zinc-200 dark:border-zinc-700">
-            <flux:spacer/>
+        <div class="flex gap-2 border-t border-zinc-200 pt-4 dark:border-zinc-700">
+            <flux:spacer />
             <flux:modal.close>
                 <flux:button variant="ghost">Cancel</flux:button>
             </flux:modal.close>

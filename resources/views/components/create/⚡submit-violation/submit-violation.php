@@ -26,7 +26,7 @@ new class extends Component
         'selectedRemarkLabel' => 'required',
     ];
 
-    public function confirm()
+    public function confirm(): void
     {
         $this->validate();
 

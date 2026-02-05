@@ -7,7 +7,7 @@ new class extends Component
 {
     public $studentId = '';
 
-    public $student = null;
+    public $student;
 
     public $notFound = false;
 

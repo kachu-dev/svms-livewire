@@ -9,10 +9,6 @@ new class extends Component
 {
     public $selectedTypeId;
 
-    public $selectedTypeId;
-
-    public $selectedTypeId;
-
     #[Computed]
     public function violationRemarks()
     {
