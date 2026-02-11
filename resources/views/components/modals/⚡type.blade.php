@@ -1,3 +1,39 @@
+<?php
+
+use App\Models\ViolationType;
+use Livewire\Attributes\Computed;
+use Livewire\Component;
+
+new class extends Component {
+    public $typeSearch;
+
+    #[Computed]
+    public function filteredTypes()
+    {
+        $query = ViolationType::query();
+
+        if ($this->typeSearch) {
+            $query->where(function ($q) {
+                $q->where('code', 'like', '%' . $this->typeSearch . '%')->orWhere('name', 'like', '%' . $this->typeSearch . '%');
+            });
+        }
+
+        return $query->get()->groupBy('classification');
+    }
+
+    public function setType(int $id): void
+    {
+        /*$violation = ViolationType::findOrFail($id);
+
+        $this->selectedTypeId = $violation->id;
+        $this->selectedTypeLabel = "{$violation->code} — {$violation->name}";*/
+
+        $this->dispatch('type-selected', violationId: $id);
+        $this->modal('set-violation')->close();
+    }
+};
+?>
+
 <flux:modal name="set-violation" class="w-full max-w-md sm:max-w-96 md:max-w-3xl">
     <div class="space-y-6">
         <div>
@@ -29,7 +65,8 @@
                                     <div class="min-w-15 text-sm font-bold text-blue-600 dark:text-blue-400">
                                         {{ $type->code }}
                                     </div>
-                                    <div class="flex-1 text-sm text-zinc-600 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-zinc-100">
+                                    <div
+                                        class="flex-1 text-sm text-zinc-600 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-zinc-100">
                                         {{ $type->name }}
                                     </div>
                                 </div>

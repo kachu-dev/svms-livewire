@@ -1,8 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
-namespace config\database\seeders;
+namespace Database\Seeders;
 
 use App\Models\ViolationRemark;
 use App\Models\ViolationType;

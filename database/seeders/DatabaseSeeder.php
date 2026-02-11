@@ -1,13 +1,10 @@
 <?php
 
-declare(strict_types=1);
-
-namespace config\database\seeders;
+namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Seeder;
-
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {

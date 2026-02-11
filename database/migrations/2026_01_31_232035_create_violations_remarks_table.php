@@ -11,21 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('violations', function (Blueprint $table) {
+        Schema::create('violation_remarks', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('student_id')->index();
-            $table->string('student_name');
-            $table->string('classification')->index();
-            $table->unsignedInteger('count')->default(1);
-            $table->foreignId('violation_type_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('violation_type_snapshot');
-            $table->foreignId('violation_remark_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('violation_remark_snapshot')->nullable();
+            $table->foreignId('violation_type_id')
+                ->constrained('violation_types')
+                ->cascadeOnDelete();
+            $table->string('label');
             $table->timestamps();
-
-            $table->index(['student_id', 'classification']);
-            $table->index(['student_id', 'violation_type_id', 'created_at']);
-
         });
     }
 
@@ -34,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('violations');
+        Schema::dropIfExists('violation_remarks');
     }
 };

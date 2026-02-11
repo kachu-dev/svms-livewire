@@ -1,3 +1,52 @@
+<?php
+
+use App\Models\ViolationType;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
+use Livewire\Component;
+
+new class extends Component {
+    public $selectedTypeId;
+
+    public $customRemark;
+
+    #[On('type-selected')]
+    public function setType($violationId): void
+    {
+        $this->selectedTypeId = $violationId;
+    }
+
+    #[Computed]
+    public function violationRemarks()
+    {
+        if (!$this->selectedTypeId) {
+            return collect();
+        }
+
+        return ViolationType::find($this->selectedTypeId)->remarks;
+    }
+
+    public function setRemark(?int $id): void
+    {
+        $this->dispatch('remark-selected', remarkId: $id);
+        $this->resetValidation('customRemark');
+        $this->modal('set-remark')->close();
+    }
+
+    public function setCustomRemark(): void
+    {
+        $this->validate([
+            'customRemark' => 'required',
+        ]);
+
+        $this->dispatch('custom-remark', remark: $this->customRemark);
+        $this->resetValidation('customRemark');
+        $this->reset('customRemark');
+        $this->modal('set-remark')->close();
+    }
+};
+?>
+
 <flux:modal name="set-remark" class="w-full max-w-md sm:max-w-96 md:max-w-3xl">
     <div class="space-y-6">
 
@@ -6,7 +55,28 @@
             <flux:subheading>Select or make custom remarks</flux:subheading>
         </div>
 
-        <div class="max-h-125 space-y-4 overflow-y-auto pr-2">
+        <form wire:submit.prevent="setCustomRemark" />
+        <flux:input
+            label="Custom Remark"
+            wire:model="customRemark"
+            placeholder="Type your custom remark here..."
+        ></flux:input>
+
+        <flux:button
+            type="submit"
+            variant="primary"
+            icon="paper-airplane"
+            class="mt-3"
+            size="sm"
+        >
+            Choose Remark
+        </flux:button>
+        </form>
+
+        <label class="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            Preset Remark
+        </label>
+        <div class="max-h-125 space-y-4 overflow-y-auto">
             <div>
                 <div class="space-y-2">
                     <button

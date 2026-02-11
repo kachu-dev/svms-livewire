@@ -13,10 +13,12 @@ class Violation extends Model
         'student_name',
         'type',
         'remarks',
-        'violated_at',
-    ];
-
-    protected $casts = [
-        'violated_at' => 'datetime',
+        'violation_type_id',
+        'violation_type_snapshot',
+        'violation_remark_id',
+        'violation_remark_snapshot',
+        'classification',
+        'count',
+        'original_violation_type_id',
     ];
 }
