@@ -1,21 +1,3 @@
-<?php
-
-use App\Models\Student;
-use App\Models\Violation;
-use Livewire\Attributes\Computed;
-use Livewire\Attributes\On;
-use Livewire\Component;
-
-new class extends Component {
-    public function render()
-    {
-        return $this->view([
-            'violations' => Violation::latest()->take(5)->get(),
-        ]);
-    }
-};
-?>
-
 <div class="rounded border-t-4 border-t-blue-500 bg-white shadow dark:bg-zinc-900">
     <div class="flex gap-1 border-b border-b-gray-200 p-4 dark:border-b-zinc-700">
         <svg

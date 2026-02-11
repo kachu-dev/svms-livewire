@@ -6,6 +6,7 @@ use Livewire\Component;
 new class extends Component
 {
     public $rfid;
+
     public $student;
 
     protected function detectInputType(string $input): string

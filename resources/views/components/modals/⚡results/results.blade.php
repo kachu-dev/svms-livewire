@@ -1,23 +1,3 @@
-<?php
-
-use Livewire\Attributes\On;
-use Livewire\Component;
-
-new class extends Component {
-    public $resultType = 'success';
-
-    public $resultMessage = '';
-
-    #[On('show-result')]
-    public function showResult($type, $message): void
-    {
-        $this->resultType = $type;
-        $this->resultMessage = $message;
-        $this->modal('results')->show();
-    }
-};
-?>
-
 <flux:modal name="results" class="w-full max-w-md sm:max-w-96">
     <div class="space-y-6">
         @if ($resultType === 'success')

@@ -63,17 +63,17 @@ new class extends Component {
 
     <div class="flex w-full flex-col gap-2">
         <flux:label>Student ID</flux:label>
-        <flux:card class="p-2 min-h-12">
+        <flux:card class="min-h-12 p-2">
             {{ $this->student?->grouptag }}{{ $this->student?->studentid ?? '' }}
         </flux:card>
 
         <flux:label class="mt-1">Course</flux:label>
-        <flux:card class="p-2 min-h-12">
+        <flux:card class="min-h-12 p-2">
             {{ $this->student?->program ?? '' }}
         </flux:card>
 
         <flux:label class="mt-1">Year Level</flux:label>
-        <flux:card class="p-2 min-h-12">
+        <flux:card class="min-h-12 p-2">
             {{ $this->student?->year ?? '' }}
         </flux:card>
     </div>
