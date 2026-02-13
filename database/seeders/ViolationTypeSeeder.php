@@ -14,7 +14,7 @@ class ViolationTypeSeeder extends Seeder
     {
         $violations = [
             // MINOR VIOLATIONS
-            ['code' => 'C.1.1', 'name' => 'No ID or improper display of ID', 'classification' => 'Minor'],
+            ['code' => 'C.1.1', 'name' => 'No ID or improper display of ID', 'classification' => 'Minor', 'deactivated' => false],
             ['code' => 'C.1.2', 'name' => 'Disruption of classes or any academic activity or school function', 'classification' => 'Minor'],
             ['code' => 'C.1.3', 'name' => 'Bringing of vape inside the campus', 'classification' => 'Minor'],
             ['code' => 'C.1.4', 'name' => 'Smoking or vaping inside the school premises', 'classification' => 'Minor'],
