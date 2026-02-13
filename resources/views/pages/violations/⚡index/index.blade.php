@@ -189,4 +189,5 @@
         </x-card>
     </div> --}}
 
+    <livewire:create.recent-violations />
 </div>

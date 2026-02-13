@@ -1,4 +1,4 @@
-<div class="flex h-[calc(100vh-(64px+67px))] flex-col gap-4">
+<div class="flex h-[calc(100vh-4rem)] flex-col gap-4">
     <div class="grid flex-1 grid-cols-[2fr_1fr] gap-4">
         <div class="grid gap-4">
             <livewire:create.search-student />
