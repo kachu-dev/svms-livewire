@@ -21,6 +21,7 @@ return new class extends Migration
                 'Major - Dismissal',
                 'Major - Expulsion',
             ])->index();
+            $table->boolean('deactivated')->default(false);
             $table->timestamps();
         });
     }

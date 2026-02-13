@@ -1,62 +1,58 @@
 <?php
 
-use App\Models\Student;
+use App\Models\Violation;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 new class extends Component
 {
-    public $rfid;
+    use WithPagination;
 
-    public $student;
+    public $sortBy = 'created_at';
 
-    protected function detectInputType(string $input): string
+    public $sortDirection = 'desc';
+
+    public $search = '';
+
+    public $classification;
+
+    public $dateFrom;
+
+    public $dateTo;
+
+    public function sort($column): void
     {
-        $input = trim($input);
-
-        if (ctype_digit($input) && strlen($input) >= 8 && strlen($input) <= 10) {
-            return 'rfid_decimal';
+        if ($this->sortBy === $column) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $column;
+            $this->sortDirection = 'asc';
         }
-
-        if (ctype_xdigit($input) && strlen($input) === 8) {
-            return 'rfid_hex';
-        }
-
-        return 'student_id';
     }
 
-    protected function normalizeRfid(string $input): string
+    #[Computed]
+    public function violations()
     {
-        $input = trim($input);
-
-        if (ctype_digit($input)) {
-            $hex = strtoupper(dechex((int) $input));
-            $hex = str_pad($hex, 8, '0', STR_PAD_LEFT);
-
-            return implode('', array_reverse(str_split($hex, 2)));
-        }
-
-        if (ctype_xdigit($input)) {
-            return strtoupper($input);
-        }
-
-        throw new InvalidArgumentException('Not an RFID value');
+        return Violation::query()
+            ->when($this->search, fn ($q) => $q->search($this->search))
+            ->when($this->classification, fn ($q) => $q->where('classification', $this->classification))
+            ->when($this->dateFrom, fn ($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
+            ->when($this->dateTo, fn ($q) => $q->whereDate('created_at', '<=', $this->dateTo))
+            ->orderBy($this->sortBy, $this->sortDirection)
+            ->paginate(10);
     }
 
-    public function findStudent(): void
+    #[Computed]
+    public function classifications()
     {
-        $input = trim((string) $this->rfid);
+        return Violation::distinct('classification')
+            ->pluck('classification')
+            ->sortDesc();
+    }
 
-        switch ($this->detectInputType($input)) {
-
-            case 'rfid_decimal':
-            case 'rfid_hex':
-                $rfid = $this->normalizeRfid($input);
-                $this->student = Student::where('rfid_uid', $rfid)->first();
-                break;
-
-            case 'student_id':
-                $this->student = Student::where('student_id', $input)->first();
-                break;
-        }
+    public function resetFilters(): void
+    {
+        $this->reset(['search', 'classification', 'dateFrom', 'dateTo']);
     }
 };

@@ -24,9 +24,9 @@ return new class extends Migration
             $table->string('violation_remark_snapshot')->nullable();
             $table->timestamps();
 
+/*            $table->index(['student_id', 'original_violation_type_id', 'created_at']);*/
             $table->index(['student_id', 'classification']);
-            $table->index(['student_id', 'violation_type_id', 'created_at']);
-
+            $table->index('created_at');
         });
     }
 
