@@ -14,22 +14,16 @@ new class extends Component
         $query = ViolationType::query();
 
         if ($this->typeSearch) {
-            $query->where(function ($q) {
-                $q->where('code', 'like', '%'.$this->typeSearch.'%')->orWhere('name', 'like', '%'.$this->typeSearch.'%');
+            $search = '%' . $this->typeSearch . '%';
+            $query->where(function ($q) use ($search) {
+                $q->where('code', 'like', $search)
+                    ->orWhere('name', 'like', $search);
             });
         }
 
-        return $query->get()->groupBy('classification');
-    }
-
-    public function setType(int $id): void
-    {
-        /*$violation = ViolationType::findOrFail($id);
-
-        $this->selectedTypeId = $violation->id;
-        $this->selectedTypeLabel = "{$violation->code} — {$violation->name}";*/
-
-        $this->dispatch('type-selected', violationId: $id);
-        $this->modal('set-violation')->close();
+        return $query->select('id', 'code', 'name', 'classification')
+        ->orderBy('classification')
+            ->get()
+            ->groupBy('classification');
     }
 };

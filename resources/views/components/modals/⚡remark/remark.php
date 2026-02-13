@@ -12,9 +12,9 @@ new class extends Component
     public $customRemark;
 
     #[On('type-selected')]
-    public function setType($violationId): void
+    public function setType($id): void
     {
-        $this->selectedTypeId = $violationId;
+        $this->selectedTypeId = $id;
     }
 
     #[Computed]
@@ -24,24 +24,20 @@ new class extends Component
             return collect();
         }
 
-        return ViolationType::find($this->selectedTypeId)->remarks;
-    }
-
-    public function setRemark(?int $id): void
-    {
-        $this->dispatch('remark-selected', remarkId: $id);
-        $this->resetValidation('customRemark');
-        $this->modal('set-remark')->close();
+        return Cache::remember(
+            "violation_remarks_{$this->selectedTypeId}",
+            now()->addHour(),
+            fn() => ViolationType::find($this->selectedTypeId)->remarks
+        );
     }
 
     public function setCustomRemark(): void
     {
         $this->validate([
-            'customRemark' => 'required',
+            'customRemark' => 'required|max:500',
         ]);
 
         $this->dispatch('custom-remark', remark: $this->customRemark);
-        $this->resetValidation('customRemark');
         $this->reset('customRemark');
         $this->modal('set-remark')->close();
     }

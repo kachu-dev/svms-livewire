@@ -1,5 +1,5 @@
 <x-card header="Search Student" icon="magnifying-glass">
-    <form wire:submit.prevent="findStudent()" class="flex flex-col gap-4">
+    <form wire:submit="findStudent" class="flex flex-col gap-4">
         <flux:input
             wire:model="studentId"
             label="Student ID"
@@ -16,7 +16,6 @@
                 icon="magnifying-glass"
                 class="flex-1"
                 size="lg"
-                wire:loading.attr="disabled"
                 wire:target="findStudent"
             >
                 <span wire:loading.remove wire:target="findStudent">Search for Student</span>

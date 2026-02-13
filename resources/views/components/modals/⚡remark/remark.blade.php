@@ -1,28 +1,21 @@
 <flux:modal name="set-remark" class="w-full max-w-md sm:max-w-96 md:max-w-3xl">
     <div class="space-y-6">
-
         <div>
             <flux:heading size="lg">Choose Remarks</flux:heading>
             <flux:subheading>Select or make custom remarks</flux:subheading>
         </div>
 
-        <form wire:submit.prevent="setCustomRemark" />
-        <flux:input
-            label="Custom Remark"
-            wire:model="customRemark"
-            placeholder="Type your custom remark here..."
-        ></flux:input>
+        <div class="space-y-2">
+            <flux:input
+                wire:model="customRemark"
+                label="Custom Remark"
+                placeholder="Enter custom remark"
+            />
 
-        <flux:button
-            type="submit"
-            variant="primary"
-            icon="paper-airplane"
-            class="mt-3"
-            size="sm"
-        >
-            Choose Remark
-        </flux:button>
-        </form>
+            <flux:button wire:click="setCustomRemark" variant="primary">
+                Save Custom Remark
+            </flux:button>
+        </div>
 
         <label class="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
             Preset Remark
@@ -32,7 +25,10 @@
                 <div class="space-y-2">
                     <button
                         type="button"
-                        wire:click="setRemark(null)"
+                        @click="$dispatch('remark-selected', {
+                            remarkId: null,
+                            remarkLabel: 'None'
+                        }); $flux.modal('set-remark').close()"
                         class="group w-full rounded-lg border-2 border-zinc-200 p-4 text-left transition-all hover:border-blue-500 hover:bg-blue-50 dark:border-zinc-700 dark:hover:bg-blue-950/30"
                     >
                         <div class="flex items-start gap-3">
@@ -45,8 +41,12 @@
 
                     @foreach ($this->violationRemarks as $remark)
                         <button
+                            wire:key="remark-{{ $remark->id }}"
                             type="button"
-                            wire:click="setRemark({{ $remark->id }})"
+                            @click="$dispatch('remark-selected', {
+                                remarkId: {{ $remark->id }},
+                                remarkLabel: @js($remark->label)
+                            }); $flux.modal('set-remark').close()"
                             class="group w-full rounded-lg border-2 border-zinc-200 p-4 text-left transition-all hover:border-blue-500 hover:bg-blue-50 dark:border-zinc-700 dark:hover:bg-blue-950/30"
                         >
                             <div class="flex items-start gap-3">

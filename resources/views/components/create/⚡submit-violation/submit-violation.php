@@ -1,8 +1,6 @@
 <?php
 
 use App\Models\Student;
-use App\Models\ViolationRemark;
-use App\Models\ViolationType;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -16,6 +14,7 @@ new class extends Component
     public $selectedTypeId;
 
     public $selectedTypeLabel;
+    public $selectedTypeClassification;
 
     public $selectedRemarkId;
 
@@ -25,28 +24,18 @@ new class extends Component
     {
         $this->validate([
             'studentId' => 'required',
+            'selectedTypeLabel' => 'required',
+            'selectedRemarkLabel' => 'required',
         ]);
 
-        if ($this->selectedRemarkId == null && $this->selectedRemarkLabel) {
-            $this->dispatch('to-confirm',
-                studentId: $this->studentId,
-                typeId: $this->selectedTypeId,
-                remarkId: null,
-                remarkLabel: $this->selectedRemarkLabel
-            );
-        } else {
-            $this->dispatch('to-confirm',
-                studentId: $this->studentId,
-                typeId: $this->selectedTypeId,
-                remarkId: $this->selectedRemarkId
-            );
-        }
-    }
-
-    #[Computed]
-    public function student()
-    {
-        return $this->studentId ? Student::find($this->studentId) : null;
+        $this->dispatch('to-confirm',
+            studentId: $this->studentId,
+            typeId: $this->selectedTypeId,
+            typeLabel: $this->selectedTypeLabel,
+            typeClassification: $this->selectedTypeClassification,
+            remarkId: $this->selectedRemarkId,
+            remarkLabel: $this->selectedRemarkLabel
+        );
     }
 
     #[On('student-found')]
@@ -72,28 +61,20 @@ new class extends Component
     }
 
     #[On('type-selected')]
-    public function setType($violationId): void
+    public function setType($id, $code, $name, $classification): void
     {
-        $type = ViolationType::findOrFail($violationId);
-
-        $this->selectedTypeId = $type->id;
-        $this->selectedTypeLabel = "{$type->code} — {$type->name}";
+        $this->selectedTypeId = $id;
+        $this->selectedTypeLabel = "{$code} — {$name}";
+        $this->selectedTypeClassification = $classification;
 
         $this->reset(['selectedRemarkId', 'selectedRemarkLabel']);
     }
 
     #[On('remark-selected')]
-    public function setRemark($remarkId): void
+    public function setRemark($remarkId, $remarkLabel): void
     {
-        if ($remarkId === null) {
-            $this->selectedRemarkId = null;
-            $this->selectedRemarkLabel = 'None';
-        } else {
-            $remark = ViolationRemark::findOrFail($remarkId);
-
-            $this->selectedRemarkId = $remark->id;
-            $this->selectedRemarkLabel = $remark->label;
-        }
+        $this->selectedRemarkId = $remarkId;
+        $this->selectedRemarkLabel = $remarkLabel;
     }
 
     #[On('custom-remark')]

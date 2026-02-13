@@ -1,14 +1,14 @@
 <?php
 
 use App\Models\Violation;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 new class extends Component
 {
-    public function render()
+    #[Computed]
+    public function violations()
     {
-        return $this->view([
-            'violations' => Violation::latest()->take(5)->get(),
-        ]);
+        return Violation::latest()->take(5)->get();
     }
 };

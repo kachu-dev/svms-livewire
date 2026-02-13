@@ -21,8 +21,14 @@
                     <div class="space-y-2">
                         @foreach ($types as $type)
                             <button
+                                wire:key="type-{{ $type->id }}"
                                 type="button"
-                                wire:click="setType({{ $type->id }})"
+                                @click="$dispatch('type-selected', {
+                                    id: {{ $type->id }},
+                                    code: @js($type->code),
+                                    name: @js($type->name),
+                                    classification: '{{ $type->classification }}'
+                                }); $flux.modal('set-violation').close()"
                                 class="group w-full rounded-lg border-2 border-zinc-200 p-4 text-left transition-all hover:border-blue-500 hover:bg-blue-50 dark:border-zinc-700 dark:hover:bg-blue-950/30"
                             >
                                 <div class="flex items-start gap-3">
