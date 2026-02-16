@@ -13,11 +13,11 @@
 <flux:button
     :$attributes
     :size="$size === 'sm' || $size === 'xs' ? 'xs' : 'sm'"
-    x-data="fluxInputClearable"
-    x-on:click="clear()"
-    tabindex="-1"
     aria-label="Clear input"
     data-flux-clear-button
+    tabindex="-1"
+    x-data="fluxInputClearable"
+    x-on:click="clear()"
 >
     <flux:icon.x-mark variant="micro" />
 </flux:button>

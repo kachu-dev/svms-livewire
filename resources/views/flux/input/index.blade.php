@@ -165,9 +165,9 @@
         <div
             class="pointer-events-none absolute bottom-0 start-0 top-0 flex items-center justify-center border-s border-transparent ps-3 text-xs text-zinc-400/75 dark:text-white/60">
             <flux:icon
+                :class="$iconClasses"
                 :icon="$iconLeading"
                 :variant="$iconVariant"
-                :class="$iconClasses"
             />
         </div>
         <?php elseif ($iconLeading): ?>
@@ -178,17 +178,17 @@
         <?php endif; ?>
 
         <input
-            type="{{ $type }}"
-            {{-- Leave file inputs unstyled... --}}
             {{ $attributes->except('class')->class($type === 'file' ? '' : $classes) }}
-            @isset($name) name="{{ $name }}" @endisset
-            @if ($maskDynamic) x-mask:dynamic="{{ $maskDynamic }}" @elseif ($mask) x-mask="{{ $mask }}" @endif
-            @if ($invalid) aria-invalid="true" data-invalid @endif
+            {{-- Leave file inputs unstyled... --}}
             @if (is_numeric($size)) size="{{ $size }}" @endif
+            @isset($name) name="{{ $name }}" @endisset
+            @if ($invalid) aria-invalid="true" data-invalid @endif
+            @if ($loading && $wireTarget) wire:target="{{ $wireTarget }}" @endif
+            @if ($loading) wire:loading.class="{{ $inputLoadingClasses }}" @endif
+            @if ($maskDynamic) x-mask:dynamic="{{ $maskDynamic }}" @elseif ($mask) x-mask="{{ $mask }}" @endif
             data-flux-control
             data-flux-group-target
-            @if ($loading) wire:loading.class="{{ $inputLoadingClasses }}" @endif
-            @if ($loading && $wireTarget) wire:target="{{ $wireTarget }}" @endif
+            type="{{ $type }}"
         >
 
         <?php if ($loading || $countOfTrailingIcons > 0): ?>
@@ -197,16 +197,16 @@
             {{-- Icon should be text-zinc-400/75 --}}
             <?php if ($loading): ?>
             <flux:icon
-                name="loading"
-                :variant="$iconVariant"
                 :class="$iconClasses"
-                wire:loading
+                :variant="$iconVariant"
                 :wire:target="$wireTarget"
+                name="loading"
+                wire:loading
             />
             <?php endif; ?>
 
             <?php if ($clearable): ?>
-            <flux:input.clearable inset="left right" :$size />
+            <flux:input.clearable :$size inset="left right" />
             <?php endif; ?>
 
             <?php if ($kbd): ?>
@@ -214,15 +214,15 @@
             <?php endif; ?>
 
             <?php if ($expandable): ?>
-            <flux:input.expandable inset="left right" :$size />
+            <flux:input.expandable :$size inset="left right" />
             <?php endif; ?>
 
             <?php if ($copyable): ?>
-            <flux:input.copyable inset="left right" :$size />
+            <flux:input.copyable :$size inset="left right" />
             <?php endif; ?>
 
             <?php if ($viewable): ?>
-            <flux:input.viewable inset="left right" :$size />
+            <flux:input.viewable :$size inset="left right" />
             <?php endif; ?>
 
             <?php if (is_string($iconTrailing)): ?>
@@ -231,9 +231,9 @@
             $trailingIconClasses->add('text-zinc-400/75 dark:text-white/60 pointer-events-none');
             ?>
             <flux:icon
+                :class="$trailingIconClasses"
                 :icon="$iconTrailing"
                 :variant="$iconVariant"
-                :class="$trailingIconClasses"
             />
             <?php elseif ($iconTrailing): ?>
             {{ $iconTrailing }}
@@ -247,9 +247,9 @@
     <?php if (is_string($iconLeading)): ?>
     <div class="absolute bottom-0 start-0 top-0 flex items-center justify-center ps-3 text-xs text-zinc-400/75">
         <flux:icon
+            :class="$iconClasses"
             :icon="$iconLeading"
             :variant="$iconVariant"
-            :class="$iconClasses"
         />
     </div>
     <?php elseif ($iconLeading): ?>
@@ -278,9 +278,9 @@
     <?php if (is_string($iconTrailing)): ?>
     <div class="absolute bottom-0 end-0 top-0 flex items-center justify-center pe-3 text-xs text-zinc-400/75">
         <flux:icon
+            :class="$iconClasses"
             :icon="$iconTrailing"
             :variant="$iconVariant"
-            :class="$iconClasses"
         />
     </div>
     <?php elseif  ($iconTrailing): ?>
