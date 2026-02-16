@@ -8,7 +8,7 @@
     "endOfLine": "LF",
     "useTabs": false,
     "sortTailwindcssClasses": true,
-    "sortHtmlAttributes": "none",
+    "sortHtmlAttributes": "alphabetical",
     "noMultipleEmptyLines": true,
     "noPhpSyntaxCheck": false,
     "noSingleQuote": false,

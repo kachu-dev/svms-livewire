@@ -2,15 +2,33 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::livewire('/violations/create', 'pages::violations.create');
-Route::livewire('/violations', 'pages::violations.index');
+Route::middleware([/* 'auth', 'can:access-staff-area' */])
+    ->prefix('staff')
+    ->name('staff.')
+    ->group(function () {
 
-Route::livewire('/policy/create', 'pages::policy.create');
-Route::livewire('/policy', 'pages::policy.index');
-Route::livewire('/policy/deactivated', 'pages::policy.deactivated');
-Route::livewire('/policy/{id}/update', 'pages::policy.update');
-/*
-Route::get('/', function (): never {
-    $students = DB::connection('school_db')->table('students')->get();
-    dd($students);
-});*/
+        // Violations routes
+        Route::livewire('/violations', 'pages::violations.staff.index')
+            ->name('violations.index');
+        Route::livewire('/violations/deleted', 'pages::violations.staff.deleted')
+            ->name('violations.deleted');
+        Route::livewire('/violations/create', 'pages::violations.staff.create')
+            ->name('violations.create');
+
+        // Policy routes
+        Route::livewire('/policy', 'pages::policy.staff.index')
+            ->name('policy.index');
+        Route::livewire('/policy/deleted', 'pages::policy.staff.deleted')
+            ->name('policy.deleted');
+    });
+
+Route::middleware(['auth', 'can:access-guard-area'])
+    ->prefix('guard')
+    ->name('guard.')
+    ->group(function () {
+
+        Route::livewire('/violations/create', 'pages::violations.guard.create')
+            ->name('violations.create');
+        Route::livewire('/violations/recent', 'pages::violations.guard.recent')
+            ->name('violations.recent');
+    });

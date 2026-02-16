@@ -17,14 +17,18 @@ return new class extends Migration
             $table->string('student_name');
             $table->string('classification')->index();
             $table->unsignedInteger('count')->default(1);
-            $table->foreignId('violation_type_id')->nullable()->constrained()->nullOnDelete();
+
             $table->unsignedBigInteger('original_violation_type_id')->nullable()->index();
+            $table->foreignId('violation_type_id')->nullable()->constrained()->nullOnDelete();
             $table->string('violation_type_snapshot');
+
             $table->foreignId('violation_remark_id')->nullable()->constrained()->nullOnDelete();
             $table->string('violation_remark_snapshot')->nullable();
+
+            $table->softDeletes();
             $table->timestamps();
 
-/*            $table->index(['student_id', 'original_violation_type_id', 'created_at']);*/
+            /*            $table->index(['student_id', 'original_violation_type_id', 'created_at']); */
             $table->index(['student_id', 'classification']);
             $table->index('created_at');
         });
