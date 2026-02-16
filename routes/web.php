@@ -20,6 +20,9 @@ Route::middleware([/* 'auth', 'can:access-staff-area' */])
             ->name('policy.index');
         Route::livewire('/policy/deleted', 'pages::policy.staff.deleted')
             ->name('policy.deleted');
+
+        Route::livewire('/users', 'pages::users-mgt.staff.index')
+            ->name('users-mgt.index');
     });
 
 Route::middleware(['auth', 'can:access-guard-area'])
