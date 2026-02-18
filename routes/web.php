@@ -2,7 +2,19 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::middleware([/* 'auth', 'can:access-staff-area' */])
+Route::livewire('/login', 'pages::auth.login')->middleware('guest')->name('login');
+
+Route::livewire('/home', 'pages::auth.login')->name('home');
+
+Route::get('/logout', function () {
+    Auth::logout();
+    session()->invalidate();
+    session()->regenerateToken();
+
+    return redirect('/login');
+})->middleware('auth')->name('logout');
+
+Route::middleware(['auth', 'can:access-staff-area' ])
     ->prefix('staff')
     ->name('staff.')
     ->group(function () {
@@ -18,11 +30,14 @@ Route::middleware([/* 'auth', 'can:access-staff-area' */])
         // Policy routes
         Route::livewire('/policy', 'pages::policy.staff.index')
             ->name('policy.index');
-        Route::livewire('/policy/deleted', 'pages::policy.staff.deleted')
+        Route::livewire('/policy/deactivated', 'pages::policy.staff.deleted')
             ->name('policy.deleted');
 
+        // Users routes
         Route::livewire('/users', 'pages::users-mgt.staff.index')
             ->name('users-mgt.index');
+        Route::livewire('/users/deactivated', 'pages::users-mgt.staff.deleted')
+            ->name('users-mgt.deleted');
     });
 
 Route::middleware(['auth', 'can:access-guard-area'])

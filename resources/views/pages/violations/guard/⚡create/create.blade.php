@@ -32,8 +32,8 @@
         </div>
     </div>
 
-    <livewire:violations.modals.confirm />
-    <livewire:violations.modals.remark />
-    <livewire:violations.modals.type />
-    <livewire:violations.modals.results />
+    <livewire:modals.violations.confirm />
+    <livewire:modals.violations.remark />
+    <livewire:modals.violations.type-guard />
+    <livewire:modals.violations.results />
 </div>

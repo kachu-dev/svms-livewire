@@ -25,6 +25,6 @@ new class extends Component
     {
         $this->policy->delete();
 
-        $this->redirect('policy');
+        $this->redirectRoute('staff.policy.index');
     }
 };

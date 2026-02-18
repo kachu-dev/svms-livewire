@@ -27,6 +27,6 @@ new #[Layout('layouts::app', ['title' => 'Create Policy'])] class extends Compon
         ]);
 
         $this->reset();
-        $this->redirect('/staff/policy');
+        $this->redirectRoute('staff.policy.index');
     }
 };

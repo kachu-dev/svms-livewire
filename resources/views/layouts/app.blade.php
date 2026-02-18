@@ -72,9 +72,8 @@
                     icon:variant="solid"
                     icon="user-group"
                 >
-                    <flux:sidebar.item href="{{ route('staff.violations.index') }}">Create User</flux:sidebar.item>
-                    <flux:sidebar.item href="{{ route('staff.violations.index') }}">All Users</flux:sidebar.item>
-                    <flux:sidebar.item href="{{ route('staff.violations.deleted') }}">Deactivated Users
+                    <flux:sidebar.item href="{{ route('staff.users-mgt.index') }}">All Users</flux:sidebar.item>
+                    <flux:sidebar.item href="{{ route('staff.users-mgt.deleted') }}">Deactivated Users
                     </flux:sidebar.item>
                 </flux:sidebar.group>
 
@@ -89,14 +88,14 @@
                 class="max-lg:hidden"
                 position="top"
             >
-                <flux:sidebar.profile avatar="https://fluxui.dev/img/demo/user.png" name="Olivia Martin" />
+                <flux:sidebar.profile name="{{ Auth::user()->name }}" />
                 <flux:menu>
                     <flux:menu.radio.group>
-                        <flux:menu.radio checked>Olivia Martin</flux:menu.radio>
+                        <flux:menu.radio checked>{{ Auth::user()->name }}</flux:menu.radio>
                         <flux:menu.radio>Truly Delta</flux:menu.radio>
                     </flux:menu.radio.group>
                     <flux:menu.separator />
-                    <flux:menu.item icon="arrow-right-start-on-rectangle">Logout</flux:menu.item>
+                    <flux:menu.item href="/logout" icon="arrow-right-start-on-rectangle">Logout</flux:menu.item>
                 </flux:menu>
             </flux:dropdown>
         </flux:sidebar>
@@ -117,11 +116,11 @@
                     <flux:profile avatar="https://fluxui.dev/img/demo/user.png" />
                     <flux:menu>
                         <flux:menu.radio.group>
-                            <flux:menu.radio checked>Olivia Martin</flux:menu.radio>
+                            <flux:menu.radio checked></flux:menu.radio>
                             <flux:menu.radio>Truly Delta</flux:menu.radio>
                         </flux:menu.radio.group>
                         <flux:menu.separator />
-                        <flux:menu.item icon="arrow-right-start-on-rectangle">Logout</flux:menu.item>
+                        <flux:menu.item href="/logout" icon="arrow-right-start-on-rectangle">Logout</flux:menu.item>
                     </flux:menu>
                 </flux:dropdown>
             </flux:navbar>

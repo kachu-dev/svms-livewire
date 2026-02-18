@@ -1,5 +1,5 @@
 <div>
-    <x-card header="Deleted Student Violations" icon="exclamation-triangle">
+    <x-card header="Deleted Student Violations" icon="trash">
         <div class="mb-6 grid grid-cols-1 gap-3 md:grid-cols-12">
             <div class="md:col-span-4">
                 <flux:input
@@ -76,7 +76,7 @@
                         Date
                     </flux:table.column>
 
-                    <flux:table.column>Actions</flux:table.column>
+                    <flux:table.column align="center">Actions</flux:table.column>
                 </flux:table.columns>
 
                 <flux:table.rows>
@@ -100,7 +100,7 @@
                             </flux:table.cell>
                             <flux:table.cell class="whitespace-nowrap">
                                 {{ $violation->created_at->format('M j, Y - h:i A') ?? 'N/A' }}</flux:table.cell>
-                            <flux:table.cell>
+                            <flux:table.cell align="center">
                                 <flux:dropdown position="left">
                                     <flux:button
                                         icon="ellipsis-horizontal"
@@ -113,14 +113,14 @@
                                         <flux:menu.item icon="pencil">Edit</flux:menu.item>
                                         <flux:menu.separator />
                                         <flux:menu.item
-                                            icon="arrow-path"
-                                            variant="danger"
                                             @click="
                                                 $dispatch('restore-violation', {
                                                 id: {{ $violation->id }},
                                                 });
                                                 $flux.modal('restore-violation').show()
                                             "
+                                            icon="arrow-path"
+                                            variant="danger"
                                         >
                                             Restore
                                         </flux:menu.item>
@@ -139,7 +139,7 @@
                                             @if ($search || $dateFrom || $dateTo)
                                                 Try adjusting your filters or search terms
                                             @else
-                                                No violations have been recorded yet
+                                                No violations have been deleted yet
                                             @endif
                                         </p>
                                     </div>
@@ -162,5 +162,5 @@
         </div>
     </x-card>
 
-    <livewire:violations.modals.restore-violation />
+    <livewire:modals.violations.restore-violation />
 </div>

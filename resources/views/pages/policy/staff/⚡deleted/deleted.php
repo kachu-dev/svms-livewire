@@ -7,7 +7,7 @@ use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
 
-new #[Layout('layouts::app', ['title' => 'Deleted Policy'])] class extends Component
+new #[Layout('layouts::app', ['title' => 'Policy Management'])] class extends Component
 {
     use WithoutUrlPagination, WithPagination;
 
@@ -35,5 +35,10 @@ new #[Layout('layouts::app', ['title' => 'Deleted Policy'])] class extends Compo
         if (in_array($property, ['search', 'classification', 'dateFrom', 'dateTo'])) {
             $this->resetPage();
         }
+    }
+
+    public function resetFilters(): void
+    {
+        $this->reset(['search', 'classification']);
     }
 };

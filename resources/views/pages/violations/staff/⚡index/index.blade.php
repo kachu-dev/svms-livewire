@@ -76,7 +76,7 @@
                         Date
                     </flux:table.column>
 
-                    <flux:table.column>Actions</flux:table.column>
+                    <flux:table.column align="center">Actions</flux:table.column>
                 </flux:table.columns>
 
                 <flux:table.rows>
@@ -100,7 +100,7 @@
                             </flux:table.cell>
                             <flux:table.cell class="whitespace-nowrap">
                                 {{ $violation->created_at->format('M j, Y - h:i A') ?? 'N/A' }}</flux:table.cell>
-                            <flux:table.cell>
+                            <flux:table.cell align="center">
                                 <flux:dropdown position="left">
                                     <flux:button
                                         icon="ellipsis-horizontal"
@@ -113,14 +113,14 @@
                                         <flux:menu.item icon="pencil">Edit</flux:menu.item>
                                         <flux:menu.separator />
                                         <flux:menu.item
-                                            icon="arrow-path"
-                                            variant="danger"
                                             @click="
                                                 $dispatch('delete-violation', {
                                                 id: {{ $violation->id }},
                                                 });
                                                 $flux.modal('delete-violation').show()
                                             "
+                                            icon="arrow-path"
+                                            variant="danger"
                                         >
                                             Delete
                                         </flux:menu.item>
@@ -162,5 +162,5 @@
         </div>
     </x-card>
 
-    <livewire:violations.modals.delete-violation />
+    <livewire:modals.violations.delete-violation />
 </div>

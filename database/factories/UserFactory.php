@@ -27,15 +27,16 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'role' => fake()->randomElement(['guard', 'staff']),
+            'role' => fake()->randomElement(['guard', 'osa']),
             'assigned_gate' => fake()->randomNumber(3, true),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => static::$password ??= Hash::make('tite'),
             'remember_token' => Str::random(10),
         ];
     }
 
     /**
      * Indicate that the model's email address should be unverified.
+     *
      */
     public function unverified(): static
     {

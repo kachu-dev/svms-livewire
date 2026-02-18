@@ -1,5 +1,5 @@
 <div>
-    <x-card header="Deactivated Policy Types" icon="document-text">
+    <x-card header="Deactivated Policy Types" icon="trash">
         <div class="mb-6 grid grid-cols-1 gap-3 md:grid-cols-12">
             <div class="md:col-span-4">
                 <flux:input
@@ -24,7 +24,7 @@
                 </flux:select>
             </div>
 
-            <div class="flex gap-3 md:col-span-2 md:items-end">
+            <div class="flex gap-3 md:col-span-4 md:items-end">
                 <flux:button
                     class="w-full"
                     href="{{ route('staff.policy.index') }}"
@@ -41,7 +41,7 @@
                     <flux:table.column>Code</flux:table.column>
                     <flux:table.column>Name</flux:table.column>
                     <flux:table.column>Classification</flux:table.column>
-                    <flux:table.column>Actions</flux:table.column>
+                    <flux:table.column align="center">Actions</flux:table.column>
                 </flux:table.columns>
 
                 <flux:table.rows>
@@ -50,7 +50,7 @@
                             <flux:table.cell>{{ $policy->code }}</flux:table.cell>
                             <flux:table.cell>{{ $policy->name }}</flux:table.cell>
                             <flux:table.cell>{{ $policy->classification }}</flux:table.cell>
-                            <flux:table.cell>
+                            <flux:table.cell align="center">
                                 <flux:dropdown position="left">
                                     <flux:button
                                         icon="ellipsis-horizontal"
@@ -60,13 +60,13 @@
                                     />
                                     <flux:menu>
                                         <flux:menu.item
-                                            icon="archive-box-x-mark"
                                             @click="
                                                 $dispatch('restore-policy', {
                                                 id: {{ $policy->id }},
                                                 });
                                                                      $flux.modal('restore-policy').show()
                                             "
+                                            icon="archive-box-x-mark"
                                         >Reactivate</flux:menu.item>
                                     </flux:menu>
                                 </flux:dropdown>
@@ -83,7 +83,7 @@
                                             @if ($search)
                                                 Try adjusting your filters or search terms
                                             @else
-                                                No policies have been deleted yet
+                                                No policies have been deactivated yet
                                             @endif
                                         </p>
                                     </div>
@@ -106,5 +106,5 @@
         </div>
     </x-card>
 
-    <livewire:violations.modals.restore-policy />
+    <livewire:modals.policy.restore-policy />
 </div>
