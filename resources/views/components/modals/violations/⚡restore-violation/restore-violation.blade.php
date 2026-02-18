@@ -1,9 +1,9 @@
-<flux:modal name="delete-violation" class="min-w-[28rem]">
+<flux:modal class="min-w-[28rem]" name="restore-violation">
     <div class="space-y-6">
         <div>
-            <flux:heading size="lg">Delete Violation</flux:heading>
+            <flux:heading size="lg">Restore Violation</flux:heading>
             <flux:subheading class="mt-2">
-                Are you sure you want to delete this violation record?
+                Are you sure you want to restore this violation record?
             </flux:subheading>
         </div>
 
@@ -38,7 +38,11 @@
             <flux:modal.close>
                 <flux:button variant="ghost">Cancel</flux:button>
             </flux:modal.close>
-            <flux:button wire:click="delete" variant="danger">Delete Violation</flux:button>
+            <flux:button
+                color="green"
+                variant="primary"
+                wire:click="restore"
+            >Restore Violation</flux:button>
         </div>
     </div>
 </flux:modal>

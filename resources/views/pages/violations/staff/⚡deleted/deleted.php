@@ -7,7 +7,7 @@ use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
 
-new #[Layout('layouts::app', ['title' => 'Deleted Violations'])] class extends Component
+new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends Component
 {
     use WithoutUrlPagination, WithPagination;
 

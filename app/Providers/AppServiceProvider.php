@@ -6,6 +6,7 @@ namespace App\Providers;
 
 use App\Models\User;
 use Carbon\CarbonImmutable;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -29,10 +30,20 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
 
-        Gate::define('access-guard-area', fn (User $user) => $user->role === 'guard');
+/*        Gate::define('access-guard-area', fn (User $user) => $user->role === 'guard');*/
+/*        Gate::define('access-staff-area', fn (User $user) => $user->role === 'staff');*/
 
-        Gate::define('access-staff-area', fn (User $user) => $user->role === 'staff');
+        Gate::define('access-staff-area', function (User $user) {
+            return $user->role === 'osa'
+                ? Response::allow()
+                : Response::denyAsNotFound();
+        });
 
+        Gate::define('access-guard-area', function (User $user) {
+            return $user->role === 'guard'
+                ? Response::allow()
+                : Response::denyAsNotFound();
+        });
     }
 
     protected function configureDefaults(): void

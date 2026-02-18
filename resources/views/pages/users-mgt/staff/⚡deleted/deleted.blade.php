@@ -1,36 +1,34 @@
 <div>
-    <x-card header="Active Policy Types" icon="document-text">
+    <x-card header="Deactivated Users" icon="trash">
         <div class="mb-6 grid grid-cols-1 gap-3 md:grid-cols-12">
             <div class="md:col-span-4">
                 <flux:input
                     icon="magnifying-glass"
                     label="Search"
-                    placeholder="Search by Code or name..."
+                    placeholder="Search by name, role, gate, or email..."
                     wire:model.live.debounce.500ms="search"
                 />
             </div>
 
             <div class="md:col-span-4">
                 <flux:select
-                    label="Classification"
-                    placeholder="All Classifications"
+                    label="Roles"
+                    placeholder="All Roles"
                     wire:model.live="classification"
                 >
-                    <flux:select.option value="">All Classifications</flux:select.option>
-                    <flux:select.option>Minor</flux:select.option>
-                    <flux:select.option>Major - Suspension</flux:select.option>
-                    <flux:select.option>Major - Dismissal</flux:select.option>
-                    <flux:select.option>Major - Expulsion</flux:select.option>
+                    <flux:select.option value="">All Roles</flux:select.option>
+                    <flux:select.option value="guard">Guard</flux:select.option>
+                    <flux:select.option value="staff">Staff</flux:select.option>
                 </flux:select>
             </div>
 
             <div class="flex gap-3 md:col-span-4 md:items-end">
                 <flux:button
                     class="w-full"
-                    href="{{ route('staff.policy.deleted') }}"
+                    href="{{ route('staff.users-mgt.index') }}"
                     icon="archive-box"
                 >
-                    Deactivated Policies
+                    Active Accounts
                 </flux:button>
 
                 <flux:button
@@ -38,28 +36,31 @@
                     class="w-full"
                     icon="plus-circle"
                 >
-                    Create Policy Type
+                    Create New User
                 </flux:button>
+
             </div>
         </div>
 
         <div class="rounded border-t-4 border-t-blue-500 p-4 shadow">
-            <flux:table :paginate="$this->policies">
+            <flux:table :paginate="$this->users">
                 <flux:table.columns>
-                    <flux:table.column>Code</flux:table.column>
                     <flux:table.column>Name</flux:table.column>
-                    <flux:table.column>Classification</flux:table.column>
+                    <flux:table.column>Role</flux:table.column>
+                    <flux:table.column>Assigned Gate</flux:table.column>
+                    <flux:table.column>Email</flux:table.column>
                     <flux:table.column align="center">Actions</flux:table.column>
                 </flux:table.columns>
 
                 <flux:table.rows>
-                    @forelse($this->policies as $policy)
+                    @forelse($this->users as $user)
                         <flux:table.row>
-                            <flux:table.cell>{{ $policy->code }}</flux:table.cell>
-                            <flux:table.cell>{{ $policy->name }}</flux:table.cell>
-                            <flux:table.cell>{{ $policy->classification }}</flux:table.cell>
+                            <flux:table.cell>{{ $user->name }}</flux:table.cell>
+                            <flux:table.cell>{{ $user->role }}</flux:table.cell>
+                            <flux:table.cell>{{ $user->assigned_gate }}</flux:table.cell>
+                            <flux:table.cell>{{ $user->email }}</flux:table.cell>
                             <flux:table.cell align="center">
-                                <flux:dropdown>
+                                <flux:dropdown position="left">
                                     <flux:button
                                         icon="ellipsis-horizontal"
                                         inset="top bottom"
@@ -69,19 +70,19 @@
                                     <flux:menu>
                                         <flux:menu.item
                                             @click="
-                                                $dispatch('update-policy', { id: {{ $policy->id }} });
+                                                $dispatch('update-policy', { id: {{ $user->id }} });
                                                                      $flux.modal('update-policy').show()
                                             "
                                             icon="arrow-path"
                                         >Update
                                         </flux:menu.item>
                                         <flux:menu.item
-                                            @click="$dispatch('confirm-delete-policy', {
-                                                id: {{ $policy->id }},
-                                            }); $flux.modal('delete-policy').show()"
+                                            @click="$dispatch('restore-user', {
+                                                id: {{ $user->id }},
+                                            }); $flux.modal('restore-user').show()"
                                             icon="archive-box-x-mark"
                                         >
-                                            Deactivate</flux:menu.item>
+                                            Reactivate</flux:menu.item>
                                         <flux:menu.separator />
                                     </flux:menu>
                                 </flux:dropdown>
@@ -93,12 +94,12 @@
                                 <div class="flex flex-col items-center gap-3">
                                     <flux:icon class="h-16 w-16 text-gray-300" name="inbox" />
                                     <div>
-                                        <p class="font-medium text-gray-600">No policies found</p>
+                                        <p class="font-medium text-gray-600">No users found</p>
                                         <p class="mt-1 text-sm text-gray-500">
                                             @if ($search)
                                                 Try adjusting your filters or search terms
                                             @else
-                                                No policies have been recorded yet
+                                                No users have been deactivated yet
                                             @endif
                                         </p>
                                     </div>
@@ -121,7 +122,5 @@
         </div>
     </x-card>
 
-    <livewire:modals.policy.create-policy />
-    <livewire:modals.policy.update-policy />
-    <livewire:modals.policy.delete-policy />
+    <livewire:modals.users-mgt.restore-user />
 </div>

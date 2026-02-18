@@ -10,7 +10,7 @@
 
 /* Re-assign Flux's gray of choice... */
 @theme {
-    --font-sans: 'Inter';
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
     --color-zinc-50: var(--color-slate-50);
     --color-zinc-100: var(--color-slate-100);
@@ -36,3 +36,18 @@
         --color-accent-foreground: var(--color-white);
     }
 }
+
+[data-flux-field]:not(ui-radio, ui-checkbox) {
+    @apply grid gap-2;
+}
+
+[data-flux-label] {
+    @apply  mb-0! leading-tight!;
+}
+
+input:focus[data-flux-control],
+textarea:focus[data-flux-control],
+select:focus[data-flux-control] {
+    @apply outline-hidden ring-2 ring-accent;
+}
+

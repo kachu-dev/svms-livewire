@@ -16,7 +16,7 @@ new #[Layout('layouts::app', ['title' => 'User Management'])] class extends Comp
     #[Computed]
     public function users()
     {
-        return User::query()
+        return User::onlyTrashed()
             ->when($this->search, fn ($q) => $q->search($this->search))
             ->paginate(10);
     }

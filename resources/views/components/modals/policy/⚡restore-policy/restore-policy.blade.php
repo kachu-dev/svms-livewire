@@ -1,9 +1,9 @@
-<flux:modal name="delete-policy" class="min-w-[22rem]">
+<flux:modal class="min-w-[22rem]" name="restore-policy">
     <div class="space-y-6">
         <div>
-            <flux:heading size="lg">Deactivate Policy?</flux:heading>
+            <flux:heading size="lg">Reactivate Policy?</flux:heading>
             <flux:text class="mt-2">
-                You're about to deactivate this policy: <br>
+                You're about to reactivate this policy: <br>
             </flux:text>
             <flux:text class="mt-2" variant="strong">
                 {{ $code }} - {{ $name }}
@@ -15,7 +15,11 @@
             <flux:modal.close>
                 <flux:button variant="ghost">Cancel</flux:button>
             </flux:modal.close>
-            <flux:button wire:click="delete" variant="danger">Deactivate Policy</flux:button>
+            <flux:button
+                color="green"
+                variant="primary"
+                wire:click="restore"
+            >Reactivate Policy</flux:button>
         </div>
     </div>
 </flux:modal>
