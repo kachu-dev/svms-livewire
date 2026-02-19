@@ -4,7 +4,7 @@ use App\Models\ViolationType;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
-new #[Layout('layouts::app', ['title' => 'Policy Management'])] class extends Component
+new #[Layout('layouts::student', ['title' => 'Policy Management'])] class extends Component
 {
     public function getFilteredTypesProperty()
     {
