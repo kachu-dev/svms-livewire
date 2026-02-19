@@ -31,11 +31,13 @@ new #[Layout('layouts::auth')] class extends Component
 
                 if ($student) {
                     $user->update([
-                        'student_id'      => $student->studentid,
+                        'student_id' => $student->studentid,
                         'student_program' => $student->program,
-                        'student_year'    => $student->year,
+                        'student_year' => $student->year,
                     ]);
                 }
+
+                return $this->redirect(route('student.policy.display-policy'));
             }
 
             if ($user->role === 'osa') {

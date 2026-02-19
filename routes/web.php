@@ -42,9 +42,6 @@ Route::middleware(['auth', 'can:access-staff-area'])
             ->name('users-mgt.index');
         Route::livewire('/users/deactivated', 'pages::users-mgt.staff.deleted')
             ->name('users-mgt.deleted');
-
-        Route::livewire('/display-policy', 'pages::policy.student.display-policy')
-            ->name('policy.display-policy');
     });
 
 Route::middleware(['auth', 'can:access-guard-area'])
@@ -56,4 +53,13 @@ Route::middleware(['auth', 'can:access-guard-area'])
             ->name('violations.create');
         Route::livewire('/violations/recent', 'pages::violations.guard.recent')
             ->name('violations.recent');
+    });
+
+Route::middleware(['auth', 'can:access-student-area'])
+    ->prefix('student')
+    ->name('student.')
+    ->group(function () {
+
+        Route::livewire('/display-policy', 'pages::policy.student.display-policy')
+            ->name('policy.display-policy');
     });

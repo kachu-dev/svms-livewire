@@ -40,6 +40,10 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('access-guard-area', fn (User $user) => $user->role === 'guard'
             ? Response::allow()
             : Response::denyAsNotFound());
+
+        Gate::define('access-student-area', fn (User $user) => $user->role === 'student'
+            ? Response::allow()
+            : Response::denyAsNotFound());
     }
 
     protected function configureDefaults(): void
