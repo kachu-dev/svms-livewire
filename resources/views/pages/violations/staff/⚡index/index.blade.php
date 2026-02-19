@@ -54,17 +54,16 @@
                         Classification
                     </flux:table.column>
 
-                    <flux:table.column
-                        :direction="$sortDirection"
-                        :sorted="$sortBy === 'count'"
-                        sortable
-                        wire:click="sort('count')"
-                    >
+                    <flux:table.column>
                         Count
                     </flux:table.column>
 
                     <flux:table.column>
-                        <p>Violation</p>
+                        Violation
+                    </flux:table.column>
+
+                    <flux:table.column>
+                        Status
                     </flux:table.column>
 
                     <flux:table.column
@@ -85,7 +84,7 @@
                             <flux:table.cell variant="strong">{{ $violation->student_id }}</flux:table.cell>
                             <flux:table.cell>{{ $violation->student_name }}</flux:table.cell>
                             <flux:table.cell>{{ $violation->classification }}</flux:table.cell>
-                            <flux:table.cell>{{ $violation->count }}</flux:table.cell>
+                            <flux:table.cell>{{ $violation->minorOffenseNumber() }}</flux:table.cell>
                             <flux:table.cell>
                                 <div>
                                     <flux:tooltip position="left">
@@ -98,6 +97,7 @@
                                     </flux:tooltip>
                                 </div>
                             </flux:table.cell>
+                            <flux:table.cell><flux:badge> {{ $violation->status }} </flux:badge></flux:table.cell>
                             <flux:table.cell class="whitespace-nowrap">
                                 {{ $violation->created_at->format('M j, Y - h:i A') ?? 'N/A' }}</flux:table.cell>
                             <flux:table.cell align="center">
@@ -109,16 +109,16 @@
                                         variant="ghost"
                                     />
                                     <flux:menu>
-                                        <flux:menu.item icon="eye">View Details</flux:menu.item>
+                                        <flux:menu.item icon="eye" :href="route('staff.violations.detail', $violation)">
+                                            View Details
+                                        </flux:menu.item>
                                         <flux:menu.item icon="pencil">Edit</flux:menu.item>
                                         <flux:menu.separator />
                                         <flux:menu.item
                                             @click="
                                                 $dispatch('delete-violation', {
                                                 id: {{ $violation->id }},
-                                                });
-                                                $flux.modal('delete-violation').show()
-                                            "
+                                                });"
                                             icon="arrow-path"
                                             variant="danger"
                                         >

@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ViolationTypeSeeder::class,
             ViolationRemarkSeeder::class,
+            ViolationStageTemplateSeeder::class,
         ]);
     }
 }

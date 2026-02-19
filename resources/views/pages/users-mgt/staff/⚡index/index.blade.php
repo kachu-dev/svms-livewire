@@ -5,7 +5,7 @@
                 <flux:input
                     icon="magnifying-glass"
                     label="Search"
-                    placeholder="Search by name, role, gate, or email..."
+                    placeholder="Search by name, role, gate, or username..."
                     wire:model.live.debounce.500ms="search"
                 />
             </div>
@@ -30,6 +30,14 @@
                 >
                     Deactivated Accounts
                 </flux:button>
+
+                <flux:button
+                    @click="$flux.modal('create-user').show()"
+                    class="w-full"
+                    icon="plus-circle"
+                >
+                    Create New User
+                </flux:button>
             </div>
         </div>
 
@@ -39,7 +47,7 @@
                     <flux:table.column>Name</flux:table.column>
                     <flux:table.column>Role</flux:table.column>
                     <flux:table.column>Assigned Gate</flux:table.column>
-                    <flux:table.column>Email</flux:table.column>
+                    <flux:table.column>Username</flux:table.column>
                     <flux:table.column align="center">Actions</flux:table.column>
                 </flux:table.columns>
 
@@ -49,7 +57,7 @@
                             <flux:table.cell>{{ $user->name }}</flux:table.cell>
                             <flux:table.cell>{{ $user->role }}</flux:table.cell>
                             <flux:table.cell>{{ $user->assigned_gate }}</flux:table.cell>
-                            <flux:table.cell>{{ $user->email }}</flux:table.cell>
+                            <flux:table.cell>{{ $user->username }}</flux:table.cell>
                             <flux:table.cell align="center">
                                 <flux:dropdown position="left">
                                     <flux:button
@@ -60,17 +68,16 @@
                                     />
                                     <flux:menu>
                                         <flux:menu.item
-                                            @click="
-                                                $dispatch('update-policy', { id: {{ $user->id }} });
-                                                                     $flux.modal('update-policy').show()
-                                            "
+                                            @click="$dispatch('update-user', {
+                                                id: {{ $user->id }},
+                                            });"
                                             icon="arrow-path"
                                         >Update
                                         </flux:menu.item>
                                         <flux:menu.item
                                             @click="$dispatch('confirm-delete-user', {
                                                 id: {{ $user->id }},
-                                            }); $flux.modal('delete-user').show()"
+                                            });"
                                             icon="archive-box-x-mark"
                                         >
                                             Deactivate</flux:menu.item>
@@ -114,4 +121,6 @@
     </x-card>
 
     <livewire:modals.users-mgt.delete-user />
+    <livewire:modals.users-mgt.update-user />
+    <livewire:modals.users-mgt.create-user />
 </div>

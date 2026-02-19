@@ -25,6 +25,8 @@ new class extends Component
         $this->studentName = $this->violation->student_name;
         $this->type = $this->violation->violation_type_snapshot;
         $this->remark = $this->violation->violation_remark_snapshot;
+
+        $this->modal('restore-violation')->show();
     }
 
     public function restore(): void

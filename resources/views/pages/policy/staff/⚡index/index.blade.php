@@ -68,17 +68,14 @@
                                     />
                                     <flux:menu>
                                         <flux:menu.item
-                                            @click="
-                                                $dispatch('update-policy', { id: {{ $policy->id }} });
-                                                                     $flux.modal('update-policy').show()
-                                            "
+                                            @click="$dispatch('update-policy', { id: {{ $policy->id }} });"
                                             icon="arrow-path"
                                         >Update
                                         </flux:menu.item>
                                         <flux:menu.item
                                             @click="$dispatch('confirm-delete-policy', {
                                                 id: {{ $policy->id }},
-                                            }); $flux.modal('delete-policy').show()"
+                                            });"
                                             icon="archive-box-x-mark"
                                         >
                                             Deactivate</flux:menu.item>
@@ -124,4 +121,5 @@
     <livewire:modals.policy.create-policy />
     <livewire:modals.policy.update-policy />
     <livewire:modals.policy.delete-policy />
+    <livewire:modals.violations.results/>
 </div>
