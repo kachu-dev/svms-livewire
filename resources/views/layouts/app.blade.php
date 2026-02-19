@@ -113,7 +113,7 @@
                     class="grid"
                     expandable
                     heading="Violations"
-                    icon:variant="solid"
+{{--                    icon:variant="solid"--}}
                     icon="exclamation-triangle"
                 >
                     <flux:sidebar.item href="{{ route('staff.violations.create') }}">Create Violation
@@ -127,7 +127,7 @@
                     class="grid"
                     expandable
                     heading="Policy"
-                    icon:variant="solid"
+{{--                    icon:variant="solid"--}}
                     icon="document-text"
                 >
                     <flux:sidebar.item href="{{ route('staff.policy.index') }}">All Policies</flux:sidebar.item>
@@ -139,7 +139,7 @@
                     class="grid"
                     expandable
                     heading="User Management"
-                    icon:variant="solid"
+{{--                    icon:variant="solid"--}}
                     icon="user-group"
                 >
                     <flux:sidebar.item href="{{ route('staff.users-mgt.index') }}">All Users</flux:sidebar.item>

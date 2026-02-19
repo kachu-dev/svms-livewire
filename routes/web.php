@@ -42,6 +42,9 @@ Route::middleware(['auth', 'can:access-staff-area'])
             ->name('users-mgt.index');
         Route::livewire('/users/deactivated', 'pages::users-mgt.staff.deleted')
             ->name('users-mgt.deleted');
+
+        Route::livewire('/display-policy', 'pages::policy.student.display-policy')
+            ->name('policy.display-policy');
     });
 
 Route::middleware(['auth', 'can:access-guard-area'])
