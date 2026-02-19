@@ -4,7 +4,7 @@
             <div class="flex justify-center opacity-50">
                 <a href="/" class="group flex items-center gap-3">
                     <div>
-                        <svg class="h-4 text-zinc-800 dark:text-white" viewBox="0 0 18 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg class="h-4" viewBox="0 0 18 13" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <g>
                                 <line x1="1" y1="5" x2="1" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line>
                                 <line x1="5" y1="1" x2="5" y2="8" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line>
@@ -15,7 +15,7 @@
                         </svg>
                     </div>
 
-                    <span class="text-xl font-semibold text-zinc-800 dark:text-white">svms</span>
+                    <span class="text-xl font-semibold">svms</span>
                 </a>
             </div>
 
@@ -23,27 +23,20 @@
 
             <flux:separator text="Login Page" />
 
-            <div>
-                <form wire:submit="login" class="flex flex-col gap-6">
-                    <flux:input wire:model="email" label="Email" type="email" placeholder="email@example.com" />
-
-                    <flux:input wire:model="password" label="Password" type="password" placeholder="Your password" />
-
-                    <flux:button variant="primary" class="w-full" type="submit">Log in</flux:button>
-                </form>
-            </div>
+            <form wire:submit="login" class="flex flex-col gap-6">
+{{--
+                <flux:input wire:model="email" label="Email" type="email" placeholder="email@example.com" />
+--}}
+                <flux:input wire:model="username" label="Username" type="text" placeholder="Your username" />
+                <flux:input wire:model="password" label="Password" type="password" placeholder="Your password" />
+                <flux:error class="text-center mt-0!" name="credentials"></flux:error>
+                <flux:button variant="primary" class="w-full" type="submit">Log in</flux:button>
+            </form>
         </div>
     </div>
-
+    {{ Auth::user() }}
     <div class="flex-1 p-4 max-lg:hidden">
         <div class="text-white relative rounded-lg h-full w-full bg-zinc-900 flex flex-col items-start justify-end p-16" style="background-image: url('/img/demo/auth_aurora_2x.png'); background-size: cover">
-            <div class="flex gap-2 mb-4">
-                <flux:icon.star variant="solid" />
-                <flux:icon.star variant="solid" />
-                <flux:icon.star variant="solid" />
-                <flux:icon.star variant="solid" />
-                <flux:icon.star variant="solid" />
-            </div>
 
             <div class="mb-6 italic font-base text-3xl xl:text-4xl">
                 Flux has enabled me to design, build, and deliver apps faster than ever before.

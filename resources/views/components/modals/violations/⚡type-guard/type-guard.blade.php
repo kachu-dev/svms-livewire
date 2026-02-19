@@ -53,7 +53,7 @@
             @endforelse
         </div>
 
-        <div class="flex gap-2 border-t border-zinc-200 pt-4 dark:border-zinc-700">
+        <div class="flex gap-2">
             <flux:spacer />
             <flux:modal.close>
                 <flux:button variant="ghost">Cancel</flux:button>

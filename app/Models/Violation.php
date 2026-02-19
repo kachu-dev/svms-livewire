@@ -20,7 +20,7 @@ class Violation extends Model
         'violation_remark_id',
         'violation_remark_snapshot',
         'classification',
-        'count',
+        'status',
         'original_violation_type_id',
     ];
 
@@ -34,5 +34,49 @@ class Violation extends Model
                 ->orWhere('violation_remark_snapshot', 'like', "%{$search}%")
                 ->orWhere('classification', 'like', "%{$search}%");
         });
+    }
+
+    public function minorOffenseNumber(): ?int
+    {
+        if ($this->classification !== 'Minor') {
+            return null;
+        }
+
+        return static::where('student_id', $this->student_id)
+                ->where('classification', 'Minor')
+                ->where('created_at', '<=', $this->created_at)
+                ->orderBy('created_at')
+                ->orderBy('id')
+                ->pluck('id')
+                ->search($this->id) + 1;
+    }
+
+    public function resolveOffenseKey(): string
+    {
+        if ($this->classification !== 'Minor') {
+            return match(true) {
+                str_contains($this->classification, 'Suspension') => 'major_suspension',
+                str_contains($this->classification, 'Dismissal')  => 'major_dismissal',
+                str_contains($this->classification, 'Expulsion')  => 'major_expulsion',
+                default => 'major_suspension',
+            };
+        }
+
+        $minorCount = static::where('student_id', $this->student_id)
+            ->where('classification', 'Minor')
+            ->where('created_at', '<=', $this->created_at)
+            ->count();
+
+        return match(true) {
+            $minorCount <= 1 => 'minor_1',
+            $minorCount === 2 => 'minor_2',
+            $minorCount === 3 => 'minor_3',
+            default           => 'major_suspension',
+        };
+    }
+
+    public function stages()
+    {
+        return $this->hasMany(ViolationStages::class)->orderBy('order');
     }
 }

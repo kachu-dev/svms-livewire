@@ -19,11 +19,15 @@ new class extends Component
 
         $this->name = $this->policy->name;
         $this->code = $this->policy->code;
+
+        $this->modal('restore-policy')->show();
     }
 
     public function restore(): void
     {
         $this->policy->restore();
+
+        Toaster::success('Policy reactivated successfully!');
 
         $this->redirectRoute('staff.policy.deleted');
     }

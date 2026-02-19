@@ -27,6 +27,16 @@ new #[Layout('layouts::app', ['title' => 'Create Policy'])] class extends Compon
         ]);
 
         $this->reset();
+
+        Toaster::success('Policy created successfully!');
+
         $this->redirectRoute('staff.policy.index');
     }
+
+    public function resetCreateForm(): void
+    {
+        $this->resetValidation();
+        $this->reset();
+    }
+
 };

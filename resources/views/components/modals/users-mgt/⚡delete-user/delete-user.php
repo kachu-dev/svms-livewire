@@ -16,11 +16,15 @@ new class extends Component
         $this->user = User::find($id);
 
         $this->name = $this->user->name;
+
+        $this->modal('delete-user')->show();
     }
 
     public function delete(): void
     {
         $this->user->delete();
+
+        Toaster::success('User deactivated successfully!');
 
         $this->redirectRoute('staff.users-mgt.index');
     }

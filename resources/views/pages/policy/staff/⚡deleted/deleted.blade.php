@@ -62,10 +62,8 @@
                                         <flux:menu.item
                                             @click="
                                                 $dispatch('restore-policy', {
-                                                id: {{ $policy->id }},
-                                                });
-                                                                     $flux.modal('restore-policy').show()
-                                            "
+                                                    id: {{ $policy->id }},
+                                                });"
                                             icon="archive-box-x-mark"
                                         >Reactivate</flux:menu.item>
                                     </flux:menu>

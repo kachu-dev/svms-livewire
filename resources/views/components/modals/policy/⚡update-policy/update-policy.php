@@ -22,11 +22,15 @@ new #[Layout('layouts::app', ['title' => 'Update Policy'])] class extends Compon
     #[On('update-policy')]
     public function setFields($id): void
     {
+        $this->resetErrorBag();
+
         $this->policy = ViolationType::find($id);
 
         $this->code = $this->policy->code;
         $this->name = $this->policy->name;
         $this->classification = $this->policy->classification;
+
+        $this->modal('update-policy')->show();
     }
 
     public function save(): void
@@ -36,6 +40,8 @@ new #[Layout('layouts::app', ['title' => 'Update Policy'])] class extends Compon
         $this->policy->update(
             $this->only(['code', 'name', 'classification'])
         );
+
+        Toaster::success('Policy updated successfully!');
 
         $this->redirectRoute('staff.policy.index');
     }

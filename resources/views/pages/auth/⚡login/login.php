@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Auth;
 
 new #[Layout('layouts::auth')] class extends Component
 {
-    #[Validate('required|email')]
-    public $email;
+    #[Validate('required')]
+    public $username;
 
     #[Validate('required')]
     public $password;
@@ -18,7 +18,7 @@ new #[Layout('layouts::auth')] class extends Component
         $this->validate();
 
         $credentials = [
-            'email' => $this->email,
+            'username' => $this->username,
             'password' => $this->password
         ];
 
@@ -33,6 +33,8 @@ new #[Layout('layouts::auth')] class extends Component
                 return $this->redirect(route('home'));
             }
         }
+        $this->addError('credentials', 'Credentials is incorrect.');
+        $this->reset(['username', 'password']);
         session()->flash('error', 'Invalid credentials');
     }
 };

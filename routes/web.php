@@ -26,6 +26,8 @@ Route::middleware(['auth', 'can:access-staff-area' ])
             ->name('violations.deleted');
         Route::livewire('/violations/create', 'pages::violations.staff.create')
             ->name('violations.create');
+        Route::livewire('/violations/{violation}', 'pages::violations.staff.detail')
+            ->name('violations.detail');
 
         // Policy routes
         Route::livewire('/policy', 'pages::policy.staff.index')

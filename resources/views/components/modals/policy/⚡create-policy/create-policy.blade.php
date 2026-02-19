@@ -1,4 +1,4 @@
-<flux:modal class="md:w-xl" name="create-policy">
+<flux:modal class="md:w-xl" name="create-policy" @close="resetCreateForm">
     <div class="space-y-6">
         <div>
             <flux:heading size="lg">Add Policy</flux:heading>

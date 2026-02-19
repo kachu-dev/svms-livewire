@@ -116,9 +116,7 @@
                                             @click="
                                                 $dispatch('restore-violation', {
                                                 id: {{ $violation->id }},
-                                                });
-                                                $flux.modal('restore-violation').show()
-                                            "
+                                                });"
                                             icon="arrow-path"
                                             variant="danger"
                                         >
