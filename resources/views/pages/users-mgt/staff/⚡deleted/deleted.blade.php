@@ -59,9 +59,7 @@
                                         variant="ghost"
                                     />
                                     <flux:menu>
-                                        <flux:menu.item
-                                            icon="arrow-path"
-                                        >Update
+                                        <flux:menu.item icon="arrow-path">Update
                                         </flux:menu.item>
                                         <flux:menu.item
                                             @click="$dispatch('restore-user', {

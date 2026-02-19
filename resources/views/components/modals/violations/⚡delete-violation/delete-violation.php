@@ -16,6 +16,8 @@ new class extends Component
 
     public $remark;
 
+    public $status;
+
     #[On('delete-violation')]
     public function setFields($id): void
     {
@@ -25,6 +27,7 @@ new class extends Component
         $this->studentName = $this->violation->student_name;
         $this->type = $this->violation->violation_type_snapshot;
         $this->remark = $this->violation->violation_remark_snapshot;
+        $this->status = $this->violation->status;
 
         $this->modal('delete-violation')->show();
     }

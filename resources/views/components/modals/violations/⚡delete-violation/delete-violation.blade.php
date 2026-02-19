@@ -1,9 +1,9 @@
 <flux:modal class="min-w-[28rem]" name="delete-violation">
     <div class="space-y-6">
         <div>
-            <flux:heading size="lg">Delete Violation</flux:heading>
+            <flux:heading size="lg">Archive Violation</flux:heading>
             <flux:subheading class="mt-2">
-                Are you sure you want to delete this violation record?
+                Are you sure you want to archive this violation record?
             </flux:subheading>
         </div>
 
@@ -29,6 +29,11 @@
                 <flux:text variant="strong">Remark:</flux:text>
                 <flux:text>{{ $remark ?? 'N/A' }}</flux:text>
             </div>
+
+            <div class="grid grid-cols-[120px_1fr] gap-2">
+                <flux:text variant="strong">Status:</flux:text>
+                <flux:text>{{ $status ?? 'N/A' }}</flux:text>
+            </div>
         </div>
 
         <flux:separator />
@@ -38,7 +43,7 @@
             <flux:modal.close>
                 <flux:button variant="ghost">Cancel</flux:button>
             </flux:modal.close>
-            <flux:button variant="danger" wire:click="delete">Delete Violation</flux:button>
+            <flux:button variant="danger" wire:click="delete">Archive Violation</flux:button>
         </div>
     </div>
 </flux:modal>

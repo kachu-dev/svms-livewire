@@ -1,5 +1,9 @@
-<flux:modal class="md:w-xl" name="create-user" @close="resetCreateForm">
-    <div class="space-y-6 max-h-[80vh]">
+<flux:modal
+    @close="resetCreateForm"
+    class="md:w-xl"
+    name="create-user"
+>
+    <div class="max-h-[80vh] space-y-6">
         <div>
             <flux:heading size="lg">Create User</flux:heading>
             <flux:text class="mt-2">Create a new user account.</flux:text>
@@ -43,16 +47,16 @@
                 wire:model="password_confirmation"
             />
 
-            <flux:radio.group wire:model="role" label="Role">
+            <flux:radio.group label="Role" wire:model="role">
                 <flux:radio
-                    value="osa"
-                    label="OSA Staff"
                     description="OSA Staff have full access of the capabilities of the system."
+                    label="OSA Staff"
+                    value="osa"
                 />
                 <flux:radio
-                    value="guard"
-                    label="Guard"
                     description="Guards can record a students minor violations, as well as request updates."
+                    label="Guard"
+                    value="guard"
                 />
             </flux:radio.group>
 

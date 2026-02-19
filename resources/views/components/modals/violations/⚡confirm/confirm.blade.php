@@ -2,7 +2,8 @@
     <flux:modal class="w-full max-w-md sm:max-w-96 md:max-w-3xl" name="confirm-violation">
         <div class="space-y-6">
             <div class="text-center">
-                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+                <div
+                    class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
                     <flux:icon class="h-6 w-6 text-red-600 dark:text-red-400" name="exclamation-triangle" />
                 </div>
                 <flux:heading class="mt-4" size="lg">Confirm Violation Submission</flux:heading>
@@ -44,7 +45,7 @@
             <div class="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20">
                 <div class="flex gap-3">
                     <flux:icon class="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600 dark:text-amber-400"
-                               name="information-circle"
+                        name="information-circle"
                     />
                     <div>
                         <flux:text class="text-sm font-medium text-amber-800 dark:text-amber-200">
@@ -90,7 +91,8 @@
                 <flux:modal.close>
                     <flux:button variant="ghost">Close</flux:button>
                 </flux:modal.close>
-                <flux:button variant="primary" wire:click="$dispatch('duplicate-override-confirmed')">Confirm</flux:button>
+                <flux:button variant="primary" wire:click="$dispatch('duplicate-override-confirmed')">Confirm
+                </flux:button>
             </div>
         </div>
     </flux:modal>

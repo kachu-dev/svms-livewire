@@ -8,6 +8,7 @@ namespace App\Models;
 use config\database\factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -30,7 +31,10 @@ class User extends Authenticatable
         'role',
         'assigned_gate',
         'email_verified_at',
-        'username'
+        'username',
+        'student_id',
+        'student_year',
+        'student_program',
     ];
 
     /**
@@ -77,5 +81,24 @@ class User extends Authenticatable
                 ->orWhere('assigned_gate', 'like', "%{$search}%")
                 ->orWhere('role', 'like', "%{$search}%");
         });
+    }
+
+    public function student(): ?Student
+    {
+        if ($this->role !== 'student') {
+            return null;
+        }
+
+        return Student::find($this->student_id);
+    }
+
+    public function violations(): HasMany
+    {
+        return $this->hasMany(Violation::class, 'student_id', 'student_id');
+    }
+
+    public function isStudent(): bool
+    {
+        return $this->role === 'student';
     }
 }

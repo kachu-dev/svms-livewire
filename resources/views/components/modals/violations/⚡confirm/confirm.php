@@ -63,9 +63,9 @@ new class extends Component
         if ($alreadyExists) {
             $this->modal('confirm-violation')->close();
             $this->modal('duplicate-warning')->show();
+
             return;
         }
-
         $this->saveViolation();
     }
 
@@ -87,14 +87,14 @@ new class extends Component
             $student = $this->student;
 
             $violation = Violation::create([
-                'student_id'                 => $this->studentId,
-                'student_name'               => "{$student->firstname} {$student->lastname}",
-                'classification'             => $this->classification,
-                'violation_type_id'          => $this->selectedTypeId,
+                'student_id' => $this->studentId,
+                'student_name' => "{$student->firstname} {$student->lastname}",
+                'classification' => $this->classification,
+                'violation_type_id' => $this->selectedTypeId,
                 'original_violation_type_id' => $originalTypeId,
-                'violation_type_snapshot'    => $this->selectedTypeLabel,
-                'violation_remark_id'        => $this->selectedRemarkId,
-                'violation_remark_snapshot'  => $this->selectedRemarkLabel,
+                'violation_type_snapshot' => $this->selectedTypeLabel,
+                'violation_remark_id' => $this->selectedRemarkId,
+                'violation_remark_snapshot' => $this->selectedRemarkLabel,
             ]);
 
             $offense_key = $violation->resolveOffenseKey();
@@ -105,27 +105,21 @@ new class extends Component
 
             $templates->each(fn ($template) => ViolationStages::create([
                 'violation_id' => $violation->id,
-                'order'        => $template->order,
-                'name'         => $template->name,
-                'status'       => 'pending',
+                'order' => $template->order,
+                'name' => $template->name,
             ]));
 
             $violation->update(['status' => $templates->first()->name]);
 
+            $this->dispatch('show-result', type: 'success', message: 'Violation recorded successfully.');
             $this->dispatch('violation-created');
             $this->modal('duplicate-warning')->close();
-            $this->dispatch('show-result', type: 'success', message: 'Violation recorded successfully.');
+            $this->modal('confirm-violation')->close();
 
-        } catch (\Throwable $e) {
-            Log::error('Violation creation failed', [
-                'student_id' => $this->studentId,
-                'type_id'    => $this->selectedTypeId,
-                'error'      => $e->getMessage(),
-                'trace'      => $e->getTraceAsString(),
-            ]);
-
+        } catch (Throwable $e) {
+            $this->dispatch('show-result', type: 'error', message: 'Failed to save violation. Please contact support if this persists.('.($e->getMessage()).')');
+            $this->modal('confirm-violation')->close();
             $this->modal('duplicate-warning')->close();
-            $this->dispatch('show-result', type: 'error', message: 'Failed to save violation. Please contact support if this persists.');
         }
     }
 
@@ -142,11 +136,9 @@ new class extends Component
             ? "{$this->selectedTypeLabel} - {$this->selectedRemarkLabel}"
             : $this->selectedTypeLabel;
 
-        $this->selectedRemarkId   = null;
-        $this->classification     = 'Major - Suspension';
-        $this->selectedTypeId     = $escalationType->id;
-        $this->selectedTypeLabel  = $escalationType->name;
+        $this->selectedRemarkId = null;
+        $this->classification = 'Major - Suspension';
+        $this->selectedTypeId = $escalationType->id;
+        $this->selectedTypeLabel = $escalationType->name;
     }
-
-
 };

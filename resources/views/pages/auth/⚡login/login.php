@@ -1,9 +1,10 @@
 <?php
 
+use App\Models\Student;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
-use Illuminate\Support\Facades\Auth;
 
 new #[Layout('layouts::auth')] class extends Component
 {
@@ -19,19 +20,33 @@ new #[Layout('layouts::auth')] class extends Component
 
         $credentials = [
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ];
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
+            if ($user->role === 'student') {
+                $student = Student::find($user->username);
+
+                if ($student) {
+                    $user->update([
+                        'student_id'      => $student->studentid,
+                        'student_program' => $student->program,
+                        'student_year'    => $student->year,
+                    ]);
+                }
+            }
+
             if ($user->role === 'osa') {
                 return $this->redirect(route('staff.violations.index'));
-            } elseif ($user->role === 'guard') {
-                return $this->redirect(route('guard.violations.create'));
-            } else {
-                return $this->redirect(route('home'));
             }
+
+            if ($user->role === 'guard') {
+                return $this->redirect(route('guard.violations.create'));
+            }
+
+            return $this->redirect(route('home'));
         }
         $this->addError('credentials', 'Credentials is incorrect.');
         $this->reset(['username', 'password']);

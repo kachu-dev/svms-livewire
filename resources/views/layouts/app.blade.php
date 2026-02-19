@@ -17,6 +17,76 @@
 
         @fluxAppearance
         @livewireStyles
+
+        <style>
+            html:active-view-transition {
+                &::view-transition-old(step) {
+                    animation: slide-out-to-left 500ms forwards;
+                }
+
+                &::view-transition-new(step) {
+                    animation: slide-in-from-right 500ms forwards;
+                }
+            }
+
+            html:active-view-transition-type(backward) {
+                &::view-transition-old(step) {
+                    animation: slide-out-to-right 500ms forwards;
+                }
+
+                &::view-transition-new(step) {
+                    animation: slide-in-from-left 500ms forwards;
+                }
+            }
+
+            @keyframes slide-in-from-right {
+                from {
+                    transform: translateX(50%);
+                    opacity: 0;
+                }
+
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes slide-out-to-left {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+
+                to {
+                    transform: translateX(-50%);
+                    opacity: 0;
+                }
+            }
+
+            @keyframes slide-in-from-left {
+                from {
+                    transform: translateX(-50%);
+                    opacity: 0;
+                }
+
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes slide-out-to-right {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+
+                to {
+                    transform: translateX(50%);
+                    opacity: 0;
+                }
+            }
+        </style>
     </head>
 
     <body class="min-h-screen bg-white antialiased dark:bg-zinc-800">
@@ -26,7 +96,7 @@
             collapsible
             sticky
         >
-            <flux:sidebar.header class="">
+            <flux:sidebar.header>
                 <flux:sidebar.brand
                     href="{{ route('staff.violations.index') }}"
                     logo:dark="{{ asset('images/osa_logo_2.jpg') }}"
@@ -77,8 +147,18 @@
                     </flux:sidebar.item>
                 </flux:sidebar.group>
 
+                <flux:button
+                    aria-label="Toggle dark mode"
+                    icon="moon"
+                    variant="subtle"
+                    x-data
+                    x-on:click="$flux.dark = ! $flux.dark"
+                />
+
             </flux:sidebar.nav>
+
             <flux:sidebar.spacer />
+
             <flux:sidebar.nav>
                 <flux:sidebar.item href="#" icon="cog-6-tooth">Settings</flux:sidebar.item>
                 <flux:sidebar.item href="#" icon="information-circle">Help</flux:sidebar.item>
@@ -130,7 +210,7 @@
             </flux:navbar>
         </flux:header>
 
-        <flux:main class="mx-auto flex min-h-screen w-full flex-col">
+        <flux:main>
             {{ $slot }}
         </flux:main>
 

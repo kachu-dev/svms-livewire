@@ -1,9 +1,7 @@
 <?php
 
 use App\Models\User;
-use App\Models\ViolationType;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -34,11 +32,11 @@ new #[Layout('layouts::app', ['title' => 'Update User'])] class extends Componen
         $this->validate();
 
         User::create([
-            'name'          => $this->name,
-            'username'      => $this->username,
-            'role'          => $this->role,
+            'name' => $this->name,
+            'username' => $this->username,
+            'role' => $this->role,
             'assigned_gate' => $this->assigned_gate,
-            'password'      => Hash::make($this->password),
+            'password' => Hash::make($this->password),
         ]);
 
         Toaster::success('User created successfully!');

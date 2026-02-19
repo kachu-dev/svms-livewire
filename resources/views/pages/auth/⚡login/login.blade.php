@@ -1,16 +1,61 @@
 <div class="flex min-h-screen">
-    <div class="flex-1 flex justify-center items-center">
+    <div class="flex flex-1 items-center justify-center">
         <div class="w-80 max-w-80 space-y-6">
             <div class="flex justify-center opacity-50">
-                <a href="/" class="group flex items-center gap-3">
+                <a class="group flex items-center gap-3" href="/">
                     <div>
-                        <svg class="h-4" viewBox="0 0 18 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg
+                            class="h-4"
+                            fill="none"
+                            viewBox="0 0 18 13"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
                             <g>
-                                <line x1="1" y1="5" x2="1" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line>
-                                <line x1="5" y1="1" x2="5" y2="8" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line>
-                                <line x1="9" y1="5" x2="9" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line>
-                                <line x1="13" y1="1" x2="13" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line>
-                                <line x1="17" y1="5" x2="17" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line>
+                                <line
+                                    stroke-linecap="round"
+                                    stroke-width="2"
+                                    stroke="currentColor"
+                                    x1="1"
+                                    x2="1"
+                                    y1="5"
+                                    y2="10"
+                                ></line>
+                                <line
+                                    stroke-linecap="round"
+                                    stroke-width="2"
+                                    stroke="currentColor"
+                                    x1="5"
+                                    x2="5"
+                                    y1="1"
+                                    y2="8"
+                                ></line>
+                                <line
+                                    stroke-linecap="round"
+                                    stroke-width="2"
+                                    stroke="currentColor"
+                                    x1="9"
+                                    x2="9"
+                                    y1="5"
+                                    y2="10"
+                                ></line>
+                                <line
+                                    stroke-linecap="round"
+                                    stroke-width="2"
+                                    stroke="currentColor"
+                                    x1="13"
+                                    x2="13"
+                                    y1="1"
+                                    y2="12"
+                                ></line>
+                                <line
+                                    stroke-linecap="round"
+                                    stroke-width="2"
+                                    stroke="currentColor"
+                                    x1="17"
+                                    x2="17"
+                                    y1="5"
+                                    y2="10"
+                                ></line>
                             </g>
                         </svg>
                     </div>
@@ -23,27 +68,43 @@
 
             <flux:separator text="Login Page" />
 
-            <form wire:submit="login" class="flex flex-col gap-6">
-{{--
+            <form class="flex flex-col gap-6" wire:submit="login">
+                {{--
                 <flux:input wire:model="email" label="Email" type="email" placeholder="email@example.com" />
 --}}
-                <flux:input wire:model="username" label="Username" type="text" placeholder="Your username" />
-                <flux:input wire:model="password" label="Password" type="password" placeholder="Your password" />
-                <flux:error class="text-center mt-0!" name="credentials"></flux:error>
-                <flux:button variant="primary" class="w-full" type="submit">Log in</flux:button>
+                <flux:input
+                    label="Username"
+                    placeholder="Your username"
+                    type="text"
+                    wire:model="username"
+                />
+                <flux:input
+                    label="Password"
+                    placeholder="Your password"
+                    type="password"
+                    wire:model="password"
+                />
+                <flux:error class="mt-0! text-center" name="credentials"></flux:error>
+                <flux:button
+                    class="w-full"
+                    type="submit"
+                    variant="primary"
+                >Log in</flux:button>
             </form>
         </div>
     </div>
     {{ Auth::user() }}
     <div class="flex-1 p-4 max-lg:hidden">
-        <div class="text-white relative rounded-lg h-full w-full bg-zinc-900 flex flex-col items-start justify-end p-16" style="background-image: url('/img/demo/auth_aurora_2x.png'); background-size: cover">
+        <div class="relative flex h-full w-full flex-col items-start justify-end rounded-lg bg-zinc-900 p-16 text-white"
+            style="background-image: url('/img/demo/auth_aurora_2x.png'); background-size: cover"
+        >
 
-            <div class="mb-6 italic font-base text-3xl xl:text-4xl">
+            <div class="font-base mb-6 text-3xl italic xl:text-4xl">
                 Flux has enabled me to design, build, and deliver apps faster than ever before.
             </div>
 
             <div class="flex gap-4">
-                <flux:avatar src="https://fluxui.dev/img/demo/caleb.png" size="xl" />
+                <flux:avatar size="xl" src="https://fluxui.dev/img/demo/caleb.png" />
 
                 <div class="flex flex-col justify-center font-medium">
                     <div class="text-lg">Caleb Porzio</div>

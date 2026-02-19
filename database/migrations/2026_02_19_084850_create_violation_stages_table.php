@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('violation_id')->constrained()->cascadeOnDelete();
             $table->unsignedTinyInteger('order');
             $table->string('name');
-            $table->boolean('active')->default(false);
+            $table->boolean('is_complete')->default(false);
             $table->text('remark')->nullable();
             $table->string('file_path')->nullable();
             $table->timestamp('completed_at')->nullable();
@@ -27,9 +27,10 @@ return new class extends Migration
     }
 
     protected $casts = [
-        'isComplete'   => 'boolean',
+        'isComplete' => 'boolean',
         'completed_at' => 'datetime',
     ];
+
     /**
      * Reverse the migrations.
      */
