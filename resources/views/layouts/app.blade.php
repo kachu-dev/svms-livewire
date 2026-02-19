@@ -93,7 +93,7 @@
 
         <flux:sidebar
             class="transition-all! duration-300! ease-in-out! border-r border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900"
-            collapsible="mobile"
+            collapsible
             sticky
         >
             <flux:sidebar.header>
