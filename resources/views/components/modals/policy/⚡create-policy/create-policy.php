@@ -38,5 +38,4 @@ new #[Layout('layouts::app', ['title' => 'Create Policy'])] class extends Compon
         $this->resetValidation();
         $this->reset();
     }
-
 };

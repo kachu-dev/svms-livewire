@@ -36,7 +36,7 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
     #[Computed]
     public function violations()
     {
-        return Violation::query()
+        return Violation::with('stages')
             ->when($this->search, fn ($q) => $q->search($this->search))
             ->when($this->classification, fn ($q) => $q->where('classification', $this->classification))
             ->when($this->dateFrom, fn ($q) => $q->whereDate('created_at', '>=', $this->dateFrom))

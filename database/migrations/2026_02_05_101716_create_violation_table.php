@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('student_id')->index();
             $table->string('student_name');
             $table->string('classification')->index();
-            /*$table->unsignedInteger('count')->default(1);*/
+            /* $table->unsignedInteger('count')->default(1); */
 
             $table->unsignedBigInteger('original_violation_type_id')->nullable()->index();
             $table->foreignId('violation_type_id')->nullable()->constrained()->nullOnDelete();

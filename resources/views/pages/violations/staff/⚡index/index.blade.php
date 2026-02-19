@@ -97,7 +97,9 @@
                                     </flux:tooltip>
                                 </div>
                             </flux:table.cell>
-                            <flux:table.cell><flux:badge> {{ $violation->status }} </flux:badge></flux:table.cell>
+                            <flux:table.cell>
+                                <flux:badge> {{ $violation->status }} </flux:badge>
+                            </flux:table.cell>
                             <flux:table.cell class="whitespace-nowrap">
                                 {{ $violation->created_at->format('M j, Y - h:i A') ?? 'N/A' }}</flux:table.cell>
                             <flux:table.cell align="center">
@@ -109,7 +111,10 @@
                                         variant="ghost"
                                     />
                                     <flux:menu>
-                                        <flux:menu.item icon="eye" :href="route('staff.violations.detail', $violation)">
+                                        <flux:menu.item :href="route('staff.violations.detail', [
+                                            'violation' => $violation,
+                                            'stage' => $violation->current_stage?->id,
+                                        ])" icon="eye">
                                             View Details
                                         </flux:menu.item>
                                         <flux:menu.item icon="pencil">Edit</flux:menu.item>
@@ -122,7 +127,7 @@
                                             icon="arrow-path"
                                             variant="danger"
                                         >
-                                            Delete
+                                            Archive
                                         </flux:menu.item>
                                     </flux:menu>
                                 </flux:dropdown>

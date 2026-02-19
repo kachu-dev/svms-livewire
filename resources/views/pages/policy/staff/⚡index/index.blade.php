@@ -121,5 +121,5 @@
     <livewire:modals.policy.create-policy />
     <livewire:modals.policy.update-policy />
     <livewire:modals.policy.delete-policy />
-    <livewire:modals.violations.results/>
+    <livewire:modals.violations.results />
 </div>

@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\User;
-use App\Models\ViolationType;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
@@ -33,10 +32,10 @@ new #[Layout('layouts::app', ['title' => 'Update User'])] class extends Componen
     {
         $this->user = User::find($id);
 
-        $this->name  = $this->user->name;
+        $this->name = $this->user->name;
         $this->username = $this->user->username;
-        $this->role  = $this->user->role;
-        $this->assigned_gate  = $this->user->assigned_gate;
+        $this->role = $this->user->role;
+        $this->assigned_gate = $this->user->assigned_gate;
 
         $this->modal('update-user')->show();
     }
@@ -49,7 +48,7 @@ new #[Layout('layouts::app', ['title' => 'Update User'])] class extends Componen
             $this->only(['name', 'username', 'role', 'assigned_gate', 'password'])
         );
 
-        if (!empty($this->password)) {
+        if (! empty($this->password)) {
             $this->user->update([
                 'password' => Hash::make($this->password),
             ]);

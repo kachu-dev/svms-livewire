@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\ViolationType;
 use App\Models\ViolationRemark;
+use App\Models\ViolationType;
 use Illuminate\Database\Seeder;
 
 class ViolationRemarkSeeder extends Seeder

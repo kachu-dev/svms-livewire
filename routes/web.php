@@ -1,12 +1,14 @@
 <?php
 
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Route;
 
 Route::livewire('/login', 'pages::auth.login')->middleware('guest')->name('login');
 
 Route::livewire('/home', 'pages::auth.login')->name('home');
 
-Route::get('/logout', function () {
+Route::get('/logout', function (): Redirector|RedirectResponse {
     Auth::logout();
     session()->invalidate();
     session()->regenerateToken();
@@ -14,7 +16,7 @@ Route::get('/logout', function () {
     return redirect('/login');
 })->middleware('auth')->name('logout');
 
-Route::middleware(['auth', 'can:access-staff-area' ])
+Route::middleware(['auth', 'can:access-staff-area'])
     ->prefix('staff')
     ->name('staff.')
     ->group(function () {
@@ -26,7 +28,7 @@ Route::middleware(['auth', 'can:access-staff-area' ])
             ->name('violations.deleted');
         Route::livewire('/violations/create', 'pages::violations.staff.create')
             ->name('violations.create');
-        Route::livewire('/violations/{violation}', 'pages::violations.staff.detail')
+        Route::livewire('/violations/{violation}/stage/{stage}', 'pages::violations.staff.detail')
             ->name('violations.detail');
 
         // Policy routes

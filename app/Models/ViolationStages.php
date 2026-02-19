@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -10,19 +12,15 @@ class ViolationStages extends Model
         'violation_id',
         'order',
         'name',
-        'isComplete',
+        'is_complete',
         'remark',
         'file_path',
         'completed_at',
+        'status',
     ];
 
     protected $casts = [
-        'isComplete'   => 'boolean',
+        'is_complete' => 'boolean',
         'completed_at' => 'datetime',
     ];
-
-    public function isCompleteStep(): bool
-    {
-        return $this->name === 'Complete';
-    }
 }

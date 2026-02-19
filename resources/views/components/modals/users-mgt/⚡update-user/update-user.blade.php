@@ -43,16 +43,16 @@
                 wire:model="password_confirmation"
             />
 
-            <flux:radio.group wire:model="role" label="Role">
+            <flux:radio.group label="Role" wire:model="role">
                 <flux:radio
-                    value="osa"
-                    label="OSA Staff"
                     description="OSA Staff have full access of the capabilities of the system."
+                    label="OSA Staff"
+                    value="osa"
                 />
                 <flux:radio
-                    value="guard"
-                    label="Guard"
                     description="Guards can record a students minor violations, as well as request updates."
+                    label="Guard"
+                    value="guard"
                 />
             </flux:radio.group>
 

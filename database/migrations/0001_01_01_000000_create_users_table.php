@@ -19,6 +19,9 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->enum('role', ['guard', 'osa', 'student'])->default('osa');
             $table->string('assigned_gate')->nullable();
+            $table->unsignedBigInteger('student_id')->nullable()->unique();
+            $table->string('student_program')->nullable();
+            $table->unsignedTinyInteger('student_year')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
