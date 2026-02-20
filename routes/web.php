@@ -62,4 +62,6 @@ Route::middleware(['auth', 'can:access-student-area'])
 
         Route::livewire('/display-policy', 'pages::policy.student.display-policy')
             ->name('policy.display-policy');
+        Route::livewire('/index', 'pages::violations.student.index')
+            ->name('violations.index');
     });

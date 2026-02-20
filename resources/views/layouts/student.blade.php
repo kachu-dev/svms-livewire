@@ -53,8 +53,8 @@
                     heading="Violations"
                     icon="exclamation-triangle"
                 >
-{{--                    <flux:sidebar.item href="{{ route('guard.violations.create') }}">My Violation History--}}
-{{--                    </flux:sidebar.item>--}}
+                    <flux:sidebar.item href="{{ route('student.violations.index') }}">Violation History
+                    </flux:sidebar.item>
                     <flux:sidebar.item href="{{ route('student.policy.display-policy') }}">All Violation Policy
                     </flux:sidebar.item>
                 </flux:sidebar.group>
