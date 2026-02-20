@@ -11,6 +11,7 @@
             <li><strong>File Path:</strong> {{ $stage->file_path ?? '-' }}</li>
             <li><strong>Next</strong> {{ $this->nextStage()->id ?? '-' }}</li>
             <li><strong>Previous</strong> {{ $this->previousStage()->id ?? '-' }}</li>
+            <li><strong>Current Stage</strong> {{ $violation->current_stage?->id ?? '-' }}</li>
         </ul>
     </div>
 

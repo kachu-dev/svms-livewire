@@ -33,7 +33,7 @@
     </div>
 
     <livewire:modals.violations.confirm />
-    <livewire:modals.violations.remark />
+    <livewire:modals.violations.remark/>
     <livewire:modals.violations.type />
     <livewire:modals.violations.results />
 </div>

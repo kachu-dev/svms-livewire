@@ -1,16 +1,14 @@
-<div>
     <x-card header="List of Violations" icon="document-text">
-
         <div class="space-y-4">
             @forelse($this->filteredTypes as $category => $types)
                 <div>
-                    <div class="mb-4 mt-4">
-                        <h3 class="text-sm font-semibold text-white">
+                    <div class="mb-4">
+                        <h3 class="text-sm font-semibold">
                             {{ $category }}
                         </h3>
                     </div>
 
-                    <div class="space-y-2">
+                    <div class="space-y-4">
                         @foreach ($types as $type)
                             <div
                                 class="w-full rounded-lg border border-zinc-500 p-4"
@@ -22,11 +20,11 @@
                                     </div>
 
                                     <div class="flex-1">
-                                        <div class="text-sm text-zinc-100">
+                                        <div class="text-sm dark:text-zinc-100">
                                             {{ $type->name }}
                                         </div>
 
-                                        <div class="italic text-xs text-zinc-400">
+                                        <div class="italic text-xs dark:text-zinc-400">
                                             {{ $type->classification }}
                                         </div>
                                     </div>
@@ -43,4 +41,3 @@
             @endforelse
         </div>
     </x-card>
-</div>

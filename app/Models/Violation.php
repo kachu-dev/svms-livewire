@@ -86,8 +86,10 @@ class Violation extends Model
 
     public function getCurrentStageAttribute()
     {
-        return $this->stages
-            ->sortBy('order')
-            ->firstWhere('is_complete', false);
+        $sorted = $this->stages->sortBy('order');
+
+        $current = $sorted->firstWhere('is_complete', false);
+
+        return $current ?: $sorted->last();
     }
 }

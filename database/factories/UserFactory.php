@@ -30,7 +30,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),*/
             'role' => fake()->randomElement(['guard', 'osa', 'student']),
             'assigned_gate' => fake()->randomNumber(1, true),
-            'password' => static::$password ??= Hash::make('qwerty'),
+            'password' => static::$password ??= Hash::make('qwe'),
             /* 'remember_token' => Str::random(10), */
         ];
     }

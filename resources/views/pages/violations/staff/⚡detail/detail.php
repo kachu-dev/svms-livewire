@@ -36,13 +36,22 @@ new #[Layout('layouts::app', ['title' => 'TESTING STEPS'])] class extends Compon
 
         $this->stage->save();
 
-
         $nextStage = $this->nextStage();
 
         if ($nextStage) {
+
+            $this->violation->update([
+                'status' => $nextStage->name,
+            ]);
+
             $this->redirectRoute('staff.violations.detail',
                 ['violation' => $this->violation->id, 'stage' => $nextStage->id]);
         } else {
+
+            $this->violation->update([
+                'status' => 'Completed',
+            ]);
+
             $this->redirectRoute('staff.violations.detail', [
                 'violation' => $this->violation->id,
                 'stage' => $this->stage->id,
@@ -65,6 +74,10 @@ new #[Layout('layouts::app', ['title' => 'TESTING STEPS'])] class extends Compon
             'completed_at' => null,
             'remark' => null,
             'file_path' => null,
+        ]);
+
+        $this->violation->update([
+            'status' => $lastCompleted->name,
         ]);
 
         $this->redirectRoute('staff.violations.detail', [
@@ -97,10 +110,8 @@ new #[Layout('layouts::app', ['title' => 'TESTING STEPS'])] class extends Compon
             ->orderBy('order')
             ->first();
 
-        $lastStage = $this->violation->stages()->orderBy('order')->get()->last();
-
-        return ($currentStage && $currentStage->id === $this->stage->id)
-            || ($lastStage && $lastStage->id === $this->stage->id && !$lastStage->is_complete);
+        return $currentStage
+            && $this->stage->id === $currentStage->id;
     }
 
     public function canUndo(): bool
