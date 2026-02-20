@@ -30,6 +30,8 @@ new #[Layout('layouts::app', ['title' => 'Update User'])] class extends Componen
     #[On('update-user')]
     public function setFields($id): void
     {
+        $this->reset(['password', 'password_confirmation']);
+
         $this->user = User::find($id);
 
         $this->name = $this->user->name;
@@ -45,7 +47,7 @@ new #[Layout('layouts::app', ['title' => 'Update User'])] class extends Componen
         $this->validate();
 
         $this->user->update(
-            $this->only(['name', 'username', 'role', 'assigned_gate', 'password'])
+            $this->only(['name', 'username', 'role', 'assigned_gate'])
         );
 
         if (! empty($this->password)) {

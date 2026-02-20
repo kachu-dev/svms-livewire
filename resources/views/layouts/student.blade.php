@@ -38,6 +38,14 @@
                 />
             </flux:sidebar.header>
 
+            <flux:button
+                aria-label="Toggle dark mode"
+                icon="moon"
+                variant="subtle"
+                x-data
+                x-on:click="$flux.dark = ! $flux.dark"
+            />
+
             <flux:sidebar.nav>
                 <flux:sidebar.group
                     class="grid"
@@ -56,6 +64,7 @@
                 <flux:sidebar.item href="#" icon="cog-6-tooth">Settings</flux:sidebar.item>
                 <flux:sidebar.item href="#" icon="information-circle">Help</flux:sidebar.item>
             </flux:sidebar.nav>
+
             <flux:dropdown
                 align="start"
                 class="max-lg:hidden"

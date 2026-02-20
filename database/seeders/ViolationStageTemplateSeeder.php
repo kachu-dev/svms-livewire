@@ -13,12 +13,12 @@ class ViolationStageTemplateSeeder extends Seeder
     public function run(): void
     {
         $stages = [
-            'minor_1' => ['Oral Reprimand', 'Complete'],
-            'minor_2' => ['Written Reprimand', 'Response', '3 Hours Community Service', 'Complete'],
-            'minor_3' => ['2 Days Suspension', 'Complete'],
-            'major_suspension' => ['Step 1', 'Step 2', 'Step 3', 'Step 4', 'Complete'],
-            'major_dismissal' => ['Step 1', 'Step 2', 'Complete'],
-            'major_expulsion' => ['Step 1', 'Step 2', 'Complete'],
+            'minor_1' => ['Oral Reprimand'],
+            'minor_2' => ['Written Reprimand', 'Response', '3 Hours Community Service'],
+            'minor_3' => ['2 Days Suspension'],
+            'major_suspension' => ['Step 1', 'Step 2', 'Step 3', 'Step 4'],
+            'major_dismissal' => ['Step 1', 'Step 2'],
+            'major_expulsion' => ['Step 1', 'Step 2'],
         ];
 
         foreach ($stages as $key => $steps) {
