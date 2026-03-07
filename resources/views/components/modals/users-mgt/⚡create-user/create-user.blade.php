@@ -25,13 +25,6 @@
             />
 
             <flux:input
-                label="Assigned Gate"
-                placeholder="Enter new assigned gate"
-                type="number"
-                wire:model="assigned_gate"
-            />
-
-            <flux:input
                 label="Password"
                 placeholder="Enter new password"
                 type="password"
@@ -60,12 +53,21 @@
                 />
             </flux:radio.group>
 
+            <div x-show="$wire.role === 'guard'" x-transition>
+                <flux:input
+                    label="Assigned Gate"
+                    placeholder="Enter new assigned gate"
+                    type="number"
+                    wire:model="assigned_gate"
+                />
+            </div>
+
             <flux:button
                 class="w-full"
                 type="submit"
                 variant="primary"
             >
-                Update User Details
+                Create User
             </flux:button>
         </form>
     </div>

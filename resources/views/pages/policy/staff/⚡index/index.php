@@ -3,6 +3,7 @@
 use App\Models\ViolationType;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
@@ -21,7 +22,7 @@ new #[Layout('layouts::app', ['title' => 'Policy Management'])] class extends Co
         return ViolationType::query()
             ->when($this->search, fn ($q) => $q->search($this->search))
             ->when($this->classification, fn ($q) => $q->where('classification', $this->classification))
-            ->paginate(10);
+            ->paginate(11);
     }
 
     public function delete($policyId): void
@@ -41,4 +42,7 @@ new #[Layout('layouts::app', ['title' => 'Policy Management'])] class extends Co
     {
         $this->reset(['search', 'classification']);
     }
+
+    #[On('refresh-policy')]
+    public function refreshTable(): void {}
 };

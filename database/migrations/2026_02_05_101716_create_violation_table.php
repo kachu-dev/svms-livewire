@@ -15,21 +15,31 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('student_id')->index();
             $table->string('student_name');
-            $table->string('classification')->index();
-            /* $table->unsignedInteger('count')->default(1); */
+
+            $table->foreignId('violation_type_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('violation_remark_id')->nullable()->constrained()->nullOnDelete();
 
             $table->unsignedBigInteger('original_violation_type_id')->nullable()->index();
-            $table->foreignId('violation_type_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('violation_type_snapshot');
 
-            $table->foreignId('violation_remark_id')->nullable()->constrained()->nullOnDelete();
+            /*$table->string('classification')->index();
+            $table->string('violation_type_snapshot');*/
+
+            $table->string('violation_type_code_snapshot');
+            $table->string('violation_type_name_snapshot');
             $table->string('violation_remark_snapshot')->nullable();
+            $table->string('classification_snapshot')->index();
+
+            $table->string('status')->default('pending');
+
+            $table->foreignId('recorded_by')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
 
             $table->softDeletes();
             $table->timestamps();
 
-            /*            $table->index(['student_id', 'original_violation_type_id', 'created_at']); */
-            $table->index(['student_id', 'classification']);
+            $table->index(['student_id', 'classification_snapshot']);
             $table->index('created_at');
         });
     }

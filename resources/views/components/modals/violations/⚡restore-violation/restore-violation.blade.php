@@ -42,7 +42,9 @@
                 color="green"
                 variant="primary"
                 wire:click="restore"
-            >Restore Violation</flux:button>
+            >
+                Restore Violation
+            </flux:button>
         </div>
     </div>
 </flux:modal>

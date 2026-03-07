@@ -38,7 +38,7 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
     {
         return Violation::onlyTrashed()
             ->when($this->search, fn ($q) => $q->search($this->search))
-            ->when($this->classification, fn ($q) => $q->where('classification', $this->classification))
+            ->when($this->classification, fn ($q) => $q->where('classification_snapshot', $this->classification))
             ->when($this->dateFrom, fn ($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
             ->when($this->dateTo, fn ($q) => $q->whereDate('created_at', '<=', $this->dateTo))
             ->orderBy($this->sortBy, $this->sortDirection)
@@ -49,7 +49,7 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
     public function classifications()
     {
         return Violation::onlyTrashed()->distinct('classification')
-            ->pluck('classification')
+            ->pluck('classification_snapshot')
             ->sortDesc();
     }
 

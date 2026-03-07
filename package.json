@@ -21,6 +21,8 @@
         "lightningcss-linux-x64-gnu": "^1.29.1"
     },
     "devDependencies": {
-        "blade-formatter": "^1.44.2"
+        "blade-formatter": "^1.44.2",
+        "prettier": "^3.8.1",
+        "prettier-plugin-blade": "^2.1.21"
     }
 }

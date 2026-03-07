@@ -30,9 +30,6 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
 
-        /*        Gate::define('access-guard-area', fn (User $user) => $user->role === 'guard'); */
-        /*        Gate::define('access-staff-area', fn (User $user) => $user->role === 'staff'); */
-
         Gate::define('access-staff-area', fn (User $user) => $user->role === 'osa'
             ? Response::allow()
             : Response::denyAsNotFound());
@@ -44,6 +41,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('access-student-area', fn (User $user) => $user->role === 'student'
             ? Response::allow()
             : Response::denyAsNotFound());
+
+        Gate::define('is-osa', fn (User $user) => $user->role === 'osa');
     }
 
     protected function configureDefaults(): void

@@ -10,6 +10,10 @@ new #[Layout('layouts::guard', ['title' => 'Recent Violations'])] class extends 
     #[Computed]
     public function violations()
     {
-        return Violation::latest()->take(5)->get();
+        return Violation::query()
+            ->where('recorded_by', auth()->id())
+            ->latest()
+            ->take(5)
+            ->get();
     }
 };

@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('qwe'),
         ]);
 
-        User::create([
+        /*User::create([
             'name' => 'Matthew Caga-anan',
             'username' => '220802',
             'role' => 'student',
@@ -46,7 +46,7 @@ class DatabaseSeeder extends Seeder
             'role' => 'student',
             'assigned_gate' => null,
             'password' => Hash::make('qwe'),
-        ]);
+        ]);*/
 
         $this->call([
             ViolationTypeSeeder::class,

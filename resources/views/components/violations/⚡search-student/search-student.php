@@ -7,6 +7,10 @@ new class extends Component
 {
     public $studentId = '';
 
+    public $foundStudentId;
+
+    public $notFound = false;
+
     public function findStudent(): void
     {
         $this->validate(['studentId' => 'required']);
@@ -18,8 +22,12 @@ new class extends Component
             : Student::where('studentid', $input)->first();
 
         if ($student) {
+            $this->foundStudentId = $student->studentid;
+            $this->notFound = false;
             $this->dispatch('student-found', studentId: $student->studentid);
         } else {
+            $this->foundStudentId = null;
+            $this->notFound = true;
             $this->dispatch('student-not-found');
         }
 

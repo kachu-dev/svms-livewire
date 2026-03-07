@@ -19,6 +19,7 @@ return new class extends Migration
             $table->boolean('is_complete')->default(false);
             $table->text('remark')->nullable();
             $table->string('file_path')->nullable();
+            $table->string('file_name')->nullable();
             $table->timestamp('completed_at')->nullable();
             $table->timestamps();
 

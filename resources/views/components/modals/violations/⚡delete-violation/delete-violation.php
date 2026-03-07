@@ -25,7 +25,7 @@ new class extends Component
 
         $this->studentId = $this->violation->student_id;
         $this->studentName = $this->violation->student_name;
-        $this->type = $this->violation->violation_type_snapshot;
+        $this->type = $this->violation->violation_type_code_snapshot . ' — ' . $this->violation->violation_type_name_snapshot;
         $this->remark = $this->violation->violation_remark_snapshot;
         $this->status = $this->violation->status;
 
@@ -36,6 +36,6 @@ new class extends Component
     {
         $this->violation->delete();
 
-        $this->redirectRoute('staff.violations.index');
+        $this->dispatch('refresh-violation');
     }
 };

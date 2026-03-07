@@ -1,47 +1,44 @@
 <?php
 
 use App\Models\User;
-use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Masmerise\Toaster\Toaster;
 
-new #[Layout('layouts::app', ['title' => 'Update User'])] class extends Component
+new class extends Component
 {
-    public ?User $user = null;
-
     #[Validate('required|string')]
-    public $name;
+    public string $name = '';
 
     #[Validate('required|string|unique:users,username')]
-    public $username;
+    public string $username = '';
 
     #[Validate('required|string')]
-    public $role;
+    public string $role = '';
 
-    #[Validate('required|integer')]
-    public $assigned_gate;
+    public ?int $assigned_gate = null;
 
     #[Validate('required|string|min:8|confirmed')]
-    public $password = '';
+    public string $password = '';
 
     #[Validate('required')]
-    public $password_confirmation = '';
+    public string $password_confirmation = '';
 
     public function submit(): void
     {
-        $this->validate();
+        $validated = $this->validate();
 
-        User::create([
-            'name' => $this->name,
-            'username' => $this->username,
-            'role' => $this->role,
-            'assigned_gate' => $this->assigned_gate,
-            'password' => Hash::make($this->password),
-        ]);
+        try {
+            User::create($validated);
 
-        Toaster::success('User created successfully!');
+            $this->resetCreateForm();
+            $this->modal('create-user')->close();
+            $this->dispatch('refresh-user');
 
-        $this->redirectRoute('staff.users-mgt.index');
+            Toaster::success('User created successfully!');
+        } catch (Exception) {
+            Toaster::error('Failed to create user. Please try again.');
+        }
     }
 
     public function resetCreateForm(): void

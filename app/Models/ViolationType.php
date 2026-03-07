@@ -17,7 +17,6 @@ class ViolationType extends Model
         'code',
         'name',
         'classification',
-        'deactivated',
     ];
 
     const CLASSIFICATION_MINOR = 'Minor';

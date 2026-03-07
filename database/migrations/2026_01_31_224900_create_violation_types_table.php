@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('violation_types', function (Blueprint $table) {
             $table->id();
-            $table->string('code', 20)->unique()->index();
+            $table->string('code')->unique()->index();
             $table->string('name');
             $table->enum('classification', [
                 'Minor',

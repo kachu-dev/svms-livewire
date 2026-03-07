@@ -4,26 +4,22 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use config\database\factories\UserFactory;
+use Database\Factories\UserFactory;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
@@ -32,26 +28,13 @@ class User extends Authenticatable
         'assigned_gate',
         'email_verified_at',
         'username',
-        'student_id',
-        'student_year',
-        'student_program',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -60,9 +43,6 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Get the user's initials
-     */
     public function initials(): string
     {
         return Str::of($this->name)
@@ -77,19 +57,21 @@ class User extends Authenticatable
     {
         return $query->where(function ($q) use ($search) {
             $q->where('name', 'like', "%{$search}%")
+                ->orWhere('username', 'like', "%{$search}%")
                 ->orWhere('email', 'like', "%{$search}%")
                 ->orWhere('assigned_gate', 'like', "%{$search}%")
                 ->orWhere('role', 'like', "%{$search}%");
         });
     }
 
-    public function student(): ?Student
+    public function student(): BelongsTo
     {
-        if ($this->role !== 'student') {
-            return null;
-        }
+        return $this->belongsTo(Student::class, 'student_id', 'studentid');
+    }
 
-        return Student::find($this->student_id);
+    public function recordedViolations(): HasMany
+    {
+        return $this->hasMany(Violation::class, 'recorded_by');
     }
 
     public function violations(): HasMany
@@ -100,5 +82,14 @@ class User extends Authenticatable
     public function isStudent(): bool
     {
         return $this->role === 'student';
+    }
+
+    public function getRoleLabelAttribute(): string
+    {
+        return match ($this->role) {
+            'guard' => 'Guard',
+            'osa' => 'Staff',
+            default => ucfirst($this->role),
+        };
     }
 }
