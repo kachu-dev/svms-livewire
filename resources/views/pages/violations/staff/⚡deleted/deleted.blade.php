@@ -136,7 +136,7 @@
                         </flux:table.row>
                     @empty
                         <flux:table.row>
-                            <flux:table.cell class="py-12 text-center" colspan="6">
+                            <flux:table.cell class="py-12 text-center" colspan="7">
                                 <div class="flex flex-col items-center gap-3">
                                     <flux:icon class="h-16 w-16 text-gray-300" name="inbox" />
                                     <div>

@@ -185,7 +185,7 @@
                         </flux:table.row>
                     @empty
                         <flux:table.row>
-                            <flux:table.cell class="py-12 text-center" colspan="7">
+                            <flux:table.cell class="py-12 text-center" colspan="10">
                                 <div class="flex flex-col items-center gap-3">
                                     <flux:icon class="h-16 w-16 text-gray-300" name="inbox" />
                                     <div>
@@ -217,6 +217,19 @@
         </div>
 
         <x-slot:actions>
+            <flux:dropdown>
+                <flux:button icon:trailing="chevron-down">School Year</flux:button>
+
+                <flux:menu>
+                    <flux:modal.trigger name="reset-sy">
+                        <flux:menu.item icon="arrow-uturn-left">Reset Violations</flux:menu.item>
+                    </flux:modal.trigger>
+                    <flux:menu.separator />
+                    <flux:menu.item icon="academic-cap">2025-2026</flux:menu.item>
+                    <flux:menu.item icon="academic-cap">2026-2027</flux:menu.item>
+                    <flux:menu.item icon="academic-cap">2027-2028</flux:menu.item>
+                </flux:menu>
+            </flux:dropdown>
             <flux:button
                 class="w-full"
                 href="{{ route('staff.violations.deleted') }}"
@@ -235,6 +248,24 @@
                 New Record
             </flux:button>
         </x-slot>
+
+        <flux:modal name="reset-sy" class="md:w-96">
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg">This resets all violations!</flux:heading>
+                    <flux:text class="mt-2">PLEASE DOUBLE CHECK.</flux:text>
+                </div>
+
+                <div class="grid grid-cols-[1fr_auto_1fr] items-end gap-2">
+                    <flux:input label="School Year From" placeholder="From" />
+                    <span class="pb-2">-</span>
+                    <flux:input label="School Year To" placeholder="To" />
+                </div>
+
+                <flux:button class="w-full" variant="danger">RESET SCHOOL YEAR</flux:button>
+            </div>
+        </flux:modal>
+
     </x-table-wrapper>
 
     @teleport('body')
