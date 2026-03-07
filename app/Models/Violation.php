@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Violation extends Model
@@ -16,16 +17,14 @@ class Violation extends Model
         'student_id',
         'student_name',
         'violation_type_id',
-        'violation_type_snapshot',
+        'violation_type_code_snapshot',
+        'violation_type_name_snapshot',
         'violation_remark_id',
         'violation_remark_snapshot',
-        'classification',
+        'classification_snapshot',
         'status',
         'original_violation_type_id',
-        'is_complete',
-        'completed_at',
-        'remark',
-        'file_path',
+        'recorded_by',
     ];
 
     #[Scope]
@@ -34,20 +33,21 @@ class Violation extends Model
         return $query->where(function ($q) use ($search) {
             $q->where('student_id', 'like', "%{$search}%")
                 ->orWhere('student_name', 'like', "%{$search}%")
-                ->orWhere('violation_type_snapshot', 'like', "%{$search}%")
+                ->orWhere('violation_type_code_snapshot', 'like', "%{$search}%")
+                ->orWhere('violation_type_name_snapshot', 'like', "%{$search}%")
                 ->orWhere('violation_remark_snapshot', 'like', "%{$search}%")
-                ->orWhere('classification', 'like', "%{$search}%");
+                ->orWhere('classification_snapshot', 'like', "%{$search}%");
         });
     }
 
-    public function minorOffenseNumber(): ?int
+    public function getMinorOffenseNumberAttribute(): ?int
     {
-        if ($this->classification !== 'Minor') {
+        if ($this->classification_snapshot !== 'Minor') {
             return null;
         }
 
         return static::where('student_id', $this->student_id)
-            ->where('classification', 'Minor')
+            ->where('classification_snapshot', 'Minor')
             ->where('created_at', '<=', $this->created_at)
             ->orderBy('created_at')
             ->orderBy('id')
@@ -57,17 +57,19 @@ class Violation extends Model
 
     public function resolveOffenseKey(): string
     {
-        if ($this->classification !== 'Minor') {
+        if ($this->classification_snapshot !== 'Minor') {
             return match (true) {
-                str_contains($this->classification, 'Suspension') => 'major_suspension',
-                str_contains($this->classification, 'Dismissal') => 'major_dismissal',
-                str_contains($this->classification, 'Expulsion') => 'major_expulsion',
-                default => 'major_suspension',
+                str_contains($this->classification_snapshot, 'Suspension') => 'major_suspension',
+                str_contains($this->classification_snapshot, 'Dismissal') => 'major_dismissal',
+                str_contains($this->classification_snapshot, 'Expulsion') => 'major_expulsion',
+                default => throw new \UnexpectedValueException(
+                    "Minor count exceeds expected escalation range"
+                ),
             };
         }
 
         $minorCount = static::where('student_id', $this->student_id)
-            ->where('classification', 'Minor')
+            ->where('classification_snapshot', 'Minor')
             ->where('created_at', '<=', $this->created_at)
             ->count();
 
@@ -81,7 +83,12 @@ class Violation extends Model
 
     public function stages()
     {
-        return $this->hasMany(ViolationStages::class)->orderBy('order');
+        return $this->hasMany(ViolationStages::class);
+    }
+
+    public function recordedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'recorded_by');
     }
 
     public function getCurrentStageAttribute()
@@ -91,5 +98,13 @@ class Violation extends Model
         $current = $sorted->firstWhere('is_complete', false);
 
         return $current ?: $sorted->last();
+    }
+
+    public function getLastCompletedStageAttribute()
+    {
+        return $this->stages()
+            ->where('is_complete', true)
+            ->orderByDesc('order')
+            ->first();
     }
 }

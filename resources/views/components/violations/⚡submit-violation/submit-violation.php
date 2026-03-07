@@ -11,25 +11,30 @@ new class extends Component
 
     public $selectedTypeId;
 
+    public $selectedTypeCode;
+
+    public $selectedTypeName;
+
     public $selectedTypeLabel;
 
     public $selectedTypeClassification;
 
     public $selectedRemarkId;
 
-    public $selectedRemarkLabel = 'N/A';
+    public $selectedRemarkLabel;
 
     public function confirmViolation(): void
     {
         $this->validate([
             'studentId' => 'required',
             'selectedTypeLabel' => 'required',
-            'selectedRemarkLabel' => 'required',
         ]);
 
         $this->dispatch('to-confirm',
             studentId: $this->studentId,
             typeId: $this->selectedTypeId,
+            typeCode: $this->selectedTypeCode,
+            typeName: $this->selectedTypeName,
             typeLabel: $this->selectedTypeLabel,
             typeClassification: $this->selectedTypeClassification,
             remarkId: $this->selectedRemarkId,
@@ -43,7 +48,8 @@ new class extends Component
         $this->studentId = $studentId;
         $this->notFound = false;
 
-        $this->reset(['selectedTypeId', 'selectedTypeLabel', 'selectedRemarkId', 'selectedRemarkLabel']);
+        $this->reset(['selectedTypeId', 'selectedTypeCode', 'selectedTypeName',
+            'selectedTypeLabel', 'selectedRemarkId', 'selectedRemarkLabel']);
 
         $this->resetValidation();
     }
@@ -54,7 +60,8 @@ new class extends Component
         $this->studentId = null;
         $this->notFound = true;
 
-        $this->reset(['selectedTypeId', 'selectedTypeLabel', 'selectedRemarkId', 'selectedRemarkLabel']);
+        $this->reset(['selectedTypeId', 'selectedTypeCode', 'selectedTypeName',
+            'selectedTypeLabel', 'selectedRemarkId', 'selectedRemarkLabel']);
 
         $this->resetValidation();
     }
@@ -63,6 +70,8 @@ new class extends Component
     public function setType($id, $code, $name, $classification): void
     {
         $this->selectedTypeId = $id;
+        $this->selectedTypeCode = $code;
+        $this->selectedTypeName = $name;
         $this->selectedTypeLabel = "{$code} — {$name}";
         $this->selectedTypeClassification = $classification;
 
@@ -86,8 +95,10 @@ new class extends Component
     #[On('violation-created')]
     public function resetInputs(): void
     {
-        $this->reset(['studentId', 'notFound', 'selectedTypeId', 'selectedTypeLabel', 'selectedRemarkId', 'selectedRemarkLabel']);
-
+        $this->reset([
+            'studentId', 'notFound', 'selectedTypeId', 'selectedTypeCode', 'selectedTypeName',
+            'selectedTypeLabel', 'selectedRemarkId', 'selectedRemarkLabel'
+        ]);
         $this->resetValidation();
     }
 };

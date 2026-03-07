@@ -1,4 +1,4 @@
-<x-card header="Violation Details" icon="exclamation-triangle">
+<x-card header="Step 3: Choose Violation Details" icon="exclamation-triangle">
     <div class="flex flex-col gap-4">
         @if ($studentId)
             <flux:modal.trigger name="set-violation">
@@ -7,7 +7,8 @@
                     label="Type of Violation"
                     placeholder="Click to choose violation"
                     readonly
-                    size="lg"
+                    size="accessible"
+                    variant="accessible"
                     wire:model="selectedTypeLabel"
                 />
             </flux:modal.trigger>
@@ -18,7 +19,8 @@
                 label="Type of Violation"
                 placeholder="Click to choose violation"
                 readonly
-                size="lg"
+                size="accessible"
+                variant="accessible"
             />
         @endif
 
@@ -29,7 +31,8 @@
                     label="Remarks"
                     placeholder="Remarks"
                     readonly
-                    size="lg"
+                    size="accessible"
+                    variant="accessible"
                     wire:model="selectedRemarkLabel"
                 />
             </flux:modal.trigger>
@@ -40,12 +43,13 @@
                 label="Remarks"
                 placeholder="Remarks"
                 readonly
-                size="lg"
+                size="accessible"
+                variant="accessible"
             />
         @endif
 
         <flux:button
-            class="mt-4"
+            :disabled="!$selectedTypeId"
             icon="paper-airplane"
             size="lg"
             variant="primary"

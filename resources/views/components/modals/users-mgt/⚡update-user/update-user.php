@@ -1,63 +1,76 @@
 <?php
 
 use App\Models\User;
-use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Masmerise\Toaster\Toaster;
 
-new #[Layout('layouts::app', ['title' => 'Update User'])] class extends Component
+new class extends Component
 {
     public ?User $user = null;
 
     #[Validate('required|string')]
-    public $name;
+    public string $name = '';
 
     #[Validate('required|string')]
-    public $username;
+    public string $username = '';
 
     #[Validate('required|string')]
-    public $role;
+    public string $role = '';
 
-    #[Validate('required|string')]
-    public $assigned_gate;
+    #[Validate('string')]
+    public ?string $assigned_gate = null;
 
     #[Validate('nullable|string|min:8|confirmed')]
-    public $password = '';
+    public string $password = '';
 
-    public $password_confirmation = '';
+    public string $password_confirmation = '';
 
     #[On('update-user')]
     public function setFields($id): void
     {
-        $this->reset(['password', 'password_confirmation']);
+        try {
+            $this->resetErrorBag();
 
-        $this->user = User::find($id);
+            $this->user = User::findOrFail($id);
 
-        $this->name = $this->user->name;
-        $this->username = $this->user->username;
-        $this->role = $this->user->role;
-        $this->assigned_gate = $this->user->assigned_gate;
+            $this->name = $this->user->name;
+            $this->username = $this->user->username;
+            $this->role = $this->user->role;
+            $this->assigned_gate = $this->user->assigned_gate;
 
-        $this->modal('update-user')->show();
+            $this->modal('update-user')->show();
+        } catch (Exception) {
+            Toaster::error('User not found');
+        }
     }
 
     public function save(): void
     {
-        $this->validate();
+        if (! $this->user instanceof User) {  // ← Add null check
+            Toaster::error('No user selected for update.');
 
-        $this->user->update(
-            $this->only(['name', 'username', 'role', 'assigned_gate'])
-        );
-
-        if (! empty($this->password)) {
-            $this->user->update([
-                'password' => Hash::make($this->password),
-            ]);
+            return;
         }
 
-        Toaster::success('User updated successfully!');
+        $this->validate();
 
-        $this->redirectRoute('staff.users-mgt.index');
+        try {
+            $this->user->update(
+                $this->only(['name', 'username', 'role', 'assigned_gate'])
+            );
+
+            if ($this->password !== '' && $this->password !== '0') {
+                $this->user->update([
+                    'password' => Hash::make($this->password),
+                ]);
+            }
+
+            $this->modal('update-user')->close();
+            $this->dispatch('refresh-user');
+        } catch (Exception) {
+            Toaster::error('Failed to update user. Please try again.');
+        }
     }
 };

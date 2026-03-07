@@ -1,0 +1,60 @@
+<?php
+
+use App\Models\Student;
+use App\Models\User;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Hash;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Validate;
+use Livewire\Component;
+
+new #[Layout('layouts::auth', ['heading' => 'Register'])] class extends Component
+{
+    #[Validate('required|string')]
+    public string $username = '';
+
+    #[Validate('required|string|min:8|confirmed')]
+    public string $password = '';
+
+    #[Validate('required|string')]
+    public string $password_confirmation = '';
+
+    // Resolved from Student model after validation
+    public ?string $resolvedName = null;
+
+    public function register()
+    {
+        $this->validate();
+
+        // Check if student ID exists in the student DB
+        $student = Student::select('studentid', 'studentid', 'rfidtag', 'firstname', 'lastname')
+            ->where('studentid', $this->username)
+            ->first();
+
+        if (!$student) {
+            $this->addError('username', 'Student ID not found. Please check your ID number.');
+
+            return;
+        }
+
+        if (User::where('username', $this->username)->where('role', 'student')->exists()) {
+            $this->addError('username', 'This student ID is already registered.');
+
+            return;
+        }
+
+        $user = User::create([
+            'name' => $student->firstname.' '.$student->lastname,
+            'username' => $this->username,
+            'email' => $this->username.'@adzu.edu.ph',
+            'password' => Hash::make($this->password),
+            'role' => 'student',
+        ]);
+
+        event(new Registered($user));
+
+        auth()->login($user);
+
+        return $this->redirect(route('student.violations.index'));
+    }
+};

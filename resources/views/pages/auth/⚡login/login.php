@@ -6,7 +6,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
-new #[Layout('layouts::auth')] class extends Component
+new #[Layout('layouts::auth', ['heading' => 'Login'])] class extends Component
 {
     #[Validate('required')]
     public $username;
@@ -27,17 +27,7 @@ new #[Layout('layouts::auth')] class extends Component
             $user = Auth::user();
 
             if ($user->role === 'student') {
-                $student = Student::find($user->username);
-
-                if ($student) {
-                    $user->update([
-                        'student_id' => $student->studentid,
-                        'student_program' => $student->program,
-                        'student_year' => $student->year,
-                    ]);
-                }
-
-                return $this->redirect(route('student.policy.display-policy'));
+                return $this->redirect(route('student.violations.index'));
             }
 
             if ($user->role === 'osa') {
@@ -50,7 +40,8 @@ new #[Layout('layouts::auth')] class extends Component
 
             return $this->redirect(route('home'));
         }
-        $this->addError('credentials', 'Credentials is incorrect.');
+
+        $this->addError('credentials', 'Credentials are incorrect.');
         $this->reset(['username', 'password']);
         session()->flash('error', 'Invalid credentials');
     }

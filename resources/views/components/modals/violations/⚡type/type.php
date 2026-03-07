@@ -8,10 +8,16 @@ new class extends Component
 {
     public $typeSearch;
 
+    public bool $minorOnly = false;
+
     #[Computed]
     public function filteredTypes()
     {
         $query = ViolationType::query();
+
+        if ($this->minorOnly) {
+            $query->where('classification', 'Minor');
+        }
 
         if ($this->typeSearch) {
             $search = '%'.$this->typeSearch.'%';

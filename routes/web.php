@@ -1,67 +1,103 @@
 <?php
 
+use App\Http\Controllers\HomeController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Route;
 
-Route::livewire('/login', 'pages::auth.login')->middleware('guest')->name('login');
+Route::get('/', HomeController::class)->name('home');
 
-Route::livewire('/home', 'pages::auth.login')->name('home');
+Route::middleware('guest')->group(function () {
+    Route::livewire('/login', 'pages::auth.login')->name('login');
+    Route::livewire('/register', 'pages::auth.register')->name('register');
+});
 
-Route::get('/logout', function (): Redirector|RedirectResponse {
-    Auth::logout();
-    session()->invalidate();
-    session()->regenerateToken();
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', function (): Redirector|RedirectResponse {
+        Auth::logout();
+        session()->invalidate();
+        session()->regenerateToken();
 
-    return redirect('/login');
-})->middleware('auth')->name('logout');
+        return redirect()->route('login');
+    })->name('logout');
+});
 
+// Staff area routes
 Route::middleware(['auth', 'can:access-staff-area'])
     ->prefix('staff')
     ->name('staff.')
     ->group(function () {
 
-        // Violations routes
-        Route::livewire('/violations', 'pages::violations.staff.index')
-            ->name('violations.index');
-        Route::livewire('/violations/deleted', 'pages::violations.staff.deleted')
-            ->name('violations.deleted');
-        Route::livewire('/violations/create', 'pages::violations.staff.create')
-            ->name('violations.create');
-        Route::livewire('/violations/{violation}/stage/{stage}', 'pages::violations.staff.detail')
-            ->name('violations.detail');
+        // Violations management
+        Route::prefix('violations')->name('violations.')->group(function () {
+            Route::livewire('/', 'pages::violations.staff.index')->name('index');
+            Route::livewire('/create', 'pages::violations.staff.create')->name('create');
+            Route::livewire('/deleted', 'pages::violations.staff.deleted')->name('deleted');
+            Route::livewire('/{violation}/stage/{stage}', 'pages::violations.staff.detail')->name('detail');
+        });
 
-        // Policy routes
-        Route::livewire('/policy', 'pages::policy.staff.index')
-            ->name('policy.index');
-        Route::livewire('/policy/deactivated', 'pages::policy.staff.deleted')
-            ->name('policy.deleted');
+        // Student profile
+        Route::livewire('/student-profile/{studentId}', 'pages::violations.staff.student-profile')
+            ->name('violations.student');
 
-        // Users routes
-        Route::livewire('/users', 'pages::users-mgt.staff.index')
-            ->name('users-mgt.index');
-        Route::livewire('/users/deactivated', 'pages::users-mgt.staff.deleted')
-            ->name('users-mgt.deleted');
+        // Policy management
+        Route::prefix('policy')->name('policy.')->group(function () {
+            Route::livewire('/', 'pages::policy.staff.index')->name('index');
+            Route::livewire('/deactivated', 'pages::policy.staff.deleted')->name('deleted');
+        });
+
+        // User management
+        Route::prefix('users')->name('users-mgt.')->group(function () {
+            Route::livewire('/', 'pages::users-mgt.staff.index')->name('index');
+            Route::livewire('/deactivated', 'pages::users-mgt.staff.deleted')->name('deleted');
+        });
     });
 
+// Guard area routes
 Route::middleware(['auth', 'can:access-guard-area'])
     ->prefix('guard')
     ->name('guard.')
     ->group(function () {
-
-        Route::livewire('/violations/create', 'pages::violations.guard.create')
-            ->name('violations.create');
-        Route::livewire('/violations/recent', 'pages::violations.guard.recent')
-            ->name('violations.recent');
+        Route::prefix('violations')->name('violations.')->group(function () {
+            Route::livewire('/create', 'pages::violations.guard.create')->name('create');
+            Route::livewire('/recent', 'pages::violations.guard.recent')->name('recent');
+        });
     });
 
-Route::middleware(['auth', 'can:access-student-area'])
+// Student area routes
+Route::middleware(['auth', 'verified', 'can:access-student-area'])
     ->prefix('student')
     ->name('student.')
     ->group(function () {
-
-        Route::livewire('/display-policy', 'pages::policy.student.display-policy')
+        // Policy display
+        Route::livewire('/policies', 'pages::policy.student.display-policy')
             ->name('policy.display-policy');
-        Route::livewire('/index', 'pages::violations.student.index')
+
+        // Violations
+        Route::livewire('/violations', 'pages::violations.student.index')
             ->name('violations.index');
     });
+
+/*Route::get('/email/verify', function () {
+    return view('pages.auth.⚡verify-email.verify-email');
+})->middleware('auth')->name('verification.notice');*/
+
+Route::livewire('/email/verify', 'pages::auth.verify-email')->middleware('auth')->name('verification.notice');
+
+// Handle the verification link click
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+
+    return redirect()->route('student.violations.index');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+// Resend verification email
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+
+    return back()->with('message', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+Route::livewire('/test', 'pages::test');

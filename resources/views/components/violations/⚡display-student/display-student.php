@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Student;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -18,8 +19,24 @@ new class extends Component
             return null;
         }
 
-        return Student::select('studentid', 'firstname', 'lastname', 'grouptag')
+        $student = Student::select('studentid', 'firstname', 'lastname', 'grouptag')
             ->find($this->studentId);
+
+        if ($student) {
+            try {
+                $image = DB::connection('imagedb')
+                    ->table('pictures')
+                    ->where('idnumber', $student->studentid)
+                    ->where('idgroup', $student->grouptag)
+                    ->value('idpicture');
+
+                $student->photo = $image ? base64_encode((string) $image) : null;
+            } catch (\Throwable $e) {
+                $student->photo = null; // show placeholder if imagedb is unavailable
+            }
+        }
+
+        return $student;
     }
 
     #[On('student-found')]

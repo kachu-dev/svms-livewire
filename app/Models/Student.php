@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class Student extends Model
@@ -15,33 +16,41 @@ class Student extends Model
 
     protected $primaryKey = 'studentid';
 
-    protected $appends = ['program', 'year'];
+    protected $hidden = ['cmdate'];
 
-    public function getProgram(): string
+    public function getProgram(): ?string
     {
-        return DB::connection('collegedb')
-            ->table('stud_program')
-            ->join('prgram', 'stud_program.sp_pr_acronym', '=', 'prgram.pr_code')
-            ->where('stud_program.sp_idnum', $this->studentid)
-            ->orderBy('stud_program.ts', 'desc')
-            ->value('prgram.pr_acronym');
+        return Cache::remember(
+            "student:{$this->studentid}:program",
+            now()->addHours(6),
+            fn () => DB::connection('collegedb')
+                ->table('stud_program')
+                ->join('prgram', 'stud_program.sp_pr_acronym', '=', 'prgram.pr_code')
+                ->where('stud_program.sp_idnum', $this->studentid)
+                ->orderBy('stud_program.ts', 'desc')
+                ->value('prgram.pr_acronym')
+        );
     }
 
-    public function getYear(): int
+    public function getYear(): ?int
     {
-        return DB::connection('collegedb')
-            ->table('stud_program')
-            ->where('sp_idnum', $this->studentid)
-            ->latest('ts')
-            ->value('sp_year');
+        return Cache::remember(
+            "student:{$this->studentid}:year",
+            now()->addHours(6),
+            fn () => DB::connection('collegedb')
+                ->table('stud_program')
+                ->where('sp_idnum', $this->studentid)
+                ->latest('ts')
+                ->value('sp_year')
+        );
     }
 
-    public function getProgramAttribute(): string
+    public function getProgramAttribute(): ?string
     {
         return $this->getProgram();
     }
 
-    public function getYearAttribute(): int
+    public function getYearAttribute(): ?int
     {
         return $this->getYear();
     }

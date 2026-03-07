@@ -1,4 +1,4 @@
-<flux:modal class="w-full max-w-md sm:max-w-96" name="results">
+<flux:modal class="w-full max-w-lg sm:max-w-96" name="results">
     <div class="space-y-6">
         @if ($resultType === 'success')
             <div class="flex flex-col items-center text-center">
@@ -18,8 +18,11 @@
                         ></path>
                     </svg>
                 </div>
-                <flux:heading class="text-green-600 dark:text-green-400" size="lg">Success!</flux:heading>
-                <flux:subheading class="mt-2">{{ $resultMessage ?? 'Operation completed successfully' }}
+                <flux:heading class="text-green-600 dark:text-green-400" size="lg">
+                    Success!
+                </flux:heading>
+                <flux:subheading class="mt-2">
+                    {{ $resultMessage ?? 'Operation completed successfully' }}
                 </flux:subheading>
             </div>
         @else
@@ -40,7 +43,9 @@
                     </svg>
                 </div>
                 <flux:heading class="text-red-600 dark:text-red-400" size="lg">Error!</flux:heading>
-                <flux:subheading class="mt-2">{{ $resultMessage ?? 'Something went wrong' }}</flux:subheading>
+                <flux:subheading class="mt-2">
+                    {{ $resultMessage ?? 'Something went wrong' }}
+                </flux:subheading>
             </div>
         @endif
 
