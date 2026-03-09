@@ -8,6 +8,8 @@ use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
+use Masmerise\Toaster\Toaster;
 
 new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends Component
 {
@@ -61,7 +63,7 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
             ->map(fn ($group) => $group->pluck('id'));
 
         $violations->getCollection()->transform(function ($violation) use ($minorsByStudent) {
-            $violation->minor_offense_number = $violation->classification === 'Minor'
+            $violation->minor_offense_number = $violation->classification_snapshot === 'Minor'
                 ? ($minorsByStudent[$violation->student_id]->search($violation->id) + 1)
                 : null;
 
@@ -107,7 +109,7 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
     {
         $violations = Violation::with('stages')
             ->when($this->search, fn ($q) => $q->search($this->search))
-            ->when($this->classification, fn ($q) => $q->where('classification', $this->classification))
+            ->when($this->classification, fn ($q) => $q->where('classification_snapshot', $this->classification))
             ->when($this->dateFrom, fn ($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
             ->when($this->dateTo, fn ($q) => $q->whereDate('created_at', '<=', $this->dateTo))
             ->orderBy($this->sortBy, $this->sortDirection)
@@ -119,11 +121,11 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
             return;
         }
 
-        $studentIds = $violations->where('classification', 'Minor')
+        $studentIds = $violations->where('classification_snapshot', 'Minor')
             ->pluck('student_id')
             ->unique();
 
-        $minorsByStudent = Violation::where('classification', 'Minor')
+        $minorsByStudent = Violation::where('classification_snapshot', 'Minor')
             ->whereIn('student_id', $studentIds)
             ->orderBy('created_at')
             ->orderBy('id')
@@ -132,7 +134,7 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
             ->map(fn ($group) => $group->pluck('id'));
 
         $violations->transform(function ($violation) use ($minorsByStudent) {
-            $violation->minor_offense_number = $violation->classification === 'Minor'
+            $violation->minor_offense_number = $violation->classification_snapshot === 'Minor'
                 ? ($minorsByStudent[$violation->student_id]->search($violation->id) + 1)
                 : null;
 
