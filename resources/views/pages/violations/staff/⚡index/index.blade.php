@@ -115,9 +115,9 @@
                                     :color="match (true) {
                                         $violation->minor_offense_number === 1 => 'lime',
                                         $violation->minor_offense_number === 2 => 'yellow',
-                                        $violation->minor_offense_number === 3 => 'orange',
+                                        $violation->minor_offense_number === 3 => 'amber',
                                         $violation->minor_offense_number >= 4 => 'red',
-                                        default => 'zinc',
+                                        default => 'red',
                                     }"
                                     rounded
                                     variant="solid"
