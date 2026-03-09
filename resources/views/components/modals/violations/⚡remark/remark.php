@@ -17,6 +17,7 @@ new class extends Component
     public function setType($id): void
     {
         $this->selectedTypeId = $id;
+        $this->selectedRemarkId = null;
     }
 
     #[Computed]

@@ -76,7 +76,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function violations(): HasMany
     {
-        return $this->hasMany(Violation::class, 'student_id', 'student_id');
+        return $this->hasMany(Violation::class, 'student_id', 'username');
     }
 
     public function isStudent(): bool

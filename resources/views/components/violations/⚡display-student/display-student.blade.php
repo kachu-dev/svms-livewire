@@ -20,7 +20,7 @@
             />
         @else
             <div class="flex h-full w-full items-center justify-center rounded-2xl bg-zinc-100 dark:bg-zinc-800">
-                <flux:icon class="h-16 w-16 text-zinc-400" name="user-circle" />
+                <flux:icon class="h-32 w-32 text-zinc-400" name="question-mark-circle" />
             </div>
         @endif
     </div>

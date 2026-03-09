@@ -51,6 +51,8 @@ new class extends Component
         $this->reset(['selectedTypeId', 'selectedTypeCode', 'selectedTypeName',
             'selectedTypeLabel', 'selectedRemarkId', 'selectedRemarkLabel']);
 
+        $this->dispatch('reset-type');
+
         $this->resetValidation();
     }
 

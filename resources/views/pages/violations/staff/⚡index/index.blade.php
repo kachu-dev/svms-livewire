@@ -111,40 +111,36 @@
                             <flux:table.cell align="center">{{ $violation->student?->year ?? 'N/A' }}</flux:table.cell>
                             <flux:table.cell>{{ $violation->classification_snapshot }}</flux:table.cell>
                             <flux:table.cell align="center">
-                                <flux:badge
-                                    :color="match (true) {
-                                        $violation->minor_offense_number === 1 => 'lime',
-                                        $violation->minor_offense_number === 2 => 'yellow',
-                                        $violation->minor_offense_number === 3 => 'amber',
-                                        $violation->minor_offense_number >= 4 => 'red',
-                                        default => 'red',
-                                    }"
-                                    rounded
-                                    variant="solid"
-                                >
-                                    {{ $violation->minor_offense_number }}
-                                </flux:badge>
+                                <div class="flex justify-center items-center">
+                                    @if($violation->is_escalated)
+                                        <flux:tooltip toggleable content="C.3.9 - Commission of a fourth minor violation">
+                                            <flux:button icon="arrow-trending-up" variant="ghost" class="text-red-500!" />
+                                        </flux:tooltip>
+                                    @else
+                                        <flux:badge
+                                            :color="match (true) {
+                                            $violation->minor_offense_number === 1 => 'lime',
+                                            $violation->minor_offense_number === 2 => 'yellow',
+                                            $violation->minor_offense_number === 3 => 'amber',
+                                            $violation->minor_offense_number >= 4 => 'red',
+                                            default => 'red',
+                                        }"
+                                            rounded
+                                            variant="solid"
+                                        >
+                                            {{ $violation->minor_offense_number }}
+                                        </flux:badge>
+                                    @endif
+                                </div>
                             </flux:table.cell>
                             <flux:table.cell>
-                                <div>
-                                    <flux:tooltip position="left">
-                                        <p class="whitespace-normal">
-                                            {{ $violation->violation_type_code_snapshot }}
-                                            -
-                                            {{ $violation->violation_type_name_snapshot }}
-                                        </p>
-                                        <flux:tooltip.content class="max-w-[20rem] space-y-2">
-                                            <p>
-                                                {{ $violation->violation_type_code_snapshot }}
-                                                -
-                                                {{ str($violation->violation_type_name_snapshot) }}
-                                            </p>
-                                            @if ($violation->violation_remark_snapshot)
-                                                <flux:separator />
-                                                <p>{{ $violation->violation_remark_snapshot }}</p>
-                                            @endif
-                                        </flux:tooltip.content>
-                                    </flux:tooltip>
+                                <div class="space-y-1">
+                                    <p class="text-sm font-medium whitespace-normal">
+                                            {{ $violation->violation_type_code_snapshot }} - {{ $violation->violation_type_name_snapshot }}
+                                    </p>
+                                    @if ($violation->violation_remark_snapshot)
+                                        <p class="text-sm text-gray-500">{{ $violation->violation_remark_snapshot }}</p>
+                                    @endif
                                 </div>
                             </flux:table.cell>
                             <flux:table.cell class="whitespace-normal">

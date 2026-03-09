@@ -17,14 +17,12 @@ class Violation extends Model
     protected $fillable = [
         'student_id',
         'student_name',
-        'violation_type_id',
         'violation_type_code_snapshot',
         'violation_type_name_snapshot',
-        'violation_remark_id',
         'violation_remark_snapshot',
         'classification_snapshot',
+        'is_escalated',
         'status',
-        'original_violation_type_id',
         'recorded_by',
     ];
 
