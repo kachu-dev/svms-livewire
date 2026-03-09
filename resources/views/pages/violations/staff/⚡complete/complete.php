@@ -39,7 +39,7 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
     public function violations()
     {
         $violations = Violation::with(['stages', 'student'])
-            ->where('status', '!=', 'Complete')
+            ->where('status', 'Complete')
             ->when($this->search, fn ($q) => $q->search($this->search))
             ->when($this->classification, fn ($q) => $q->where('classification_snapshot', $this->classification))
             ->when($this->dateFrom, fn ($q) => $q->whereDate('created_at', '>=', $this->dateFrom))

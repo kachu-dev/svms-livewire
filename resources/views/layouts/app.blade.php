@@ -5,9 +5,9 @@
         @include('partials.head')
     </head>
 
-    <body class="min-h-screen bg-zinc-50 antialiased dark:bg-zinc-800">
+    <body class="min-h-screen bg-zinc-200 antialiased dark:bg-zinc-800">
         <flux:sidebar
-            class="border-r border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
+            class="dark border-r border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
             collapsible
             sticky
         >
@@ -26,28 +26,34 @@
 
             <flux:sidebar.nav>
                 <flux:sidebar.group
-                    icon:variant="solid"
                     class="grid"
                     expandable
                     heading="Violations"
+                    icon:variant="solid"
                     icon="exclamation-triangle"
                 >
-                    <flux:sidebar.item  href="{{ route('staff.violations.create') }}" wire:navigate>
+                    <flux:sidebar.item href="{{ route('staff.violations.create') }}" wire:navigate>
                         Create Violation
                     </flux:sidebar.item>
                     <flux:sidebar.item href="{{ route('staff.violations.index') }}" wire:navigate>
-                        All Violations
+                        Pending Violations
+                    </flux:sidebar.item>
+                    <flux:sidebar.item href="{{ route('staff.violations.complete') }}" wire:navigate>
+                        Completed Violations
                     </flux:sidebar.item>
                     <flux:sidebar.item href="{{ route('staff.violations.deleted') }}" wire:navigate>
                         Deleted Violations
                     </flux:sidebar.item>
+                    <flux:sidebar.item href="{{ route('staff.violations.requests') }}" wire:navigate>
+                        Request Deletes
+                    </flux:sidebar.item>
                 </flux:sidebar.group>
 
                 <flux:sidebar.group
-                    icon:variant="solid"
                     class="grid"
                     expandable
                     heading="Policy"
+                    icon:variant="solid"
                     icon="document-text"
                 >
                     <flux:sidebar.item href="{{ route('staff.policy.index') }}" wire:navigate>
@@ -59,10 +65,10 @@
                 </flux:sidebar.group>
 
                 <flux:sidebar.group
-                    icon:variant="solid"
                     class="grid"
                     expandable
                     heading="User Management"
+                    icon:variant="solid"
                     icon="user-group"
                 >
                     <flux:sidebar.item href="{{ route('staff.users-mgt.index') }}" wire:navigate>
@@ -84,9 +90,6 @@
 
             <flux:sidebar.spacer />
 
-            <flux:sidebar.nav>
-                something
-            </flux:sidebar.nav>
             <flux:dropdown
                 align="start"
                 class="max-lg:hidden"
@@ -108,7 +111,7 @@
             </flux:dropdown>
         </flux:sidebar>
 
-        <flux:header class="block! border-b border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
+        <flux:header class="block! dark border-b border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
             <flux:navbar class="w-full lg:hidden">
                 <flux:sidebar.toggle
                     class="lg:hidden"
@@ -139,9 +142,9 @@
                 <flux:heading class="flex-1" size="xl">{{ $title }}</flux:heading>
                 <flux:spacer />
                 <div class="flex items-center gap-2">
-                    <span class="text-xl" id="current-date"></span>
+                    <flux:text class="text-xl" id="current-date"></flux:text>
                     <flux:separator vertical />
-                    <span class="text-xl" id="current-time"></span>
+                    <flux:text class="text-xl" id="current-time"></flux:text>
                 </div>
             </flux:navbar>
         </flux:header>

@@ -72,7 +72,7 @@ new class extends Component
         $this->selectedTypeId = $id;
         $this->selectedTypeCode = $code;
         $this->selectedTypeName = $name;
-        $this->selectedTypeLabel = "{$code} — {$name}";
+        $this->selectedTypeLabel = "{$code} - {$name}";
         $this->selectedTypeClassification = $classification;
 
         $this->reset(['selectedRemarkId', 'selectedRemarkLabel']);
@@ -97,7 +97,7 @@ new class extends Component
     {
         $this->reset([
             'studentId', 'notFound', 'selectedTypeId', 'selectedTypeCode', 'selectedTypeName',
-            'selectedTypeLabel', 'selectedRemarkId', 'selectedRemarkLabel'
+            'selectedTypeLabel', 'selectedRemarkId', 'selectedRemarkLabel',
         ]);
         $this->resetValidation();
     }

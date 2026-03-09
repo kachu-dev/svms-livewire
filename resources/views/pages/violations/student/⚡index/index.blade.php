@@ -19,7 +19,8 @@
                         </div>
                         <div class="mt-3 space-y-2">
                             <div class="text-sm font-medium text-zinc-900 dark:text-white">
-                                {{ $violation->violation_type_code_snapshot }} — {{ $violation->violation_type_name_snapshot }}                            </div>
+                                {{ $violation->violation_type_code_snapshot }} -
+                                {{ $violation->violation_type_name_snapshot }} </div>
                             <div class="text-sm text-zinc-600 dark:text-zinc-400">
                                 {{ $violation->violation_remark_snapshot }}
                             </div>

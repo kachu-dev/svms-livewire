@@ -216,7 +216,7 @@
         </div>
 
         <p class="text-center text-3xl font-bold">
-            {{ $this->student->firstname }} {{ $this->student->lastname }}
+            {{ $this->student->lastname ?? '-' }}, {{ $this->student->firstname ?? '-' }} {{ $this->student->mi }}.
         </p>
 
         <div class="flex w-full flex-col gap-4">
@@ -225,7 +225,7 @@
                     Student ID
                 </flux:label>
                 <p class="mt-2 text-xl font-bold text-zinc-900 dark:text-white">
-                    {{ $this->student->studentid }}
+                    {{ $this->student->grouptag }}{{ $this->student->studentid }}
                 </p>
             </div>
 
@@ -237,7 +237,7 @@
             </div>
 
             <div class="rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-700 dark:bg-zinc-800">
-                <flux:label class="text-xs uppercase tracking-widest">Course</flux:label>
+                <flux:label class="text-xs uppercase tracking-widest">Program</flux:label>
                 <p class="mt-2 text-xl font-bold text-zinc-900 dark:text-white">
                     {{ $this->student->program }}
                 </p>

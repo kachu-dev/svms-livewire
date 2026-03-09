@@ -19,21 +19,29 @@ new class extends Component
             return null;
         }
 
-        $student = Student::select('studentid', 'firstname', 'lastname', 'grouptag')
+        $student = Student::select('studentid', 'firstname', 'lastname', 'mi', 'grouptag')
             ->find($this->studentId);
 
         if ($student) {
-            try {
-                $image = DB::connection('imagedb')
-                    ->table('pictures')
-                    ->where('idnumber', $student->studentid)
-                    ->where('idgroup', $student->grouptag)
-                    ->value('idpicture');
+            $student->photo = Cache::remember(
+                "student:{$student->studentid}:photo",
+                now()->addHours(6),
+                function () use ($student): ?string {
+                    try {
+                        $binary = DB::connection('imagedb')
+                            ->table('pictures')
+                            ->where('idnumber', $student->studentid)
+                            ->where('idgroup', $student->grouptag)
+                            ->value('idpicture');
 
-                $student->photo = $image ? base64_encode((string) $image) : null;
-            } catch (\Throwable $e) {
-                $student->photo = null; // show placeholder if imagedb is unavailable
-            }
+                        return $binary
+                            ? 'data:image/jpeg;base64,'.base64_encode((string) $binary)
+                            : null;
+                    } catch (Throwable) {
+                        return null;
+                    }
+                }
+            );
         }
 
         return $student;

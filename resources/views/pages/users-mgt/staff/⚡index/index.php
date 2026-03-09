@@ -14,7 +14,9 @@ new #[Layout('layouts::app', ['title' => 'User Management'])] class extends Comp
 
     public $search = '';
 
-    public $classification = '';
+    public $role;
+
+    public $gate;
 
     #[Computed]
     public function users()
@@ -22,7 +24,8 @@ new #[Layout('layouts::app', ['title' => 'User Management'])] class extends Comp
         return User::query()
             ->where('role', '!=', 'student')
             ->when($this->search, fn ($q) => $q->search($this->search))
-            ->when($this->classification, fn ($q) => $q->where('role', $this->classification))
+            ->when($this->role, fn ($q) => $q->where('role', $this->role))
+            ->when($this->gate, fn ($q) => $q->where('assigned_gate', $this->gate))
             ->paginate(11);
     }
 
@@ -39,7 +42,17 @@ new #[Layout('layouts::app', ['title' => 'User Management'])] class extends Comp
 
     public function resetFilters(): void
     {
-        $this->reset(['search', 'classification']);
+        $this->reset(['search', 'role', 'gate']);
+    }
+
+    #[Computed]
+    public function gates()
+    {
+        return User::distinct()
+            ->pluck('assigned_gate')
+            ->filter()
+            ->sort()
+            ->values();
     }
 
     #[On('refresh-user')]

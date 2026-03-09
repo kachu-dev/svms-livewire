@@ -46,6 +46,7 @@ new class extends Component
             $hex = str_pad(strtoupper(dechex((int) $input)), 8, '0', STR_PAD_LEFT);
 
             return implode('', array_reverse(str_split($hex, 2)));
+
         }
 
         return strtoupper($input);

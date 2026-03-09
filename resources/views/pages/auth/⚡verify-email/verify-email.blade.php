@@ -11,19 +11,30 @@
         <flux:callout variant="success">{{ session('message') }}</flux:callout>
     @endif
 
-
     <div class="flex flex-col items-center justify-between space-y-3">
 
-        <form action="{{ route('verification.send') }}"  class="space-y-4" method="POST">
+        <form
+            action="{{ route('verification.send') }}"
+            class="space-y-4"
+            method="POST"
+        >
             @csrf
-            <flux:button class="w-full" variant="primary" type="submit">
+            <flux:button
+                class="w-full"
+                type="submit"
+                variant="primary"
+            >
                 Resend Verification Email
             </flux:button>
         </form>
 
         <form action="{{ route('logout') }}" method="POST">
             @csrf
-            <flux:button class="w-full" variant="ghost" type="submit">
+            <flux:button
+                class="w-full"
+                type="submit"
+                variant="ghost"
+            >
                 Back to Login
             </flux:button>
         </form>
