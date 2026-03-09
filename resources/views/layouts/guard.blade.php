@@ -25,19 +25,19 @@
             </flux:sidebar.header>
 
             <flux:sidebar.nav>
-                <flux:sidebar.group
-                    class="grid"
-                    expandable
-                    heading="Violations"
-                    icon="exclamation-triangle"
-                >
-                    <flux:sidebar.item href="{{ route('guard.violations.create') }}" wire:navigate>
-                        Create Violation
-                    </flux:sidebar.item>
-                    <flux:sidebar.item href="{{ route('guard.violations.recent') }}" wire:navigate>
-                        Recent Violations
-                    </flux:sidebar.item>
-                </flux:sidebar.group>
+                <flux:sidebar.item href="{{ route('guard.violations.create') }}" wire:navigate>
+                    Create Violation
+                </flux:sidebar.item>
+                <flux:sidebar.item href="{{ route('guard.violations.recent') }}" wire:navigate>
+                    Recent Violations
+                </flux:sidebar.item>
+                <flux:button
+                    aria-label="Toggle dark mode"
+                    icon="moon"
+                    variant="subtle"
+                    x-data
+                    x-on:click="$flux.dark = ! $flux.dark"
+                />
             </flux:sidebar.nav>
             <flux:sidebar.spacer />
             <flux:sidebar.nav>

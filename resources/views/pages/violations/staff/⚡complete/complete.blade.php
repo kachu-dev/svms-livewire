@@ -1,10 +1,10 @@
 <div>
-    <x-table-wrapper heading="Archived Records">
+    <x-table-wrapper heading="Status Complete Records">
         <div class="flex flex-wrap items-center gap-2 p-6 pb-4 pt-4">
             <div class="min-w-48 max-w-72 flex-1">
                 <flux:input
                     icon="magnifying-glass"
-                    placeholder="Search archived..."
+                    placeholder="Search records..."
                     wire:model.live.debounce.500ms="search"
                 />
             </div>
@@ -48,6 +48,18 @@
             >Clear Filters</flux:button>
 
             <div class="flex-1"></div>
+
+            <flux:button
+                color="green"
+                icon="arrow-down-tray"
+                variant="primary"
+                wire:click="exportExcel"
+            >Excel</flux:button>
+            <flux:button
+                color="red"
+                icon="document-text"
+                variant="primary"
+            >PDF</flux:button>
         </div>
 
         <flux:separator />
@@ -60,8 +72,13 @@
                     <flux:table.column>Program</flux:table.column>
                     <flux:table.column align="center">Year</flux:table.column>
                     <flux:table.column>Classification</flux:table.column>
+
+                    <flux:table.column align="center">Count</flux:table.column>
+
                     <flux:table.column>Violation</flux:table.column>
+
                     <flux:table.column>Status</flux:table.column>
+
                     <flux:table.column
                         :direction="$sortDirection"
                         :sorted="$sortBy === 'created_at'"
@@ -70,9 +87,11 @@
                     >
                         Date
                     </flux:table.column>
+
                     <flux:table.column align="end">Recorded by</flux:table.column>
                     <flux:table.column align="center">Actions</flux:table.column>
                 </flux:table.columns>
+
                 <flux:table.rows>
                     @forelse ($this->violations as $violation)
                         <flux:table.row :key="$violation->id">
@@ -85,10 +104,27 @@
                                     {{ $violation->student_id }}
                                 </flux:link>
                             </flux:table.cell>
-                            <flux:table.cell>{{ $violation->student_name }}</flux:table.cell>
+                            <flux:table.cell>
+                                {{ $violation->student_name }}
+                            </flux:table.cell>
                             <flux:table.cell>{{ $violation->student?->program ?? 'N/A' }}</flux:table.cell>
                             <flux:table.cell align="center">{{ $violation->student?->year ?? 'N/A' }}</flux:table.cell>
                             <flux:table.cell>{{ $violation->classification_snapshot }}</flux:table.cell>
+                            <flux:table.cell align="center">
+                                <flux:badge
+                                    :color="match (true) {
+                                        $violation->minor_offense_number === 1 => 'lime',
+                                        $violation->minor_offense_number === 2 => 'yellow',
+                                        $violation->minor_offense_number === 3 => 'orange',
+                                        $violation->minor_offense_number >= 4 => 'red',
+                                        default => 'zinc',
+                                    }"
+                                    rounded
+                                    variant="solid"
+                                >
+                                    {{ $violation->minor_offense_number }}
+                                </flux:badge>
+                            </flux:table.cell>
                             <flux:table.cell>
                                 <div>
                                     <flux:tooltip position="left">
@@ -111,7 +147,9 @@
                                     </flux:tooltip>
                                 </div>
                             </flux:table.cell>
-                            <flux:table.cell>{{ $violation->status }}</flux:table.cell>
+                            <flux:table.cell>
+                                {{ $violation->status }}
+                            </flux:table.cell>
                             <flux:table.cell class="whitespace-nowrap">
                                 <div>
                                     <flux:tooltip position="right">
@@ -119,7 +157,9 @@
                                             {{ $violation->created_at->format('m-d-y') ?? 'N/A' }}
                                         </p>
                                         <flux:tooltip.content class="max-w-[20rem] space-y-2">
-                                            <p>{{ $violation->created_at->format('h:i A') ?? 'N/A' }}</p>
+                                            <p>
+                                                {{ $violation->created_at->format('h:i A') ?? 'N/A' }}
+                                            </p>
                                         </flux:tooltip.content>
                                     </flux:tooltip>
                                 </div>
@@ -128,9 +168,13 @@
                                 @if ($violation->recordedBy?->assigned_gate)
                                     <div>
                                         <flux:tooltip position="right">
-                                            <p>{{ $violation->recordedBy?->name }}</p>
+                                            <p>
+                                                {{ $violation->recordedBy?->name }}
+                                            </p>
                                             <flux:tooltip.content class="max-w-[20rem] space-y-2">
-                                                <p>Gate {{ $violation->recordedBy?->assigned_gate }}</p>
+                                                <p>
+                                                    Gate {{ $violation->recordedBy?->assigned_gate }}
+                                                </p>
                                             </flux:tooltip.content>
                                         </flux:tooltip>
                                     </div>
@@ -143,16 +187,25 @@
                                     <flux:button
                                         icon="ellipsis-horizontal"
                                         inset="top bottom"
-                                        size="sm"
                                         variant="ghost"
                                     />
                                     <flux:menu>
+                                        <flux:menu.item :href="route('staff.violations.detail', [
+                                            'violation' => $violation,
+                                            'stage' => $violation->current_stage?->id,
+                                        ])" icon="eye">
+                                            View Details
+                                        </flux:menu.item>
+                                        <flux:menu.separator />
                                         <flux:menu.item
-                                            @click="$dispatch('restore-violation', { id: {{ $violation->id }} });"
+                                            @click="
+                                                $dispatch('delete-violation', {
+                                                id: {{ $violation->id }},
+                                                });"
                                             icon="arrow-path"
-                                            variant="success"
+                                            variant="danger"
                                         >
-                                            Restore
+                                            Archive
                                         </flux:menu.item>
                                     </flux:menu>
                                 </flux:dropdown>
@@ -169,7 +222,7 @@
                                             @if ($search || $dateFrom || $dateTo)
                                                 Try adjusting your filters or search terms
                                             @else
-                                                No violations have been archived yet
+                                                No violations have been recorded yet
                                             @endif
                                         </p>
                                     </div>
@@ -192,20 +245,60 @@
         </div>
 
         <x-slot:actions>
+            <flux:dropdown>
+                <flux:button icon:trailing="chevron-down">School Year</flux:button>
+
+                <flux:menu>
+                    <flux:modal.trigger name="reset-sy">
+                        <flux:menu.item icon="arrow-uturn-left">Reset Violations</flux:menu.item>
+                    </flux:modal.trigger>
+                    <flux:menu.separator />
+                    <flux:menu.item icon="academic-cap">2025-2026</flux:menu.item>
+                    <flux:menu.item icon="academic-cap">2026-2027</flux:menu.item>
+                    <flux:menu.item icon="academic-cap">2027-2028</flux:menu.item>
+                </flux:menu>
+            </flux:dropdown>
             <flux:button
                 class="w-full"
-                href="{{ route('staff.violations.index') }}"
-                icon="arrow-uturn-left"
+                href="{{ route('staff.violations.deleted') }}"
+                icon="archive-box"
                 wire:navigate
             >
-                Back to Active Records
+                Archived Violations
+            </flux:button>
+            <flux:button
+                class="w-full"
+                href="{{ route('staff.violations.create') }}"
+                icon="plus-circle"
+                variant="primary"
+                wire:navigate
+            >
+                New Record
             </flux:button>
         </x-slot>
+
+        <flux:modal class="md:w-96" name="reset-sy">
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg">This resets all violations!</flux:heading>
+                    <flux:text class="mt-2">PLEASE DOUBLE CHECK.</flux:text>
+                </div>
+
+                <div class="grid grid-cols-[1fr_auto_1fr] items-end gap-2">
+                    <flux:input label="School Year From" placeholder="From" />
+                    <span class="pb-2">-</span>
+                    <flux:input label="School Year To" placeholder="To" />
+                </div>
+
+                <flux:button class="w-full" variant="danger">RESET SCHOOL YEAR</flux:button>
+            </div>
+        </flux:modal>
+
     </x-table-wrapper>
 
     @teleport('body')
         <div>
-            <livewire:modals.violations.restore-violation />
+            <livewire:modals.violations.delete-violation />
         </div>
     @endteleport
 </div>

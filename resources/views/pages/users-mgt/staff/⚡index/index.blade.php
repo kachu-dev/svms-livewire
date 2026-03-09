@@ -12,10 +12,21 @@
             <flux:separator vertical />
 
             <div class="w-44">
-                <flux:select placeholder="All Roles" wire:model.live="classification">
+                <flux:select placeholder="All Roles" wire:model.live="role">
                     <flux:select.option value="">All Roles</flux:select.option>
                     <flux:select.option value="guard">Guard</flux:select.option>
                     <flux:select.option value="staff">Staff</flux:select.option>
+                </flux:select>
+            </div>
+
+            <flux:separator vertical />
+
+            <div class="w-44">
+                <flux:select placeholder="All Gates" wire:model.live="gate">
+                    <flux:select.option value="">All Gates</flux:select.option>
+                    @foreach ($this->gates as $gate)
+                        <flux:select.option value="{{ $gate }}">{{ $gate }}</flux:select.option>
+                    @endforeach
                 </flux:select>
             </div>
 
@@ -72,6 +83,7 @@
                                                 id: {{ $user->id }},
                                             });"
                                             icon="archive-box-x-mark"
+                                            variant="danger"
                                         >
                                             Deactivate
                                         </flux:menu.item>

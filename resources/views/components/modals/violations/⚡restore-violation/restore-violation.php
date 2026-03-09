@@ -23,7 +23,7 @@ new class extends Component
 
         $this->studentId = $this->violation->student_id;
         $this->studentName = $this->violation->student_name;
-        $this->type = $this->violation->violation_type_code_snapshot . ' — ' . $this->violation->violation_type_name_snapshot;
+        $this->type = $this->violation->violation_type_code_snapshot.' - '.$this->violation->violation_type_name_snapshot;
         $this->remark = $this->violation->violation_remark_snapshot;
 
         $this->modal('restore-violation')->show();
@@ -33,6 +33,6 @@ new class extends Component
     {
         $this->violation->restore();
 
-        $this->redirectRoute('staff.violations.deleted', navigate: true);
+        $this->dispatch('refresh-del-violation');
     }
 };

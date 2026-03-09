@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Violation;
+use App\Models\ViolationDeleteRequest;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -18,10 +19,14 @@ new class extends Component
 
     public $status;
 
-    #[On('delete-violation')]
-    public function setFields($id): void
+    public $requestId;
+
+    #[On('approve-delete')]
+    public function setFields($violationId, $violationRequestId): void
     {
-        $this->violation = Violation::find($id);
+        $this->violation = Violation::find($violationId);
+
+        $this->requestId = $violationRequestId;
 
         $this->studentId = $this->violation->student_id;
         $this->studentName = $this->violation->student_name;
@@ -29,13 +34,22 @@ new class extends Component
         $this->remark = $this->violation->violation_remark_snapshot;
         $this->status = $this->violation->status;
 
-        $this->modal('delete-violation')->show();
+        $this->modal('approve-delete')->show();
     }
 
     public function delete(): void
     {
-        $this->violation->delete();
+        $request = ViolationDeleteRequest::findOrFail($this->requestId);
 
-        $this->dispatch('refresh-violation');
+        $request->violation->delete();
+        $request->update([
+            'status' => 'approved',
+            'reviewed_by' => auth()->id(),
+            'reviewed_at' => now(),
+        ]);
+
+        $this->dispatch('refresh-request');
+
+        Toaster::success('Violation deleted.');
     }
 };

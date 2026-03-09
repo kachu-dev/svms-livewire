@@ -9,10 +9,12 @@ use App\Models\ViolationStages;
 use App\Models\ViolationStageTemplate;
 use App\Models\ViolationType;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class ViolationService
 {
     private const ESCALATION_CODE = 'C.3.9';
+
     private const MINOR_ESCALATION_THRESHOLD = 3;
 
     public function prepareViolationData(
@@ -43,13 +45,13 @@ class ViolationService
 
         return [
             'originalTypeId' => $originalTypeId,
-            'typeId'         => $typeId,
-            'typeCode'       => $typeCode,
-            'typeName'       => $typeName,
+            'typeId' => $typeId,
+            'typeCode' => $typeCode,
+            'typeName' => $typeName,
             'classification' => $classification,
-            'typeLabel'      => $typeLabel,
-            'remarkId'       => $remarkId,
-            'remarkLabel'    => $remarkLabel,
+            'typeLabel' => $typeLabel,
+            'remarkId' => $remarkId,
+            'remarkLabel' => $remarkLabel,
         ];
     }
 
@@ -77,15 +79,15 @@ class ViolationService
             }
 
             $violation = Violation::create([
-                'student_id'                 => $studentId,
-                'student_name'               => $studentName,
-                'classification_snapshot'             => $violationData['classification'],
-                'violation_type_id'          => $violationData['typeId'],
+                'student_id' => $studentId,
+                'student_name' => $studentName,
+                'classification_snapshot' => $violationData['classification'],
+                'violation_type_id' => $violationData['typeId'],
                 'original_violation_type_id' => $violationData['originalTypeId'],
-                'violation_type_code_snapshot'    => $violationData['typeCode'],
-                'violation_type_name_snapshot'    => $violationData['typeName'],
-                'violation_remark_id'        => $violationData['remarkId'],
-                'violation_remark_snapshot'  => $violationData['remarkLabel'],
+                'violation_type_code_snapshot' => $violationData['typeCode'],
+                'violation_type_name_snapshot' => $violationData['typeName'],
+                'violation_remark_id' => $violationData['remarkId'],
+                'violation_remark_snapshot' => $violationData['remarkLabel'],
                 'recorded_by' => auth()->id(),
             ]);
 
@@ -112,13 +114,13 @@ class ViolationService
             ->get();
 
         if ($templates->isEmpty()) {
-            throw new \RuntimeException("No stage templates found for offense key: {$offenseKey}");
+            throw new RuntimeException("No stage templates found for offense key: {$offenseKey}");
         }
 
         $templates->each(fn ($template) => ViolationStages::create([
             'violation_id' => $violation->id,
-            'order'        => $template->order,
-            'name'         => $template->name,
+            'order' => $template->order,
+            'name' => $template->name,
         ]));
 
         $violation->update(['status' => $templates->first()->name]);
@@ -137,13 +139,13 @@ class ViolationService
 
         return [
             'originalTypeId' => $originalTypeId,
-            'typeId'         => $escalationType->id,
-            'typeCode'       => $escalationType->code,
-            'typeName'       => $escalationType->name,
-            'typeLabel'      => $escalationType->name,
+            'typeId' => $escalationType->id,
+            'typeCode' => $escalationType->code,
+            'typeName' => $escalationType->name,
+            'typeLabel' => $escalationType->name,
             'classification' => 'Major - Suspension',
-            'remarkId'       => null,
-            'remarkLabel'    => $remarkLabel,
+            'remarkId' => null,
+            'remarkLabel' => $remarkLabel,
         ];
     }
 }

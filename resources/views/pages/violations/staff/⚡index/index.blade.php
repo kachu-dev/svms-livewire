@@ -1,5 +1,5 @@
 <div>
-    <x-table-wrapper heading="Active Records">
+    <x-table-wrapper heading="Pending Records">
         <div class="flex flex-wrap items-center gap-2 p-6 pb-4 pt-4">
             <div class="min-w-48 max-w-72 flex-1">
                 <flux:input
@@ -69,6 +69,8 @@
                 <flux:table.columns>
                     <flux:table.column><strong>Student ID</strong></flux:table.column>
                     <flux:table.column>Student Name</flux:table.column>
+                    <flux:table.column>Program</flux:table.column>
+                    <flux:table.column align="center">Year</flux:table.column>
                     <flux:table.column>Classification</flux:table.column>
 
                     <flux:table.column align="center">Count</flux:table.column>
@@ -87,7 +89,6 @@
                     </flux:table.column>
 
                     <flux:table.column align="end">Recorded by</flux:table.column>
-                    <flux:table.column align="center">Gate</flux:table.column>
                     <flux:table.column align="center">Actions</flux:table.column>
                 </flux:table.columns>
 
@@ -95,13 +96,19 @@
                     @forelse ($this->violations as $violation)
                         <flux:table.row :key="$violation->id">
                             <flux:table.cell variant="strong">
-                                <flux:link href="{{ route('staff.violations.student', $violation->student_id) }}"
+                                <flux:link
+                                    class="tabular-nums"
+                                    href="{{ route('staff.violations.student', $violation->student_id) }}"
                                     wire:navigate
                                 >
                                     {{ $violation->student_id }}
                                 </flux:link>
                             </flux:table.cell>
-                            <flux:table.cell>{{ $violation->student_name }}</flux:table.cell>
+                            <flux:table.cell>
+                                {{ $violation->student_name }}
+                            </flux:table.cell>
+                            <flux:table.cell>{{ $violation->student?->program ?? 'N/A' }}</flux:table.cell>
+                            <flux:table.cell align="center">{{ $violation->student?->year ?? 'N/A' }}</flux:table.cell>
                             <flux:table.cell>{{ $violation->classification_snapshot }}</flux:table.cell>
                             <flux:table.cell align="center">
                                 <flux:badge
@@ -115,16 +122,16 @@
                                     rounded
                                     variant="solid"
                                 >
-                                    <p>{{ $violation->minor_offense_number }}</p>
+                                    {{ $violation->minor_offense_number }}
                                 </flux:badge>
                             </flux:table.cell>
                             <flux:table.cell>
                                 <div>
                                     <flux:tooltip position="left">
-                                        <p>
+                                        <p class="whitespace-normal">
                                             {{ $violation->violation_type_code_snapshot }}
                                             -
-                                            {{ str($violation->violation_type_name_snapshot)->words(6) }}
+                                            {{ $violation->violation_type_name_snapshot }}
                                         </p>
                                         <flux:tooltip.content class="max-w-[20rem] space-y-2">
                                             <p>
@@ -132,40 +139,50 @@
                                                 -
                                                 {{ str($violation->violation_type_name_snapshot) }}
                                             </p>
-                                            <flux:separator />
-                                            <p>{{ $violation->violation_remark_snapshot }}</p>
+                                            @if ($violation->violation_remark_snapshot)
+                                                <flux:separator />
+                                                <p>{{ $violation->violation_remark_snapshot }}</p>
+                                            @endif
                                         </flux:tooltip.content>
                                     </flux:tooltip>
                                 </div>
                             </flux:table.cell>
-                            <flux:table.cell>
-                                <flux:badge>{{ $violation->status }}</flux:badge>
+                            <flux:table.cell class="whitespace-normal">
+                                {{ $violation->status }}
                             </flux:table.cell>
-                            <flux:table.cell class="whitespace-nowrap">
-                                {{ $violation->created_at->format('M j, Y - h:i A') ?? 'N/A' }}
+                            <flux:table.cell class="whitespace-normal">
+                                {{ $violation->created_at->format('m-d-y h:i A') ?? 'N/A' }}
                             </flux:table.cell>
                             <flux:table.cell align="end">
-                                {{ $violation->recordedBy?->name }}
-                            </flux:table.cell>
-                            <flux:table.cell align="center">
-                                {{ $violation->recordedBy?->assigned_gate }}
+                                @if ($violation->recordedBy?->assigned_gate)
+                                    <div>
+                                        <flux:tooltip position="right">
+                                            <p>
+                                                {{ $violation->recordedBy?->name }}
+                                            </p>
+                                            <flux:tooltip.content class="max-w-[20rem] space-y-2">
+                                                <p>
+                                                    Gate {{ $violation->recordedBy?->assigned_gate }}
+                                                </p>
+                                            </flux:tooltip.content>
+                                        </flux:tooltip>
+                                    </div>
+                                @else
+                                    {{ $violation->recordedBy?->name }}
+                                @endif
                             </flux:table.cell>
                             <flux:table.cell align="center">
                                 <flux:dropdown position="left">
                                     <flux:button
                                         icon="ellipsis-horizontal"
                                         inset="top bottom"
-                                        size="sm"
                                         variant="ghost"
                                     />
                                     <flux:menu>
-                                        <flux:menu.item
-                                            :href="route('staff.violations.detail', [
-                                                'violation' => $violation,
-                                                'stage' => $violation->current_stage?->id,
-                                            ])"
-                                            icon="eye"
-                                        >
+                                        <flux:menu.item :href="route('staff.violations.detail', [
+                                            'violation' => $violation,
+                                            'stage' => $violation->current_stage?->id,
+                                        ])" icon="eye">
                                             View Details
                                         </flux:menu.item>
                                         <flux:menu.separator />
@@ -249,7 +266,7 @@
             </flux:button>
         </x-slot>
 
-        <flux:modal name="reset-sy" class="md:w-96">
+        <flux:modal class="md:w-96" name="reset-sy">
             <div class="space-y-6">
                 <div>
                     <flux:heading size="lg">This resets all violations!</flux:heading>

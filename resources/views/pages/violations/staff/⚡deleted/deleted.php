@@ -3,6 +3,7 @@
 use App\Models\Violation;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
@@ -37,6 +38,7 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
     public function violations()
     {
         return Violation::onlyTrashed()
+            ->with(['student', 'stages'])
             ->when($this->search, fn ($q) => $q->search($this->search))
             ->when($this->classification, fn ($q) => $q->where('classification_snapshot', $this->classification))
             ->when($this->dateFrom, fn ($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
@@ -48,7 +50,8 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
     #[Computed]
     public function classifications()
     {
-        return Violation::onlyTrashed()->distinct('classification')
+        return Violation::onlyTrashed()
+            ->distinct()
             ->pluck('classification_snapshot')
             ->sortDesc();
     }
@@ -57,6 +60,9 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
     {
         $this->reset(['search', 'classification', 'dateFrom', 'dateTo']);
     }
+
+    #[On('refresh-del-violation')]
+    public function refreshTable(): void {}
 
     public function restore($violationId): void
     {

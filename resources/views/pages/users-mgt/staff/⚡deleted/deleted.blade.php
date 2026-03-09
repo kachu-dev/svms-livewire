@@ -21,6 +21,17 @@
 
             <flux:separator vertical />
 
+            <div class="w-44">
+                <flux:select placeholder="All Gates" wire:model.live="gate">
+                    <flux:select.option value="">All Gates</flux:select.option>
+                    @foreach ($this->gates as $gate)
+                        <flux:select.option value="{{ $gate }}">{{ $gate }}</flux:select.option>
+                    @endforeach
+                </flux:select>
+            </div>
+
+            <flux:separator vertical />
+
             <flux:button
                 icon="x-mark"
                 variant="ghost"
@@ -63,6 +74,7 @@
                                                 id: {{ $user->id }},
                                             });"
                                             icon="archive-box-x-mark"
+                                            variant="success"
                                         >
                                             Reactivate
                                         </flux:menu.item>

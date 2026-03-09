@@ -112,7 +112,7 @@
         })
         ->add(match ($variant) { // Border...
             'outline' => 'shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5',
-            'accessible' => 'border-2 border-zinc-400 disabled:border-zinc-300 dark:border-zinc-500 dark:disabled:border-zinc-600',
+            'accessible' => 'border-2 border-zinc-500 disabled:border-zinc-300 dark:border-zinc-500 dark:disabled:border-zinc-600',
             'filled'  => 'border-0',
         })
         ->add(match ($variant) { // Invalid...

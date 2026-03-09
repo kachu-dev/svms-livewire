@@ -42,7 +42,7 @@ class AllViolationExport implements FromCollection, WithHeadings, WithMapping, W
             $violation->student_name,
             $violation->minor_offense_number,
             $violation->classification_snapshot,
-            $violation->violation_type_code_snapshot .' - '. $violation->violation_type_name_snapshot,
+            $violation->violation_type_code_snapshot.' - '.$violation->violation_type_name_snapshot,
             $violation->violation_remark_snapshot,
             $violation->status,
             $violation->created_at->format('Y-m-d'),

@@ -31,7 +31,7 @@ new #[Layout('layouts::auth', ['heading' => 'Register'])] class extends Componen
             ->where('studentid', $this->username)
             ->first();
 
-        if (!$student) {
+        if (! $student) {
             $this->addError('username', 'Student ID not found. Please check your ID number.');
 
             return;

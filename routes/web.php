@@ -33,8 +33,10 @@ Route::middleware(['auth', 'can:access-staff-area'])
         // Violations management
         Route::prefix('violations')->name('violations.')->group(function () {
             Route::livewire('/', 'pages::violations.staff.index')->name('index');
+            Route::livewire('/complete', 'pages::violations.staff.complete')->name('complete');
             Route::livewire('/create', 'pages::violations.staff.create')->name('create');
             Route::livewire('/deleted', 'pages::violations.staff.deleted')->name('deleted');
+            Route::livewire('/delete-requests', 'pages::violations.staff.delete-requests')->name('requests');
             Route::livewire('/{violation}/stage/{stage}', 'pages::violations.staff.detail')->name('detail');
         });
 

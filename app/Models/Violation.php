@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use UnexpectedValueException;
 
 class Violation extends Model
 {
@@ -62,8 +63,8 @@ class Violation extends Model
                 str_contains($this->classification_snapshot, 'Suspension') => 'major_suspension',
                 str_contains($this->classification_snapshot, 'Dismissal') => 'major_dismissal',
                 str_contains($this->classification_snapshot, 'Expulsion') => 'major_expulsion',
-                default => throw new \UnexpectedValueException(
-                    "Minor count exceeds expected escalation range"
+                default => throw new UnexpectedValueException(
+                    'Minor count exceeds expected escalation range'
                 ),
             };
         }
@@ -91,6 +92,11 @@ class Violation extends Model
         return $this->belongsTo(User::class, 'recorded_by');
     }
 
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(Student::class, 'student_id', 'studentid');
+    }
+
     public function getCurrentStageAttribute()
     {
         $sorted = $this->stages->sortBy('order');
@@ -102,9 +108,9 @@ class Violation extends Model
 
     public function getLastCompletedStageAttribute()
     {
-        return $this->stages()
+        return $this->stages
             ->where('is_complete', true)
-            ->orderByDesc('order')
+            ->sortByDesc('order')
             ->first();
     }
 }

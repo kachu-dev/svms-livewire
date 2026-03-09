@@ -26,25 +26,31 @@
                     <div class="space-y-3">
                         @foreach ($types as $type)
                             <button
-                                @click="$dispatch('type-selected', {
-                                    id: {{ $type->id }},
-                                    code: @js($type->code),
-                                    name: @js($type->name),
-                                    classification: @js($type->classification)
-                                }); $flux.modal('set-violation').close()"
-                                class="group w-full rounded-xl border-2 border-zinc-300 p-5 text-left transition-all hover:border-blue-500 hover:bg-blue-50 focus:outline-none focus:ring-4 focus:ring-blue-400 active:scale-95 dark:border-zinc-600 dark:hover:bg-blue-950/30"
+                                :class="{{ $type->id }} === $wire.selectedTypeId ?
+                                    'border-blue-500 bg-blue-50 dark:bg-blue-950/30' :
+                                    'border-zinc-500 hover:border-blue-500 hover:bg-blue-50 dark:border-zinc-600 dark:hover:bg-blue-950/30'"
+                                @click="
+                                    $wire.selectedTypeId = {{ $type->id }};
+                                    $dispatch('type-selected', {
+                                        id: {{ $type->id }},
+                                        code: @js($type->code),
+                                        name: @js($type->name),
+                                        classification: @js($type->classification)
+                                    }); $flux.modal('set-violation').close()
+                                "
+                                class="group w-full rounded-xl border-2 p-5 text-left transition-all focus:outline-none focus:ring-4 focus:ring-blue-400 active:scale-95"
                                 type="button"
                                 wire:key="type-{{ $type->id }}"
                             >
-                                <div class="flex items-start gap-4">
-                                    <div class="min-w-15 text-base font-bold text-blue-600 dark:text-blue-400">
+                                <div class="flex items-center gap-4">
+                                    <div class="text-base font-bold text-blue-600 dark:text-blue-400">
                                         {{ $type->code }}
                                     </div>
+                                    <flux:separator vertical />
                                     <div class="flex-1">
-                                        <div
-                                            class="text-base font-semibold text-zinc-800 group-hover:text-zinc-900 dark:text-zinc-200 dark:group-hover:text-zinc-100">
+                                        <flux:heading>
                                             {{ $type->name }}
-                                        </div>
+                                        </flux:heading>
                                         <div class="mt-1">
                                             <flux:badge
                                                 color="{{ $type->classification === 'Minor' ? 'yellow' : 'red' }}"
@@ -54,6 +60,11 @@
                                             </flux:badge>
                                         </div>
                                     </div>
+                                    <flux:icon
+                                        class="h-5 w-5 text-blue-500"
+                                        name="check-circle"
+                                        x-show="{{ $type->id }} === $wire.selectedTypeId"
+                                    />
                                 </div>
                             </button>
                         @endforeach
@@ -67,6 +78,8 @@
                 </div>
             @endforelse
         </div>
+
+        <flux:separator />
 
         <div class="flex gap-3">
             <flux:spacer />

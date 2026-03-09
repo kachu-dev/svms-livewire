@@ -37,7 +37,7 @@
                     remarkId: null,
                     remarkLabel: null
                 }); $flux.modal('set-remark').close()"
-                class="group w-full rounded-xl border-2 border-zinc-300 p-5 text-left transition-all hover:border-blue-500 hover:bg-blue-50 focus:outline-none focus:ring-4 focus:ring-blue-400 active:scale-95 dark:border-zinc-600 dark:hover:bg-blue-950/30"
+                class="group w-full rounded-xl border-2 border-zinc-500 p-5 text-left transition-all hover:border-blue-500 hover:bg-blue-50 focus:outline-none focus:ring-4 focus:ring-blue-400 active:scale-95 dark:border-zinc-600 dark:hover:bg-blue-950/30"
                 type="button"
             >
                 <div
@@ -48,17 +48,28 @@
 
             @foreach ($this->violationRemarks as $remark)
                 <button
-                    @click="$dispatch('remark-selected', {
+                    :class="{{ $remark->id }} === $wire.selectedRemarkId ?
+                        'border-blue-500 bg-blue-50 dark:bg-blue-950/30' :
+                        'border-zinc-500 hover:border-blue-500 hover:bg-blue-50 dark:border-zinc-600 dark:hover:bg-blue-950/30'"
+                    @click="
+                    $wire.selectedRemarkId = {{ $remark->id }};
+                    $dispatch('remark-selected', {
                         remarkId: {{ $remark->id }},
                         remarkLabel: @js($remark->label)
                     }); $flux.modal('set-remark').close()"
-                    class="group w-full rounded-xl border-2 border-zinc-300 p-5 text-left transition-all hover:border-blue-500 hover:bg-blue-50 focus:outline-none focus:ring-4 focus:ring-blue-400 active:scale-95 dark:border-zinc-600 dark:hover:bg-blue-950/30"
+                    class="group w-full rounded-xl border-2 p-5 text-left transition-all focus:outline-none focus:ring-4 focus:ring-blue-400 active:scale-95"
                     type="button"
                     wire:key="remark-{{ $remark->id }}"
                 >
-                    <div
-                        class="text-base font-medium text-zinc-700 group-hover:text-zinc-900 dark:text-zinc-300 dark:group-hover:text-zinc-100">
-                        {{ $remark->label }}
+                    <div class="flex items-center justify-between">
+                        <flux:heading>
+                            {{ $remark->label }}
+                        </flux:heading>
+                        <flux:icon
+                            class="h-5 w-5 text-blue-500"
+                            name="check-circle"
+                            x-show="{{ $remark->id }} === $wire.selectedRemarkId"
+                        />
                     </div>
                 </button>
             @endforeach

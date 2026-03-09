@@ -8,6 +8,8 @@ new class extends Component
 {
     public $typeSearch;
 
+    public $selectedTypeId;
+
     public bool $minorOnly = false;
 
     #[Computed]

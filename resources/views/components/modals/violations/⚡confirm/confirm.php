@@ -46,22 +46,21 @@ new class extends Component
 
     public $selectedRemarkId;
 
-
     public ?array $resolvedData = null;
 
     #[Computed]
     public function student()
     {
         return $this->studentId
-            ? Student::select('studentid', 'firstname', 'lastname')->find($this->studentId)
+            ? Student::select('studentid', 'firstname', 'lastname', 'mi')->find($this->studentId)
             : null;
     }
 
     #[On('to-confirm')]
     public function confirm(
-        $studentId, $typeId, $typeCode, $typeName,
-        $typeLabel, $typeClassification, $remarkId = null,
-        $remarkLabel = null): void
+        int $studentId, int $typeId, string $typeCode, string $typeName,
+        string $typeLabel, string $typeClassification, ?int $remarkId = null,
+        ?string $remarkLabel = null): void
     {
         $this->studentId = $studentId;
 
@@ -76,14 +75,14 @@ new class extends Component
         $this->selectedRemarkLabel = $remarkLabel;
 
         $this->resolvedData = app(ViolationService::class)->prepareViolationData(
-            studentId:      $studentId,
-            typeId:         $typeId,
-            typeCode:       $typeCode,
-            typeName:       $typeName,
+            studentId: $studentId,
+            typeId: $typeId,
+            typeCode: $typeCode,
+            typeName: $typeName,
             classification: $typeClassification,
-            typeLabel:      $typeLabel,
-            remarkId:       $remarkId,
-            remarkLabel:    $remarkLabel,
+            typeLabel: $typeLabel,
+            remarkId: $remarkId,
+            remarkLabel: $remarkLabel,
         );
 
         $this->modal('confirm-violation')->show();
@@ -96,6 +95,7 @@ new class extends Component
         if ($service->isDuplicate($this->studentId, $this->originalTypeId)) {
             $this->modal('confirm-violation')->close();
             $this->modal('duplicate-warning')->show();
+
             return;
         }
 
@@ -128,8 +128,8 @@ new class extends Component
             $student = $this->student;
 
             $service->create(
-                studentId:     $this->studentId,
-                studentName:   "{$student->firstname} {$student->lastname}",
+                studentId: $this->studentId,
+                studentName: "{$student->lastname}, {$student->firstname} {$student->mi}.",
                 violationData: $this->resolvedData,
             );
 
@@ -138,11 +138,11 @@ new class extends Component
             $this->modal('duplicate-warning')->close();
             $this->modal('confirm-violation')->close();
 
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::error('Violation save failed', [
                 'student_id' => $this->studentId,
-                'exception'  => $e->getMessage(),
-                'trace'      => $e->getTraceAsString(),
+                'exception' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             $this->dispatch('show-result', type: 'error',
