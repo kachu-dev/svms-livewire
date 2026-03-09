@@ -32,7 +32,7 @@ class ViolationRecorded extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'mail.violation-recorded',
+            view: 'mail.violation-recorded',
         );
     }
 

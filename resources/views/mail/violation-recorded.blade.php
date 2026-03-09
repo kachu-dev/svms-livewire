@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 
-    <body style="font-family: Arial, Helvetica, sans-serif; line-height: 1.6;">
+    <body class="bg-transparent">
 
         <p>Greetings of Peace!</p>
 
@@ -9,7 +9,7 @@
 
         <p>
             This is to inform you that you have been recorded for
-            a <strong>({{ $violation->violation_type_snapshot }})</strong>
+            a <strong>({{ $violation->violation_type_code_snapshot }} {{ $violation->violation_type_name_snapshot }})</strong>
             under the AdZU policy
             on {{ $violation->created_at->format('F d, Y') }}.
         </p>

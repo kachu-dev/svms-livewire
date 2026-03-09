@@ -2,6 +2,7 @@
 
 use App\Models\ViolationType;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 new class extends Component
@@ -37,6 +38,12 @@ new class extends Component
 
     public function clearSearch(): void
     {
-        $this->typeSearch = '';
+        $this->reset('typeSearch');
+    }
+
+    #[On('reset-type')]
+    public function resetType(): void
+    {
+        $this->reset('selectedTypeId');
     }
 };
