@@ -11,6 +11,8 @@ use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
+use Masmerise\Toaster\Toaster;
 
 new #[Layout('layouts::app', ['title' => 'Student Profile'])] class extends Component
 {
@@ -60,7 +62,7 @@ new #[Layout('layouts::app', ['title' => 'Student Profile'])] class extends Comp
             ->pluck('id');
 
         $violations->getCollection()->transform(function ($violation) use ($allMinors) {
-            $violation->minor_offense_number = $violation->classification === 'Minor'
+            $violation->minor_offense_number = $violation->classification_snapshot === 'Minor'
                 ? $allMinors->search($violation->id) + 1
                 : null;
 
@@ -73,7 +75,7 @@ new #[Layout('layouts::app', ['title' => 'Student Profile'])] class extends Comp
     #[Computed]
     public function classifications()
     {
-        return Violation::distinct('classification_snapshot')
+        return Violation::distinct()
             ->where('student_id', $this->studentId)
             ->pluck('classification_snapshot')
             ->sortDesc();
@@ -154,8 +156,7 @@ new #[Layout('layouts::app', ['title' => 'Student Profile'])] class extends Comp
             ->get();
 
         if ($violations->isEmpty()) {
-            Toaster::error('No violations found for '.$this->student->studentid.' to export.');
-
+            Toaster::error('No violations found for '.$this->studentId.' to export.');
             return;
         }
 
@@ -166,7 +167,7 @@ new #[Layout('layouts::app', ['title' => 'Student Profile'])] class extends Comp
             ->pluck('id');
 
         $violations->transform(function ($violation) use ($allMinors) {
-            $violation->minor_offense_number = $violation->classification === 'Minor'
+            $violation->minor_offense_number = $violation->classification_snapshot === 'Minor'
                 ? $allMinors->search($violation->id) + 1
                 : null;
 

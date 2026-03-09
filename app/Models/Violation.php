@@ -41,21 +41,6 @@ class Violation extends Model
         });
     }
 
-    public function getMinorOffenseNumberAttribute(): ?int
-    {
-        if ($this->classification_snapshot !== 'Minor') {
-            return null;
-        }
-
-        return static::where('student_id', $this->student_id)
-            ->where('classification_snapshot', 'Minor')
-            ->where('created_at', '<=', $this->created_at)
-            ->orderBy('created_at')
-            ->orderBy('id')
-            ->pluck('id')
-            ->search($this->id) + 1;
-    }
-
     public function resolveOffenseKey(): string
     {
         if ($this->classification_snapshot !== 'Minor') {

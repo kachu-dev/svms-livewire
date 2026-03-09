@@ -34,4 +34,9 @@ new class extends Component
             ->get()
             ->groupBy('classification');
     }
+
+    public function clearSearch(): void
+    {
+        $this->typeSearch = '';
+    }
 };
