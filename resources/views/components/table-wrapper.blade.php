@@ -18,8 +18,14 @@
         </div>
     </div>
 
+    @isset($searches)
+        <div class="mt-2 rounded-xl border border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900">
+            {{ $searches }}
+        </div>
+    @endisset
+
     <div
-        {{ $attributes->merge(['class' => 'dark:bg-slate-900 bg-white rounded-xl mt-6 border-1 border-slate-300 dark:border-slate-700']) }}>
-        {{ $slot }}
+    {{ $attributes->merge(['class' => 'dark:bg-slate-900 bg-white rounded-xl mt-2 border border-slate-300 dark:border-slate-700']) }}>
+    {{ $slot }}
     </div>
 </div>

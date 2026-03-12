@@ -1,4 +1,4 @@
-<div class="space-y-4">
+<form class="space-y-4" wire:submit="login">
     <div class="space-y-4">
         <flux:input
             icon="user"
@@ -23,15 +23,9 @@
             class="w-full"
             type="submit"
             variant="primary"
-            wire:click="login"
         >Log in</flux:button>
-        <flux:button
-            class="w-full"
-            href="{{ route('register') }}"
-            variant="ghost"
-            wire:navigate
-        >
-            Sign up for a new account
-        </flux:button>
+        <flux:text class="mt-2 text-center">Don't have a student account?
+            <flux:link href="{{ route('register') }}" wire:navigate>Register</flux:link>
+        </flux:text>
     </div>
-</div>
+</form>

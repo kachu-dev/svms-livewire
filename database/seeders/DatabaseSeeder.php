@@ -52,6 +52,7 @@ class DatabaseSeeder extends Seeder
             ViolationTypeSeeder::class,
             ViolationRemarkSeeder::class,
             ViolationStageTemplateSeeder::class,
+            /*ViolationSeeder::class,*/
         ]);
     }
 }

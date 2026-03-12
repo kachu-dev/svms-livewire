@@ -77,53 +77,96 @@
                             Date
                         </flux:table.column>
 
+                        <flux:table.column>Recorded by</flux:table.column>
+
                         <flux:table.column align="center">Actions</flux:table.column>
                     </flux:table.columns>
 
                     <flux:table.rows>
                         @forelse ($this->violations as $violation)
                             <flux:table.row :key="$violation->id">
-                                <flux:table.cell>{{ $violation->classification_snapshot }}</flux:table.cell>
+                                <flux:table.cell class="max-w-10 whitespace-normal">{{ $violation->classification }}
+                                </flux:table.cell>
                                 <flux:table.cell align="center">
-                                    <flux:badge
-                                        :color="match (true) {
-                                            $violation->minor_offense_number === 1 => 'lime',
-                                            $violation->minor_offense_number === 2 => 'yellow',
-                                            $violation->minor_offense_number === 3 => 'orange',
-                                            $violation->minor_offense_number >= 4 => 'red',
-                                            default => 'zinc',
-                                        }"
-                                        rounded
-                                        variant="solid"
-                                    >
-                                        <p>{{ $violation->minor_offense_number }}</p>
-                                    </flux:badge>
+                                    <div class="flex items-center justify-center">
+                                        @if ($violation->is_escalated)
+                                            <flux:tooltip content="C.3.9 - Commission of a fourth minor violation"
+                                                toggleable
+                                            >
+                                                <flux:button
+                                                    class="text-red-500!"
+                                                    icon="arrow-trending-up"
+                                                    variant="ghost"
+                                                />
+                                            </flux:tooltip>
+                                        @else
+                                            <flux:badge
+                                                :color="match (true) {
+                                                    $violation->minor_offense_number === 1 => 'lime',
+                                                    $violation->minor_offense_number === 2 => 'yellow',
+                                                    $violation->minor_offense_number === 3 => 'amber',
+                                                    $violation->minor_offense_number >= 4 => 'red',
+                                                    default => 'red',
+                                                }"
+                                                rounded
+                                                variant="solid"
+                                            >
+                                                {{ $violation->minor_offense_number }}
+                                            </flux:badge>
+                                        @endif
+                                    </div>
                                 </flux:table.cell>
                                 <flux:table.cell>
-                                    <div>
-                                        <flux:tooltip position="left">
-                                            <p>
-                                                {{ $violation->violation_type_code_snapshot }}
-                                                -
-                                                {{ str($violation->violation_type_name_snapshot)->words(6) }}
-                                            </p>
-                                            <flux:tooltip.content class="max-w-[20rem] space-y-2">
-                                                <p>
-                                                    {{ $violation->violation_type_code_snapshot }}
-                                                    -
-                                                    {{ str($violation->violation_type_name_snapshot) }}
-                                                </p>
-                                                <flux:separator />
-                                                <p>{{ $violation->violation_remark_snapshot }}</p>
+                                    <div class="w-60 space-y-0.5">
+                                        <flux:tooltip toggleable>
+                                            <div>
+                                                <flux:text class="truncate font-medium">
+                                                    <flux:link
+                                                        as="button"
+                                                        class="tabular-nums"
+                                                        variant="ghost"
+                                                    >{{ $violation->type_code }}</flux:link>
+                                                    {{ $violation->type_name }}
+                                                </flux:text>
+                                                @if ($violation->remark)
+                                                    <flux:text class="truncate text-sm text-zinc-400">
+                                                        {{ $violation->remark }}</flux:text>
+                                                @endif
+                                            </div>
+                                            <flux:tooltip.content class="max-w-xs space-y-2">
+                                                <p>{{ $violation->type_code }} — {{ $violation->type_name }}</p>
+                                                @if ($violation->remark)
+                                                    <p class="text-zinc-400">{{ $violation->remark }}</p>
+                                                @endif
                                             </flux:tooltip.content>
                                         </flux:tooltip>
                                     </div>
                                 </flux:table.cell>
                                 <flux:table.cell>
-                                    <flux:badge>{{ $violation->status }}</flux:badge>
+                                    <div>
+                                        <flux:text size="xs">{{ $violation->status }}</flux:text>
+                                        @if ($violation->is_escalated)
+                                            <flux:text color="red" size="xs">Escalated</flux:text>
+                                        @endif
+                                    </div>
                                 </flux:table.cell>
-                                <flux:table.cell class="whitespace-nowrap">
-                                    {{ $violation->created_at->format('M j, Y - h:i A') ?? 'N/A' }}
+                                <flux:table.cell class="tabular-nums">
+                                    <flux:text>{{ $violation->created_at->format('m-d-y') ?? 'N/A' }}</flux:text>
+                                    <flux:text>{{ $violation->created_at->format('h:i A') ?? 'N/A' }}</flux:text>
+                                </flux:table.cell>
+                                <flux:table.cell>
+                                    @if ($violation->recordedBy?->assigned_gate)
+                                        <div>
+                                            <flux:text>
+                                                {{ $violation->recordedBy?->name }}
+                                            </flux:text>
+                                            <flux:text>
+                                                Gate {{ $violation->recordedBy?->assigned_gate }}
+                                            </flux:text>
+                                        </div>
+                                    @else
+                                        {{ $violation->recordedBy?->name }}
+                                    @endif
                                 </flux:table.cell>
                                 <flux:table.cell align="center">
                                     <flux:dropdown position="left">
@@ -165,16 +208,14 @@
                                     <div class="flex flex-col items-center gap-3">
                                         <flux:icon class="h-16 w-16 text-gray-300" name="inbox" />
                                         <div>
-                                            <p class="font-medium text-gray-600">
-                                                No violations found
-                                            </p>
-                                            <p class="mt-1 text-sm text-gray-500">
+                                            <flux:text class="font-medium text-gray-600">No violations found</flux:text>
+                                            <flux:text class="mt-1 text-sm text-gray-500">
                                                 @if ($search || $dateFrom || $dateTo)
                                                     Try adjusting your filters or search terms
                                                 @else
                                                     No violations have been recorded yet
                                                 @endif
-                                            </p>
+                                            </flux:text>
                                         </div>
                                         @if ($search || $dateFrom || $dateTo)
                                             <flux:button
@@ -202,11 +243,11 @@
         icon="user-circle"
     >
         <div class="aspect-square w-full max-w-64 rounded-2xl">
-            @if ($this->student?->photo)
+            @if ($this->student?->photo ?? '')
                 <img
                     alt="Photo"
                     class="h-full w-full rounded-2xl object-cover"
-                    src="{{ $this->student->photo }}"
+                    src="{{ $this->student->photo ?? '' }}"
                 />
             @else
                 <div class="flex h-full w-full items-center justify-center rounded-2xl bg-zinc-100 dark:bg-zinc-800">
@@ -225,21 +266,21 @@
                     Student ID
                 </flux:label>
                 <p class="mt-2 text-xl font-bold text-zinc-900 dark:text-white">
-                    {{ $this->student->grouptag }}{{ $this->student->studentid }}
+                    {{ $this->student->grouptag ?? '' }}{{ $this->student->studentid ?? '' }}
                 </p>
             </div>
 
             <div class="rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-700 dark:bg-zinc-800">
                 <flux:label class="text-xs uppercase tracking-widest">Year</flux:label>
                 <p class="mt-2 text-xl font-bold text-zinc-900 dark:text-white">
-                    {{ $this->student->year }}
+                    {{ $this->student->year ?? '' }}
                 </p>
             </div>
 
             <div class="rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-700 dark:bg-zinc-800">
                 <flux:label class="text-xs uppercase tracking-widest">Program</flux:label>
                 <p class="mt-2 text-xl font-bold text-zinc-900 dark:text-white">
-                    {{ $this->student->program }}
+                    {{ $this->student->program ?? '' }}
                 </p>
             </div>
         </div>

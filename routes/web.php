@@ -55,6 +55,8 @@ Route::middleware(['auth', 'can:access-staff-area'])
             Route::livewire('/', 'pages::users-mgt.staff.index')->name('index');
             Route::livewire('/deactivated', 'pages::users-mgt.staff.deleted')->name('deleted');
         });
+
+        Route::livewire('/dashboard', 'pages::dashboard')->name('dashboard');
     });
 
 // Guard area routes
@@ -82,20 +84,12 @@ Route::middleware(['auth', 'verified', 'can:access-student-area'])
             ->name('violations.index');
     });
 
-/*Route::get('/email/verify', function () {
-    return view('pages.auth.⚡verify-email.verify-email');
-})->middleware('auth')->name('verification.notice');*/
-
 Route::livewire('/email/verify', 'pages::auth.verify-email')->middleware('auth')->name('verification.notice');
-
-// Handle the verification link click
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
 
     return redirect()->route('student.violations.index');
 })->middleware(['auth', 'signed'])->name('verification.verify');
-
-// Resend verification email
 Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
 

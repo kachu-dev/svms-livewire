@@ -30,8 +30,8 @@ new class extends Component
 
         $this->studentId = $this->violation->student_id;
         $this->studentName = $this->violation->student_name;
-        $this->type = $this->violation->violation_type_code_snapshot.' - '.$this->violation->violation_type_name_snapshot;
-        $this->remark = $this->violation->violation_remark_snapshot;
+        $this->type = $this->violation->type_code.' - '.$this->violation->type_name;
+        $this->remark = $this->violation->remark;
         $this->status = $this->violation->status;
 
         $this->modal('approve-delete')->show();

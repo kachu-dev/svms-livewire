@@ -38,13 +38,13 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
     public function violations()
     {
         return Violation::onlyTrashed()
-            ->with(['student', 'stages'])
+            ->with(['student', 'recordedBy'])
             ->when($this->search, fn ($q) => $q->search($this->search))
-            ->when($this->classification, fn ($q) => $q->where('classification_snapshot', $this->classification))
+            ->when($this->classification, fn ($q) => $q->where('classification', $this->classification))
             ->when($this->dateFrom, fn ($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
             ->when($this->dateTo, fn ($q) => $q->whereDate('created_at', '<=', $this->dateTo))
             ->orderBy($this->sortBy, $this->sortDirection)
-            ->paginate(10);
+            ->paginate(8);
     }
 
     #[Computed]
@@ -52,7 +52,7 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
     {
         return Violation::onlyTrashed()
             ->distinct()
-            ->pluck('classification_snapshot')
+            ->pluck('classification')
             ->sortDesc();
     }
 

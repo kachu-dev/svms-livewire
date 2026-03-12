@@ -45,9 +45,9 @@ new #[Layout('layouts::app', ['title' => 'Student Profile'])] class extends Comp
     #[Computed]
     public function violations()
     {
-        $violations = Violation::with('stages')
+        $violations = Violation::with(['stages', 'student', 'recordedBy'])
             ->when($this->search, fn ($q) => $q->search($this->search))
-            ->when($this->classification, fn ($q) => $q->where('classification_snapshot', $this->classification))
+            ->when($this->classification, fn ($q) => $q->where('classification', $this->classification))
             ->when($this->dateFrom, fn ($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
             ->when($this->dateTo, fn ($q) => $q->whereDate('created_at', '<=', $this->dateTo))
             ->where('student_id', $this->studentId)
@@ -56,13 +56,13 @@ new #[Layout('layouts::app', ['title' => 'Student Profile'])] class extends Comp
 
         // One query for all minor IDs instead of one per violation
         $allMinors = Violation::where('student_id', $this->studentId)
-            ->where('classification_snapshot', 'Minor')
+            ->where('classification', 'Minor')
             ->orderBy('created_at')
             ->orderBy('id')
             ->pluck('id');
 
         $violations->getCollection()->transform(function ($violation) use ($allMinors) {
-            $violation->minor_offense_number = $violation->classification_snapshot === 'Minor'
+            $violation->minor_offense_number = $violation->classification === 'Minor'
                 ? $allMinors->search($violation->id) + 1
                 : null;
 
@@ -77,7 +77,7 @@ new #[Layout('layouts::app', ['title' => 'Student Profile'])] class extends Comp
     {
         return Violation::distinct()
             ->where('student_id', $this->studentId)
-            ->pluck('classification_snapshot')
+            ->pluck('classification')
             ->sortDesc();
     }
 
@@ -148,7 +148,7 @@ new #[Layout('layouts::app', ['title' => 'Student Profile'])] class extends Comp
     {
         $violations = Violation::with('stages')
             ->when($this->search, fn ($q) => $q->search($this->search))
-            ->when($this->classification, fn ($q) => $q->where('classification_snapshot', $this->classification))
+            ->when($this->classification, fn ($q) => $q->where('classification', $this->classification))
             ->when($this->dateFrom, fn ($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
             ->when($this->dateTo, fn ($q) => $q->whereDate('created_at', '<=', $this->dateTo))
             ->where('student_id', $this->studentId)
@@ -157,17 +157,18 @@ new #[Layout('layouts::app', ['title' => 'Student Profile'])] class extends Comp
 
         if ($violations->isEmpty()) {
             Toaster::error('No violations found for '.$this->studentId.' to export.');
+
             return;
         }
 
         $allMinors = Violation::where('student_id', $this->studentId)
-            ->where('classification_snapshot', 'Minor')
+            ->where('classification', 'Minor')
             ->orderBy('created_at')
             ->orderBy('id')
             ->pluck('id');
 
         $violations->transform(function ($violation) use ($allMinors) {
-            $violation->minor_offense_number = $violation->classification_snapshot === 'Minor'
+            $violation->minor_offense_number = $violation->classification === 'Minor'
                 ? $allMinors->search($violation->id) + 1
                 : null;
 

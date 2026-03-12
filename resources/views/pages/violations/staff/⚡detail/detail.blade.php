@@ -1,6 +1,4 @@
 <div class="flex gap-6">
-
-    {{-- ─── CHECKLIST SIDEBAR ─────────────────────────────────────────────── --}}
     <div class="w-80 shrink-0">
         <div class="rounded-xl border border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900">
             <div class="px-5 pb-4 pt-5">
@@ -8,13 +6,13 @@
                     Stages - {{ $this->stages->where('is_complete', true)->count() }}/{{ $this->stages->count() }}
                 </flux:text>
 
-                {{-- Progress bar --}}
                 @php $pct = $this->stages->count() ? ($this->stages->where('is_complete', true)->count() / $this->stages->count()) * 100 : 0; @endphp
-                <div class="mb-4 h-2 w-full rounded-full bg-slate-200 dark:bg-slate-700">
-                    <div class="bg-accent h-2 rounded-full" style="width: {{ $pct }}%"></div>
-                </div>
+                <flux:progress
+                    class="mb-4 mt-4 h-2"
+                    color="yellow"
+                    value="{{ $pct }}"
+                />
 
-                {{-- Sortable list --}}
                 <div class="flex flex-col gap-0.5" wire:sort="handleSort">
                     @foreach ($this->stages as $i => $s)
                         @php
@@ -61,7 +59,6 @@
                                 @endif
                             </button>
 
-                            {{-- Label --}}
                             <a
                                 class="min-w-0 flex-1"
                                 href="{{ route('staff.violations.detail', ['violation' => $this->violation, 'stage' => $s->id]) }}"
@@ -124,11 +121,9 @@
         </div>
     </div>
 
-    {{-- ─── MAIN CONTENT ───────────────────────────────────────────────────── --}}
     <div class="min-w-0 flex-1">
         <div class="rounded-xl border border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900">
 
-            {{-- Header --}}
             <div
                 class="flex items-start justify-between gap-4 border-b border-slate-200 px-8 py-6 dark:border-slate-700">
                 <div>
@@ -147,7 +142,6 @@
                 </span>
             </div>
 
-            {{-- Body --}}
             <div class="space-y-6 px-8 py-6">
 
                 @if ($this->stage->remark)
@@ -161,7 +155,6 @@
                     </flux:callout>
                 @endif
 
-                {{-- File --}}
                 @if ($this->stage->file_path)
                     @if (in_array($this->fileExtension, ['jpg', 'jpeg', 'png', 'gif', 'webp']))
                         <div
@@ -239,11 +232,10 @@
                 @endif
             </div>
 
-            {{-- Footer --}}
             <div
                 class="flex items-center justify-between gap-3 border-t border-slate-200 px-8 py-5 dark:border-slate-700">
                 <div class="flex gap-2">
-                    <flux:modal.trigger name="edit-status">
+                    <flux:modal.trigger name="edit-stage">
                         <flux:button icon="pencil-square" variant="primary">Edit Stage Details</flux:button>
                     </flux:modal.trigger>
 
@@ -274,7 +266,6 @@
         </div>
     </div>
 
-    {{-- ─── MODALS ──────────────────────────────────────────────────────────── --}}
     <flux:modal class="md:w-80" name="reset-progress">
         <div class="space-y-6">
             <div>
@@ -305,7 +296,7 @@
         </div>
     </flux:modal>
 
-    <flux:modal class="md:w-96" name="edit-status">
+    <flux:modal class="md:w-96" name="edit-stage">
         <div class="space-y-6">
             <div>
                 <flux:heading size="lg">Update Stage</flux:heading>

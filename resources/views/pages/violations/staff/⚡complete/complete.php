@@ -38,21 +38,21 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
     #[Computed]
     public function violations()
     {
-        $violations = Violation::with(['stages', 'student'])
+        $violations = Violation::with(['stages', 'student', 'recordedBy'])
             ->where('status', 'Complete')
             ->when($this->search, fn ($q) => $q->search($this->search))
-            ->when($this->classification, fn ($q) => $q->where('classification_snapshot', $this->classification))
+            ->when($this->classification, fn ($q) => $q->where('classification', $this->classification))
             ->when($this->dateFrom, fn ($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
             ->when($this->dateTo, fn ($q) => $q->whereDate('created_at', '<=', $this->dateTo))
             ->orderBy($this->sortBy, $this->sortDirection)
-            ->paginate(10);
+            ->paginate(8);
 
         $studentIds = $violations->getCollection()
-            ->where('classification_snapshot', 'Minor')
+            ->where('classification', 'Minor')
             ->pluck('student_id')
             ->unique();
 
-        $minorsByStudent = Violation::where('classification_snapshot', 'Minor')
+        $minorsByStudent = Violation::where('classification', 'Minor')
             ->whereIn('student_id', $studentIds)
             ->orderBy('created_at')
             ->orderBy('id')
@@ -61,15 +61,12 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
             ->map(fn ($group) => $group->pluck('id'));
 
         $violations->getCollection()->transform(function ($violation) use ($minorsByStudent) {
-            $violation->minor_offense_number = $violation->classification_snapshot === 'Minor'
+            $violation->minor_offense_number = $violation->classification === 'Minor'
                 ? ($minorsByStudent[$violation->student_id]->search($violation->id) + 1)
                 : null;
 
             return $violation;
         });
-
-        // Trigger accessors to capture all DB hits
-        $violations->getCollection()->each(fn ($v) => [$v->student?->program, $v->student?->year]);
 
         return $violations;
     }
@@ -78,7 +75,8 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
     public function classifications()
     {
         return Violation::distinct()
-            ->pluck('classification_snapshot')
+            ->where('status', 'Complete')
+            ->pluck('classification')
             ->sortDesc();
     }
 
@@ -108,7 +106,7 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
         $violations = Violation::with('stages')
             ->where('status', 'Complete')
             ->when($this->search, fn ($q) => $q->search($this->search))
-            ->when($this->classification, fn ($q) => $q->where('classification_snapshot', $this->classification))
+            ->when($this->classification, fn ($q) => $q->where('classification', $this->classification))
             ->when($this->dateFrom, fn ($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
             ->when($this->dateTo, fn ($q) => $q->whereDate('created_at', '<=', $this->dateTo))
             ->orderBy($this->sortBy, $this->sortDirection)
@@ -116,14 +114,15 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
 
         if ($violations->isEmpty()) {
             Toaster::error('No violations found to export.');
+
             return;
         }
 
-        $studentIds = $violations->where('classification_snapshot', 'Minor')
+        $studentIds = $violations->where('classification', 'Minor')
             ->pluck('student_id')
             ->unique();
 
-        $minorsByStudent = Violation::where('classification_snapshot', 'Minor')
+        $minorsByStudent = Violation::where('classification', 'Minor')
             ->whereIn('student_id', $studentIds)
             ->orderBy('created_at')
             ->orderBy('id')
@@ -132,7 +131,7 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
             ->map(fn ($group) => $group->pluck('id'));
 
         $violations->transform(function ($violation) use ($minorsByStudent) {
-            $violation->minor_offense_number = $violation->classification_snapshot === 'Minor'
+            $violation->minor_offense_number = $violation->classification === 'Minor'
                 ? ($minorsByStudent[$violation->student_id]->search($violation->id) + 1)
                 : null;
 

@@ -8,7 +8,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
-new #[Layout('layouts::auth', ['heading' => 'Register'])] class extends Component
+new #[Layout('layouts::auth', ['heading' => 'Student Registration'])] class extends Component
 {
     #[Validate('required|string')]
     public string $username = '';
@@ -19,14 +19,10 @@ new #[Layout('layouts::auth', ['heading' => 'Register'])] class extends Componen
     #[Validate('required|string')]
     public string $password_confirmation = '';
 
-    // Resolved from Student model after validation
-    public ?string $resolvedName = null;
-
     public function register()
     {
         $this->validate();
 
-        // Check if student ID exists in the student DB
         $student = Student::select('studentid', 'studentid', 'rfidtag', 'firstname', 'lastname')
             ->where('studentid', $this->username)
             ->first();

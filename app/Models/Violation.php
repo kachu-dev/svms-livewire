@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -17,13 +19,18 @@ class Violation extends Model
     protected $fillable = [
         'student_id',
         'student_name',
-        'violation_type_code_snapshot',
-        'violation_type_name_snapshot',
-        'violation_remark_snapshot',
-        'classification_snapshot',
+        'type_code',
+        'type_name',
+        'remark',
+        'classification',
         'is_escalated',
         'status',
         'recorded_by',
+        'st_first_name',
+        'st_last_name',
+        'st_program',
+        'st_year',
+        'st_mi',
     ];
 
     #[Scope]
@@ -31,21 +38,95 @@ class Violation extends Model
     {
         return $query->where(function ($q) use ($search) {
             $q->where('student_id', 'like', "%{$search}%")
-                ->orWhere('student_name', 'like', "%{$search}%")
-                ->orWhere('violation_type_code_snapshot', 'like', "%{$search}%")
-                ->orWhere('violation_type_name_snapshot', 'like', "%{$search}%")
-                ->orWhere('violation_remark_snapshot', 'like', "%{$search}%")
-                ->orWhere('classification_snapshot', 'like', "%{$search}%");
+                ->orWhere('st_last_name', 'like', "%{$search}%")
+                ->orWhere('st_first_name', 'like', "%{$search}%")
+                ->orWhere('st_mi', 'like', "%{$search}%")
+                ->orWhere('st_program', 'like', "%{$search}%")
+                ->orWhere('st_year', 'like', "%{$search}%")
+                ->orWhere('type_code', 'like', "%{$search}%")
+                ->orWhere('type_name', 'like', "%{$search}%")
+                ->orWhere('remark', 'like', "%{$search}%")
+                ->orWhere('status', 'like', "%{$search}%")
+                ->orWhere('classification', 'like', "%{$search}%");
         });
+    }
+
+    #[Scope]
+    protected function period($query, string $period = 'month', ?string $from = null, ?string $to = null)
+    {
+        if ($from && $to) {
+            return $query->whereBetween('created_at', [
+                Carbon::parse($from)->startOfDay(),
+                Carbon::parse($to)->endOfDay(),
+            ]);
+        }
+
+        if ($from) {
+            return $query->where('created_at', '>=', Carbon::parse($from)->startOfDay());
+        }
+
+        if ($to) {
+            return $query->where('created_at', '<=', Carbon::parse($to)->endOfDay());
+        }
+
+        return match ($period) {
+            'today' => $query->whereDate('created_at', today()),
+            'week' => $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]),
+            'month' => $query->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year),
+            'year' => $query->whereYear('created_at', now()->year),
+            default => $query,
+        };
+    }
+
+    #[Scope]
+    protected function total(Builder $query): int
+    {
+        return $query->count();
+    }
+
+    #[Scope]
+    protected function pending(Builder $query): int
+    {
+        return $query->where('status', '!=', 'Complete')->count();
+    }
+
+    #[Scope]
+    protected function resolved(Builder $query): int
+    {
+        return $query->where('status', 'Complete')->count();
+    }
+
+    #[Scope]
+    protected function minor(Builder $query): int
+    {
+        return $query->where('classification', 'Minor')->count();
+    }
+
+    #[Scope]
+    protected function majorSuspension(Builder $query): int
+    {
+        return $query->where('classification', 'Major - Suspension')->count();
+    }
+
+    #[Scope]
+    protected function majorDismissal(Builder $query): int
+    {
+        return $query->where('classification', 'Major - Dismissal')->count();
+    }
+
+    #[Scope]
+    protected function majorExpulsion(Builder $query): int
+    {
+        return $query->where('classification', 'Major - Expulsion')->count();
     }
 
     public function resolveOffenseKey(): string
     {
-        if ($this->classification_snapshot !== 'Minor') {
+        if ($this->classification !== 'Minor') {
             return match (true) {
-                str_contains($this->classification_snapshot, 'Suspension') => 'major_suspension',
-                str_contains($this->classification_snapshot, 'Dismissal') => 'major_dismissal',
-                str_contains($this->classification_snapshot, 'Expulsion') => 'major_expulsion',
+                str_contains($this->classification, 'Suspension') => 'major_suspension',
+                str_contains($this->classification, 'Dismissal') => 'major_dismissal',
+                str_contains($this->classification, 'Expulsion') => 'major_expulsion',
                 default => throw new UnexpectedValueException(
                     'Minor count exceeds expected escalation range'
                 ),
@@ -53,7 +134,7 @@ class Violation extends Model
         }
 
         $minorCount = static::where('student_id', $this->student_id)
-            ->where('classification_snapshot', 'Minor')
+            ->where('classification', 'Minor')
             ->where('created_at', '<=', $this->created_at)
             ->count();
 
