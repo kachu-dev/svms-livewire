@@ -23,7 +23,9 @@ class ViolationRecorded extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'NOTICE OF VIOLATIONS');
+        return new Envelope(
+            subject: 'NOTICE OF VIOLATIONS',
+        );
     }
 
     /**

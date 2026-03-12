@@ -14,25 +14,24 @@ return new class extends Migration
         Schema::create('violations', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('student_id')->index();
-            $table->string('student_name');
+            $table->string('st_first_name');
+            $table->string('st_last_name');
+            $table->string('st_mi')->nullable();
+            $table->string('st_program');
+            $table->string('st_year');
 
-            //drop these
-            /*$table->foreignId('violation_type_id')->nullable()->constrained()->nullOnDelete();
-            $table->unsignedBigInteger('original_violation_type_id')->nullable()->index();
-            $table->foreignId('violation_remark_id')->nullable()->constrained()->nullOnDelete();*/
-
-            $table->enum('classification_snapshot', [
+            $table->enum('classification', [
                 'Minor',
                 'Major - Suspension',
                 'Major - Dismissal',
                 'Major - Expulsion',
             ])->index();
 
-            $table->string('violation_type_code_snapshot');
-            $table->string('violation_type_name_snapshot');
-            $table->string('violation_remark_snapshot')->nullable();
+            $table->string('type_code');
+            $table->string('type_name');
+            $table->string('remark')->nullable();
 
-            //add new
+            // add new
             $table->boolean('is_escalated')->default(false)->index();
 
             $table->string('status')->default('pending');
@@ -45,8 +44,8 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
 
-            $table->index(['student_id', 'classification_snapshot']);
-           /* $table->index(['violation_type_code_snapshot', 'violation_type_name_snapshot']);*/
+            $table->index(['student_id', 'classification']);
+            $table->index(['type_code', 'type_name']);
             $table->index('created_at');
         });
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class Student extends Model
@@ -38,11 +39,19 @@ class Student extends Model
 
     public function getProgramAttribute(): ?string
     {
-        return $this->getProgram();
+        return once(fn () => Cache::remember(
+            "student:{$this->studentid}:program",
+            now()->addHours(1),
+            fn () => $this->getProgram()
+        ));
     }
 
     public function getYearAttribute(): ?int
     {
-        return $this->getYear();
+        return once(fn () => Cache::remember(
+            "student:{$this->studentid}:year",
+            now()->addHours(1),
+            fn () => $this->getYear()
+        ));
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Student;
-use App\Models\Violation;
 use App\Services\ViolationService;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Computed;
@@ -13,8 +12,11 @@ new class extends Component
     public ?int $studentId = null;
 
     public string $selectedTypeCode;
+
     public string $selectedTypeName;
+
     public string $selectedTypeClassification;
+
     public string $selectedTypeLabel;
 
     public ?string $selectedRemarkLabel = null;
@@ -25,7 +27,7 @@ new class extends Component
     public function student()
     {
         return $this->studentId
-            ? Student::select('studentid', 'firstname', 'lastname', 'mi')->find($this->studentId)
+            ? Student::find($this->studentId)
             : null;
     }
 
@@ -82,8 +84,7 @@ new class extends Component
             $student = $this->student;
 
             $service->create(
-                studentId: $this->studentId,
-                studentName: "{$student->lastname}, {$student->firstname} {$student->mi}.",
+                student: $student,
                 violationData: $this->resolvedData,
             );
 
@@ -95,8 +96,8 @@ new class extends Component
         } catch (Throwable $e) {
             Log::error('Violation save failed', [
                 'student_id' => $this->studentId,
-                'exception'  => $e->getMessage(),
-                'trace'      => $e->getTraceAsString(),
+                'exception' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             $this->dispatch('show-result', type: 'error',

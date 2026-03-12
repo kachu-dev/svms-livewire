@@ -2,8 +2,7 @@
     <flux:modal class="w-full max-w-md sm:max-w-96 md:max-w-3xl" name="confirm-violation">
         <div class="space-y-6">
             <div class="text-center">
-                <div
-                    class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
                     <flux:icon class="h-6 w-6 text-red-600 dark:text-red-400" name="exclamation-triangle" />
                 </div>
                 <flux:heading class="mt-4" size="lg">Confirm Violation Submission</flux:heading>
@@ -40,7 +39,6 @@
                     </flux:text>
                 </div>
 
-                {{-- ✅ CHANGED - now shows resolvedData values (escalated type if applicable) --}}
                 <div class="flex items-start justify-between border-b border-zinc-200 pb-2 dark:border-zinc-700">
                     <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">Violation Type</flux:text>
                     <flux:text class="max-w-xs text-right text-sm font-semibold text-zinc-900 dark:text-zinc-100">
@@ -48,7 +46,6 @@
                     </flux:text>
                 </div>
 
-                {{-- ✅ CHANGED - same here for remarks --}}
                 <div class="flex items-start justify-between">
                     <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">Remarks</flux:text>
                     <flux:text class="max-w-xs text-right text-sm font-semibold text-zinc-900 dark:text-zinc-100">
@@ -59,9 +56,7 @@
 
             <div class="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20">
                 <div class="flex gap-3">
-                    <flux:icon class="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600 dark:text-amber-400"
-                        name="information-circle"
-                    />
+                    <flux:icon class="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600 dark:text-amber-400" name="information-circle" />
                     <div>
                         <flux:text class="text-sm font-medium text-amber-800 dark:text-amber-200">
                             Are you sure you want to submit this violation?
@@ -92,25 +87,42 @@
         </div>
     </flux:modal>
 
-    {{-- duplicate-warning modal unchanged --}}
     <flux:modal class="w-full max-w-md sm:max-w-96" name="duplicate-warning">
         <div class="space-y-6">
-            <div>
-                <flux:heading size="lg">Duplicate Record</flux:heading>
-                <flux:subheading>
-                    This student has already been recorded for this violation today.
+
+            <div class="text-center">
+                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+                    <flux:icon class="h-7 w-7 text-red-600 dark:text-red-400" name="shield-exclamation" />
+                </div>
+                <flux:heading class="mt-4" size="lg">Duplicate Record Detected</flux:heading>
+                <flux:subheading class="mt-2">
+                    Proceed only if you are certain this is a separate incident.
                 </flux:subheading>
             </div>
 
-            <div class="flex gap-2">
-                <flux:spacer />
-                <flux:modal.close>
-                    <flux:button variant="ghost">Close</flux:button>
+            <div class="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+                <div class="flex gap-3">
+                    <flux:icon class="mt-0.5 h-5 w-5 shrink-0 text-red-600 dark:text-red-400" name="exclamation-triangle" />
+                    <div class="space-y-1">
+                        <flux:text class="text-sm font-semibold text-red-800 dark:text-red-200">
+                            This student has already been recorded for this violation today.
+                        </flux:text>
+                        <flux:text class="text-xs text-red-700 dark:text-red-300">
+                            Submitting a duplicate may result in an inaccurate disciplinary record. This action is logged and reviewable by administrators.
+                        </flux:text>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-3 pt-2">
+                <flux:modal.close class="flex-1">
+                    <flux:button class="w-full" variant="ghost">Cancel</flux:button>
                 </flux:modal.close>
-                <flux:button variant="primary" wire:click="saveOverride">
-                    Confirm
+                <flux:button class="flex-1" icon="exclamation-triangle" variant="danger" wire:click="saveOverride">
+                    Submit Anyway
                 </flux:button>
             </div>
+
         </div>
     </flux:modal>
 </div>

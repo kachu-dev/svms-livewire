@@ -1,47 +1,47 @@
 <div>
     <x-table-wrapper heading="Active Users">
-        <div class="flex flex-wrap items-center gap-2 p-6 pb-4 pt-4">
-            <div class="min-w-48 max-w-72 flex-1">
-                <flux:input
-                    icon="magnifying-glass"
-                    placeholder="Search users..."
-                    wire:model.live.debounce.500ms="search"
-                />
+        <x-slot:searches>
+            <div class="flex flex-wrap items-center gap-2 p-6 pb-4 pt-4">
+                <div class="min-w-48 max-w-72 flex-1">
+                    <flux:input
+                        icon="magnifying-glass"
+                        placeholder="Search users..."
+                        wire:model.live.debounce.500ms="search"
+                    />
+                </div>
+
+                <flux:separator vertical />
+
+                <div class="w-44">
+                    <flux:select placeholder="All Roles" wire:model.live="role">
+                        <flux:select.option value="">All Roles</flux:select.option>
+                        <flux:select.option value="guard">Guard</flux:select.option>
+                        <flux:select.option value="staff">Staff</flux:select.option>
+                    </flux:select>
+                </div>
+
+                <flux:separator vertical />
+
+                <div class="w-44">
+                    <flux:select placeholder="All Gates" wire:model.live="gate">
+                        <flux:select.option value="">All Gates</flux:select.option>
+                        @foreach ($this->gates as $gate)
+                            <flux:select.option value="{{ $gate }}">{{ $gate }}</flux:select.option>
+                        @endforeach
+                    </flux:select>
+                </div>
+
+                <flux:separator vertical />
+
+                <flux:button
+                    icon="x-mark"
+                    variant="ghost"
+                    wire:click="resetFilters"
+                >Clear Filters</flux:button>
+
+                <div class="flex-1"></div>
             </div>
-
-            <flux:separator vertical />
-
-            <div class="w-44">
-                <flux:select placeholder="All Roles" wire:model.live="role">
-                    <flux:select.option value="">All Roles</flux:select.option>
-                    <flux:select.option value="guard">Guard</flux:select.option>
-                    <flux:select.option value="staff">Staff</flux:select.option>
-                </flux:select>
-            </div>
-
-            <flux:separator vertical />
-
-            <div class="w-44">
-                <flux:select placeholder="All Gates" wire:model.live="gate">
-                    <flux:select.option value="">All Gates</flux:select.option>
-                    @foreach ($this->gates as $gate)
-                        <flux:select.option value="{{ $gate }}">{{ $gate }}</flux:select.option>
-                    @endforeach
-                </flux:select>
-            </div>
-
-            <flux:separator vertical />
-
-            <flux:button
-                icon="x-mark"
-                variant="ghost"
-                wire:click="resetFilters"
-            >Clear Filters</flux:button>
-
-            <div class="flex-1"></div>
-        </div>
-
-        <flux:separator />
+        </x-slot:searches>
 
         <div class="p-6 pt-0">
             <flux:table :paginate="$this->users">

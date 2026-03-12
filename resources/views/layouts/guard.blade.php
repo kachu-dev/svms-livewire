@@ -5,7 +5,7 @@
         @include('partials.head')
     </head>
 
-    <body class="min-h-screen bg-zinc-50 antialiased dark:bg-zinc-800">
+    <body class="min-h-screen bg-zinc-100 antialiased dark:bg-zinc-800">
         <flux:sidebar
             class="border-r border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
             collapsible
@@ -40,10 +40,6 @@
                 />
             </flux:sidebar.nav>
             <flux:sidebar.spacer />
-            <flux:sidebar.nav>
-                <flux:sidebar.item href="#" icon="cog-6-tooth">Settings</flux:sidebar.item>
-                <flux:sidebar.item href="#" icon="information-circle">Help</flux:sidebar.item>
-            </flux:sidebar.nav>
             <flux:dropdown
                 align="start"
                 class="max-lg:hidden"
@@ -98,7 +94,7 @@
                 <div class="flex items-center gap-2">
                     <span class="text-xl" id="current-date"></span>
                     <flux:separator vertical />
-                    <span class="text-xl" id="current-time"></span>
+                    <span class="text-xl tabular-nums" id="current-time"></span>
                 </div>
             </flux:navbar>
         </flux:header>

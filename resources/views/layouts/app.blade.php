@@ -5,9 +5,9 @@
         @include('partials.head')
     </head>
 
-    <body class="min-h-screen bg-zinc-200 antialiased dark:bg-zinc-800">
+    <body class="min-h-screen bg-zinc-100 antialiased dark:bg-zinc-800">
         <flux:sidebar
-            class="dark border-r border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
+            class="border-r border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
             collapsible
             sticky
         >
@@ -45,7 +45,10 @@
                         Deleted Violations
                     </flux:sidebar.item>
                     <flux:sidebar.item href="{{ route('staff.violations.requests') }}" wire:navigate>
-                        Request Deletes
+                        Delete Requests
+                    </flux:sidebar.item>
+                    <flux:sidebar.item href="{{ route('staff.dashboard') }}" wire:navigate>
+                        Dashboard
                     </flux:sidebar.item>
                 </flux:sidebar.group>
 
@@ -111,7 +114,7 @@
             </flux:dropdown>
         </flux:sidebar>
 
-        <flux:header class="block! dark border-b border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
+        <flux:header class="block! border-b border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
             <flux:navbar class="w-full lg:hidden">
                 <flux:sidebar.toggle
                     class="lg:hidden"
@@ -144,7 +147,7 @@
                 <div class="flex items-center gap-2">
                     <flux:text class="text-xl" id="current-date"></flux:text>
                     <flux:separator vertical />
-                    <flux:text class="text-xl" id="current-time"></flux:text>
+                    <flux:text class="text-xl tabular-nums" id="current-time"></flux:text>
                 </div>
             </flux:navbar>
         </flux:header>

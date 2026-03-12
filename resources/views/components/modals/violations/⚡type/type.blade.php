@@ -1,4 +1,8 @@
-<flux:modal @close="clearSearch" class="w-full max-w-lg sm:max-w-96 md:max-w-3xl" name="set-violation">
+<flux:modal
+    @close="clearSearch"
+    class="w-full max-w-lg sm:max-w-96 md:max-w-3xl"
+    name="set-violation"
+>
     <div class="space-y-6">
         <div>
             <flux:heading size="xl">Choose Violation Type</flux:heading>

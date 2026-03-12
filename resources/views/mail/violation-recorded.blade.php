@@ -5,18 +5,26 @@
 
         <p>Greetings of Peace!</p>
 
-        <p>Dear {{ $violation->student_name }},</p>
+        <p>Dear {{ $violation->st_first_name }} {{ $violation->mi ? $violation->mi . '.' : '' }}
+            {{ $violation->st_last_name }},</p>
 
         <p>
             This is to inform you that you have been recorded for
-            a <strong>({{ $violation->violation_type_code_snapshot }} {{ $violation->violation_type_name_snapshot }})</strong>
+            a <strong>({{ $violation->type_code }} {{ $violation->type_name }})</strong>
             under the AdZU policy
-            on {{ $violation->created_at->format('F d, Y') }}.
+            on {{ $violation->created_at->format('F d, Y h:i A') }}
         </p>
 
-        @if (!empty($violation->violation_remark_snapshot) && $violation->violation_remark_snapshot !== 'N/A')
+        @if ($violation->remark)
             <p>
-                <strong>Details:</strong> {{ $violation->violation_remark_snapshot }}
+                <strong>Remarks:</strong> {{ $violation->remark }}
+            </p>
+        @endif
+
+        @if ($violation->is_escalated)
+            <p>
+                <strong>Note:</strong> This violation is has been escalated to a <strong>Major Offense</strong> and
+                requires immediate attention.
             </p>
         @endif
 
@@ -30,7 +38,7 @@
         </p>
 
         <p>
-            Should you have questions, you may reach us through local no. 2204-2205 or visit me in the Office of Student
+            Should you have questions, you may reach us through local no. 2204-2205 or visit the Office of Student
             Affairs.
         </p>
 

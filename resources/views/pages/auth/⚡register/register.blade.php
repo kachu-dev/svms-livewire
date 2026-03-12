@@ -29,13 +29,7 @@
         >Create Account</flux:button>
     </form>
 
-    <flux:button
-        class="w-full"
-        href="{{ route('login') }}"
-        variant="ghost"
-        wire:navigate
-    >
-        Already have an account? Log in
-    </flux:button>
-
+    <flux:text class="mt-2 text-center">Already have a student account?
+        <flux:link href="{{ route('login') }}" wire:navigate>Login</flux:link>
+    </flux:text>
 </div>

@@ -15,8 +15,8 @@ class ViolationStageTemplateSeeder extends Seeder
         $stages = [
             'minor_1' => ['Oral Reprimand'],
             'minor_2' => ['Written Reprimand', 'Response', '3 Hours Community Service'],
-            'minor_3' => ['2 Days Suspension'],
-            'major_suspension' => ['Step 1', 'Step 2', 'Step 3', 'Step 4'],
+            'minor_3' => ['Start 2 Days Suspension', 'Finished 2 Days Suspension'],
+            'major_suspension' => ['Step 1', 'Step 2', 'Step 3'],
             'major_dismissal' => ['Step 1', 'Step 2'],
             'major_expulsion' => ['Step 1', 'Step 2'],
         ];

@@ -2,6 +2,7 @@
 
 use App\Models\Violation;
 use App\Models\ViolationStages;
+use App\Services\ViolationService;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -14,6 +15,8 @@ new #[Layout('layouts::app', ['title' => 'Status Management'])] class extends Co
     public Violation $violation;
 
     public ViolationStages $stage;
+
+    protected ViolationService $violationService;
 
     public $remarks;
 
@@ -29,7 +32,10 @@ new #[Layout('layouts::app', ['title' => 'Status Management'])] class extends Co
         $this->remarks = $this->stage->remark;
     }
 
-    // ─── Drag-and-drop reorder ────────────────────────────────────────────────
+    public function boot(ViolationService $violationService): void
+    {
+        $this->violationService = $violationService;
+    }
 
     public function handleSort(int $id, int $position): void
     {
@@ -61,66 +67,22 @@ new #[Layout('layouts::app', ['title' => 'Status Management'])] class extends Co
         Toaster::success('Stage order updated.');
     }
 
-    // ─── Toggle complete via sidebar checkbox ─────────────────────────────────
-
     public function toggleStage(int $stageId): void
     {
-        $stages = $this->violation->stages()->orderBy('order')->get();
-        $stage = $stages->firstWhere('id', $stageId);
-        $index = $stages->search(fn ($s) => $s->id === $stageId);
+        $result = $this->violationService->toggleStage($this->violation, $stageId);
 
-        if (! $stage->is_complete) {
-            $prev = $stages[$index - 1] ?? null;
-            if ($prev && ! $prev->is_complete) {
-                Toaster::warning('Complete the previous stage first.');
+        match ($result) {
+            'previous_incomplete' => Toaster::warning('Complete the previous stage first.'),
+            'next_complete' => Toaster::warning('Undo the next stage first.'),
+            'completed' => Toaster::success('Stage marked as completed.'),
+            'incomplete' => Toaster::success('Stage marked as incomplete.'),
+        };
 
-                return;
-            }
-        } else {
-            $next = $stages[$index + 1] ?? null;
-            if ($next && $next->is_complete) {
-                Toaster::warning('Undo the next stage first.');
-
-                return;
-            }
-        }
-
-        $stage->is_complete = ! $stage->is_complete;
-        $stage->completed_at = $stage->is_complete ? now() : null;
-        $stage->save();
-
-        if ($stage->id === $this->stage->id) {
-            $this->stage->is_complete = $stage->is_complete;
-            $this->stage->completed_at = $stage->completed_at;
-        }
-
+        // Sync local stage state
+        $this->stage->refresh();
         $this->violation->unsetRelation('stages');
         $this->violation->load('stages');
-
-        $this->updateViolationStatus($stage);
-
-        $status = $stage->is_complete ? 'completed' : 'incomplete';
-        Toaster::success("Stage marked as {$status}.");
     }
-
-    public function updateViolationStatus(ViolationStages $stage): void
-    {
-        $stages = $this->violation->stages()->orderBy('order')->get();
-        $isLastStage = $stages->last()->id === $stage->id;
-
-        if ($stage->is_complete && $isLastStage) {
-            $this->violation->status = 'Complete';
-        } elseif (! $stage->is_complete) {
-            $this->violation->status = $stage->name;
-        } else {
-            $nextStage = $stages->where('order', '>', $stage->order)->first();
-            $this->violation->status = $nextStage?->name ?? $stage->name;
-        }
-
-        $this->violation->save();
-    }
-
-    // ─── Edit stage details ───────────────────────────────────────────────────
 
     public function confirm(): void
     {
@@ -148,7 +110,7 @@ new #[Layout('layouts::app', ['title' => 'Status Management'])] class extends Co
 
             $this->reset('attachment');
             $this->resetValidation();
-            $this->modal('edit-status')->close();
+            $this->modal('edit-stage')->close();
 
             Toaster::success('Stage details updated successfully!');
         } catch (Exception) {

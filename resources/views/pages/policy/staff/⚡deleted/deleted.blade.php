@@ -1,38 +1,38 @@
 <div>
     <x-table-wrapper heading="Deactivated Policies">
-        <div class="flex flex-wrap items-center gap-2 p-6 pb-4 pt-4">
-            <div class="min-w-48 max-w-72 flex-1">
-                <flux:input
-                    icon="magnifying-glass"
-                    placeholder="Search by Code or name..."
-                    wire:model.live.debounce.500ms="search"
-                />
+        <x-slot:searches>
+            <div class="flex flex-wrap items-center gap-2 p-6 pb-4 pt-4">
+                <div class="min-w-48 max-w-72 flex-1">
+                    <flux:input
+                        icon="magnifying-glass"
+                        placeholder="Search by Code or name..."
+                        wire:model.live.debounce.500ms="search"
+                    />
+                </div>
+
+                <flux:separator vertical />
+
+                <div class="w-44">
+                    <flux:select placeholder="All Classifications" wire:model.live="classification">
+                        <flux:select.option value="">All Classifications</flux:select.option>
+                        <flux:select.option>Minor</flux:select.option>
+                        <flux:select.option>Major - Suspension</flux:select.option>
+                        <flux:select.option>Major - Dismissal</flux:select.option>
+                        <flux:select.option>Major - Expulsion</flux:select.option>
+                    </flux:select>
+                </div>
+
+                <flux:separator vertical />
+
+                <flux:button
+                    icon="x-mark"
+                    variant="ghost"
+                    wire:click="resetFilters"
+                >Clear Filters</flux:button>
+
+                <div class="flex-1"></div>
             </div>
-
-            <flux:separator vertical />
-
-            <div class="w-44">
-                <flux:select placeholder="All Classifications" wire:model.live="classification">
-                    <flux:select.option value="">All Classifications</flux:select.option>
-                    <flux:select.option>Minor</flux:select.option>
-                    <flux:select.option>Major - Suspension</flux:select.option>
-                    <flux:select.option>Major - Dismissal</flux:select.option>
-                    <flux:select.option>Major - Expulsion</flux:select.option>
-                </flux:select>
-            </div>
-
-            <flux:separator vertical />
-
-            <flux:button
-                icon="x-mark"
-                variant="ghost"
-                wire:click="resetFilters"
-            >Clear Filters</flux:button>
-
-            <div class="flex-1"></div>
-        </div>
-
-        <flux:separator />
+        </x-slot:searches>
 
         <div class="p-6 pt-0">
             <flux:table :paginate="$this->policies">

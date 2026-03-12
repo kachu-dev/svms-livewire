@@ -111,6 +111,7 @@ $classes = Flux::classes()
     ->add(match ($variant) { // Border color...
         'primary' => 'border border-black/10 dark:border-0',
         'outline' => 'border border-zinc-200 hover:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600',
+        'filled' => 'border border-zinc-200 hover:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600',
          default => '',
     })
     ->add(match ($variant) { // Shadows...

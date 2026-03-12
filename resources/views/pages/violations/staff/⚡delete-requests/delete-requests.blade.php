@@ -1,6 +1,7 @@
 <div>
     <x-table-wrapper heading="Request Management">
-        <div class="flex flex-col items-center justify-center gap-2 p-6 pb-4 pt-4">
+        <div
+            class="{{ $this->requests->isEmpty() ? 'items-center justify-center' : '' }} flex min-h-[46rem] flex-col gap-2 p-6 pb-4 pt-4">
             @forelse ($this->requests as $request)
                 <flux:card
                     @click="open = !open"
@@ -18,16 +19,17 @@
                                 >
                                     {{ $request->violation->student_id }}
                                 </flux:link>
-                                {{ $request->violation->student_name }}
+                                {{ $request->violation->st_last_name }}, {{ $request->violation->st_first_name }}
+                                {{ $request->violation->st_mi }}.
                             </flux:heading>
 
                             <flux:text>
-                                {{ $request->violation->violation_type_code_snapshot }}
+                                {{ $request->violation->type_code }}
                                 —
-                                {{ $request->violation->violation_type_name_snapshot }}
+                                {{ $request->violation->type_name }}
                             </flux:text>
                         </div>
-                        <flux:text>{{ $request->created_at->format('m/d/y g:i A') }}</flux:text>
+                        <flux:text>{{ $request->created_at->format('M j, Y - h:i A') }}</flux:text>
                     </div>
 
                     {{-- Expanded Content --}}
@@ -37,7 +39,7 @@
                         <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
                             <flux:callout class="flex flex-col text-center" color="green">
                                 <flux:heading>Current</flux:heading>
-                                <flux:text>{{ $request->violation->violation_type_name_snapshot }}</flux:text>
+                                <flux:text>{{ $request->violation->type_name }}</flux:text>
                             </flux:callout>
                             <flux:icon name="arrow-long-right" />
                             <flux:callout class="flex flex-col text-center" color="red">
@@ -71,6 +73,7 @@
                             </flux:button>
                             <flux:button
                                 @click.stop="$dispatch('reject-delete', { violationRequestId: {{ $request->id }} });"
+                                icon="x-mark"
                                 variant="danger"
                             >
                                 Reject
@@ -79,7 +82,7 @@
                     </div>
                 </flux:card>
             @empty
-                <div class="flex flex-col items-center gap-3 p-32 text-center">
+                <div class="flex flex-col items-center gap-3 text-center">
                     <flux:icon class="h-12 w-12 text-gray-400" name="check-circle" />
                     <flux:heading size="xl">No pending requests</flux:heading>
                     <flux:text class="text-xl">All delete requests have been reviewed</flux:text>
