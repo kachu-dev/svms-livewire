@@ -1,28 +1,34 @@
 <?php
 
 use App\Models\User;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Masmerise\Toaster\Toaster;
 
 new class extends Component
 {
-    #[Validate('required|string')]
     public string $name = '';
 
-    #[Validate('required|string|unique:users,username')]
     public string $username = '';
 
-    #[Validate('required|string')]
     public string $role = '';
 
     public ?int $assigned_gate = null;
 
-    #[Validate('required|string|min:8|confirmed')]
     public string $password = '';
 
-    #[Validate('required')]
     public string $password_confirmation = '';
+
+    protected function rules(): array
+    {
+        return [
+            'name' => 'required|string',
+            'username' => 'required|string|unique:users,username',
+            'role' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+            'password_confirmation' => 'required',
+            'assigned_gate' => $this->role === 'assigned_guard' ? 'required|integer' : 'nullable|integer',
+        ];
+    }
 
     public function submit(): void
     {

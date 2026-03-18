@@ -36,8 +36,10 @@ Route::middleware(['auth', 'can:access-staff-area'])
             Route::livewire('/complete', 'pages::violations.staff.complete')->name('complete');
             Route::livewire('/create', 'pages::violations.staff.create')->name('create');
             Route::livewire('/deleted', 'pages::violations.staff.deleted')->name('deleted');
-            Route::livewire('/delete-requests', 'pages::violations.staff.delete-requests')->name('requests');
-            Route::livewire('/{violation}/stage/{stage}', 'pages::violations.staff.detail')->name('detail');
+            Route::livewire('/delete-requests', 'pages::violations.staff.delete-requests')->name('delete-requests');
+            Route::livewire('/update-requests', 'pages::violations.staff.update-requests')->name('update-requests');
+            Route::livewire('/{violation}/stage/{stage?}', 'pages::violations.staff.detail')->name('detail');
+            Route::livewire('/{violation}/stage', 'pages::violations.staff.detail')->name('detail.no-stage');
         });
 
         // Student profile
@@ -48,6 +50,7 @@ Route::middleware(['auth', 'can:access-staff-area'])
         Route::prefix('policy')->name('policy.')->group(function () {
             Route::livewire('/', 'pages::policy.staff.index')->name('index');
             Route::livewire('/deactivated', 'pages::policy.staff.deleted')->name('deleted');
+            Route::livewire('/template', 'pages::policy.staff.template')->name('template');
         });
 
         // User management
@@ -57,6 +60,8 @@ Route::middleware(['auth', 'can:access-staff-area'])
         });
 
         Route::livewire('/dashboard', 'pages::dashboard')->name('dashboard');
+        Route::livewire('/dashboard2', 'pages::dashboard2')->name('dashboard2');
+        Route::livewire('/logs', 'pages::logs')->name('logs');
     });
 
 // Guard area routes
@@ -67,6 +72,7 @@ Route::middleware(['auth', 'can:access-guard-area'])
         Route::prefix('violations')->name('violations.')->group(function () {
             Route::livewire('/create', 'pages::violations.guard.create')->name('create');
             Route::livewire('/recent', 'pages::violations.guard.recent')->name('recent');
+            Route::livewire('/requests', 'pages::violations.guard.requests')->name('requests');
         });
     });
 
@@ -96,4 +102,6 @@ Route::post('/email/verification-notification', function (Request $request) {
     return back()->with('message', 'Verification link sent!');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
-Route::livewire('/test', 'pages::test');
+
+/*Route::livewire('/test', 'pages::test');
+Route::livewire('/table', 'pages::tabletest');*/

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\ViolationType;
+use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
@@ -12,26 +13,25 @@ new #[Layout('layouts::app', ['title' => 'Policy Management'])] class extends Co
 {
     use WithoutUrlPagination, WithPagination;
 
-    public $search = '';
+    public string $sortBy = 'code';
 
-    public $classification;
+    public string $sortDirection = 'asc';
 
-    #[Computed]
-    public function policies()
+    public string $search = '';
+
+    public ?string $classification = null;
+
+    public function sort(string $column): void
     {
-        return ViolationType::query()
-            ->when($this->search, fn ($q) => $q->search($this->search))
-            ->when($this->classification, fn ($q) => $q->where('classification', $this->classification))
-            ->paginate(11);
+        if ($this->sortBy === $column) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $column;
+            $this->sortDirection = 'asc';
+        }
     }
 
-    public function delete($policyId): void
-    {
-        $policy = ViolationType::findOrFail($policyId);
-        $policy->delete();
-    }
-
-    public function updating($property, $value): void
+    public function updating(string $property): void
     {
         if (in_array($property, ['search', 'classification'])) {
             $this->resetPage();
@@ -41,6 +41,27 @@ new #[Layout('layouts::app', ['title' => 'Policy Management'])] class extends Co
     public function resetFilters(): void
     {
         $this->reset(['search', 'classification']);
+        $this->resetPage();
+    }
+
+    private function baseQuery(): Builder
+    {
+        return ViolationType::query()
+            ->when($this->search, fn (Builder $q) => $q->search($this->search))
+            ->when($this->classification, fn (Builder $q) => $q->where('classification', $this->classification));
+    }
+
+    #[Computed]
+    public function policies()
+    {
+        return $this->baseQuery()
+            ->orderBy($this->sortBy, $this->sortDirection)
+            ->paginate(12);
+    }
+
+    public function delete(int $policyId): void
+    {
+        ViolationType::findOrFail($policyId)->delete();
     }
 
     #[On('refresh-policy')]

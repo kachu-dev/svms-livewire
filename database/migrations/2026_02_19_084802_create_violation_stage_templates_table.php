@@ -17,8 +17,6 @@ return new class extends Migration
             $table->unsignedTinyInteger('order');
             $table->string('name');
             $table->timestamps();
-
-            $table->unique(['offense_key', 'order']);
         });
     }
 

@@ -18,21 +18,30 @@ new #[Layout('layouts::app', ['title' => 'Student Profile'])] class extends Comp
 {
     use WithoutUrlPagination, WithPagination;
 
-    public $sortBy = 'created_at';
+    public string $sortBy = 'created_at';
 
-    public $sortDirection = 'desc';
+    public string $sortDirection = 'desc';
 
-    public $search = '';
+    public string $search = '';
 
-    public $classification;
+    public ?string $classification = null;
 
-    public $dateFrom;
+    public ?string $dateFrom = null;
 
-    public $dateTo;
+    public ?string $dateTo = null;
 
-    public $studentId;
+    public int|string $studentId;
 
-    public function sort($column): void
+    public function mount(int|string $studentId): void
+    {
+        $this->studentId = $studentId;
+
+        if (! Student::where('studentid', $studentId)->exists()) {
+            abort(404);
+        }
+    }
+
+    public function sort(string $column): void
     {
         if ($this->sortBy === $column) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
@@ -42,10 +51,51 @@ new #[Layout('layouts::app', ['title' => 'Student Profile'])] class extends Comp
         }
     }
 
+    public function updating(string $property): void
+    {
+        if (in_array($property, ['search', 'classification', 'dateFrom', 'dateTo'])) {
+            $this->resetPage();
+        }
+    }
+
+    public function resetFilters(): void
+    {
+        $this->reset(['search', 'classification', 'dateFrom', 'dateTo']);
+        $this->resetPage();
+    }
+
+    #[Computed]
+    public function student()
+    {
+        $student = Student::select('studentid', 'firstname', 'lastname', 'grouptag')
+            ->find($this->studentId);
+
+        if ($student) {
+            $student->photo = Cache::remember(
+                "student:{$student->studentid}:photo",
+                now()->addHours(6),
+                function () use ($student): ?string {
+                    $binary = DB::connection('imagedb')
+                        ->table('pictures')
+                        ->where('idnumber', $student->studentid)
+                        ->where('idgroup', $student->grouptag)
+                        ->value('idpicture');
+
+                    return $binary
+                        ? 'data:image/jpeg;base64,'.base64_encode($binary)
+                        : null;
+                }
+            );
+        }
+
+        return $student;
+    }
+
     #[Computed]
     public function violations()
     {
         $violations = Violation::with(['stages', 'student', 'recordedBy'])
+            ->where('is_active', true)
             ->when($this->search, fn ($q) => $q->search($this->search))
             ->when($this->classification, fn ($q) => $q->where('classification', $this->classification))
             ->when($this->dateFrom, fn ($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
@@ -54,9 +104,9 @@ new #[Layout('layouts::app', ['title' => 'Student Profile'])] class extends Comp
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate(9);
 
-        // One query for all minor IDs instead of one per violation
         $allMinors = Violation::where('student_id', $this->studentId)
             ->where('classification', 'Minor')
+            ->where('is_active', true)
             ->orderBy('created_at')
             ->orderBy('id')
             ->pluck('id');
@@ -77,77 +127,21 @@ new #[Layout('layouts::app', ['title' => 'Student Profile'])] class extends Comp
     {
         return Violation::distinct()
             ->where('student_id', $this->studentId)
+            ->where('is_active', true)
             ->pluck('classification')
             ->sortDesc();
     }
 
-    public function resetFilters(): void
+    public function delete(int $violationId): void
     {
-        $this->reset(['search', 'classification', 'dateFrom', 'dateTo']);
+        Violation::findOrFail($violationId)->delete();
     }
-
-    public function delete($violationId): void
-    {
-        $violation = Violation::findOrFail($violationId);
-        $violation->delete();
-    }
-
-    public function updating($property, $value): void
-    {
-        if (in_array($property, ['search', 'classification', 'dateFrom', 'dateTo'])) {
-            $this->resetPage();
-        }
-    }
-
-    #[Computed]
-    public function student()
-    {
-        if (! $this->studentId) {
-            return null;
-        }
-
-        $student = Student::select('studentid', 'firstname', 'lastname', 'grouptag')
-            ->find($this->studentId);
-
-        if ($student) {
-            $student->photo = Cache::remember(
-                "student:{$student->studentid}:photo",
-                now()->addHours(6),
-                function () use ($student): ?string {
-                    $binary = DB::connection('imagedb')
-                        ->table('pictures')
-                        ->where('idnumber', $student->studentid)
-                        ->where('idgroup', $student->grouptag)
-                        ->value('idpicture');
-
-                    if (! $binary) {
-                        return null;
-                    }
-
-                    return 'data:image/jpeg;base64,'.base64_encode($binary);
-                }
-            );
-        }
-
-        return $student;
-    }
-
-    public function mount($studentId): void
-    {
-        $this->studentId = $studentId;
-
-        if (! Student::where('studentid', $studentId)->exists()) {
-            abort(404);
-        }
-    }
-
-    #[On('refresh-violation')]
-    public function refreshTable(): void {}
 
     public function exportExcel()
     {
         $violations = Violation::with('stages')
             ->when($this->search, fn ($q) => $q->search($this->search))
+            ->where('is_active', true)
             ->when($this->classification, fn ($q) => $q->where('classification', $this->classification))
             ->when($this->dateFrom, fn ($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
             ->when($this->dateTo, fn ($q) => $q->whereDate('created_at', '<=', $this->dateTo))
@@ -182,4 +176,7 @@ new #[Layout('layouts::app', ['title' => 'Student Profile'])] class extends Comp
             $this->student->studentid.'-violations-'.date('Y-m-d').'.xlsx'
         );
     }
+
+    #[On('refresh-violation')]
+    public function refreshTable(): void {}
 };

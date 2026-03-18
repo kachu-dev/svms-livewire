@@ -86,8 +86,8 @@
             default => 'text-base sm:text-sm py-2 h-10 leading-[1.375rem]', // This makes the height of the input 40px (same as buttons and such...)
             'sm' => 'text-sm py-1.5 h-8 leading-[1.125rem]',
             'xs' => 'text-xs py-1.5 h-6 leading-[1.125rem]',
-            'accessible' => 'text-lg py-3 h-14 leading-[1.75rem]',
-        })
+            'accessible' => 'text-lg py-3 h-12 leading-[1.75rem]',
+'guard' => 'text-2xl py-5 h-20 leading-[2rem] rounded-2xl font-semibold tracking-wide border-2 border-zinc-400 border-b-zinc-500 placeholder-zinc-500 focus:ring-4 focus:ring-offset-2 focus:outline-none focus:ring-blue-500 focus:border-blue-600',            })
         ->add(match ($hasLeadingIcon) {
             true => 'ps-10',
             false => 'ps-3',

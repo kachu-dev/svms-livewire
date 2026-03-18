@@ -31,7 +31,6 @@ return new class extends Migration
             $table->string('type_name');
             $table->string('remark')->nullable();
 
-            // add new
             $table->boolean('is_escalated')->default(false)->index();
 
             $table->string('status')->default('pending');
@@ -47,6 +46,14 @@ return new class extends Migration
             $table->index(['student_id', 'classification']);
             $table->index(['type_code', 'type_name']);
             $table->index('created_at');
+            $table->index(['status', 'classification', 'deleted_at']);
+            $table->index(['classification', 'student_id', 'created_at', 'id']);
+            $table->index([
+                'status',
+                'school_year',
+                'is_active',
+                'deleted_at',
+            ]);
         });
     }
 

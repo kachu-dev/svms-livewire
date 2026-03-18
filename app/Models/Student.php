@@ -41,7 +41,7 @@ class Student extends Model
     {
         return once(fn () => Cache::remember(
             "student:{$this->studentid}:program",
-            now()->addHours(1),
+            now()->addHours(6),
             fn () => $this->getProgram()
         ));
     }
@@ -50,7 +50,7 @@ class Student extends Model
     {
         return once(fn () => Cache::remember(
             "student:{$this->studentid}:year",
-            now()->addHours(1),
+            now()->addHours(6),
             fn () => $this->getYear()
         ));
     }

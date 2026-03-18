@@ -1,11 +1,10 @@
-<div class="grid h-full grid-cols-2 grid-rows-2 gap-4">
-    <div class="row-span-2 flex flex-col gap-4">
-        <livewire:violations.search-student />
-
-        <livewire:violations.submit-violation />
+<div class="grid h-full grid-cols-2 gap-6">
+    <div class="flex flex-col gap-6">
+        <livewire:violations.search-student size="guard" />
+        <livewire:violations.submit-violation size="guard" />
     </div>
 
-    <div class="row-span-2">
+    <div class="flex flex-col">
         <livewire:violations.display-student />
     </div>
 

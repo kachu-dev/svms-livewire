@@ -45,9 +45,10 @@
     @apply  mb-0! leading-tight!;
 }
 
-input:focus[data-flux-control],
-textarea:focus[data-flux-control],
-select:focus[data-flux-control] {
-    @apply outline-hidden ring-2 ring-accent;
+:root {
+    --tick-color: #64748b;
 }
 
+.dark {
+    --tick-color: #94a3b8;
+}

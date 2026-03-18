@@ -1,100 +1,180 @@
 <div>
-    <x-table-wrapper heading="Request Management">
+    <x-table-wrapper heading="Delete Request Management">
         <div
-            class="{{ $this->requests->isEmpty() ? 'items-center justify-center' : '' }} flex min-h-[46rem] flex-col gap-2 p-6 pb-4 pt-4">
-            @forelse ($this->requests as $request)
-                <flux:card
-                    @click="open = !open"
-                    class="w-full"
-                    wire:key="request-{{ $request->id }}"
-                    x-data="{ open: false }"
+            class="flex flex-wrap items-center gap-2 border-zinc-200 bg-zinc-100 p-4 dark:border-white/10 dark:bg-white/5">
+            <div class="min-w-48 max-w-72 flex-1">
+                <flux:input
+                    icon="magnifying-glass"
+                    placeholder="Search requests..."
+                    wire:model.live.debounce.500ms="search"
+                />
+            </div>
+
+            <flux:separator vertical />
+
+            <flux:button
+                icon="x-mark"
+                variant="ghost"
+                wire:click="resetFilters"
+            >
+                Clear Filters
+            </flux:button>
+
+            <div class="flex-1"></div>
+
+            @if ($this->requests->isNotEmpty())
+                <span
+                    class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-500/15 dark:text-amber-400"
                 >
-                    {{-- Collapsed Header --}}
-                    <div class="flex items-center justify-between gap-4">
-                        <div class="flex flex-col gap-1">
-                            <flux:heading size="lg">
-                                <flux:link
-                                    href="{{ route('staff.violations.student', $request->violation->student_id) }}"
-                                    wire:navigate
-                                >
-                                    {{ $request->violation->student_id }}
-                                </flux:link>
-                                {{ $request->violation->st_last_name }}, {{ $request->violation->st_first_name }}
-                                {{ $request->violation->st_mi }}.
-                            </flux:heading>
-
-                            <flux:text>
-                                {{ $request->violation->type_code }}
-                                —
-                                {{ $request->violation->type_name }}
-                            </flux:text>
-                        </div>
-                        <flux:text>{{ $request->created_at->format('M j, Y - h:i A') }}</flux:text>
-                    </div>
-
-                    {{-- Expanded Content --}}
-                    <div x-show="open">
-                        <flux:separator class="my-4" />
-
-                        <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-                            <flux:callout class="flex flex-col text-center" color="green">
-                                <flux:heading>Current</flux:heading>
-                                <flux:text>{{ $request->violation->type_name }}</flux:text>
-                            </flux:callout>
-                            <flux:icon name="arrow-long-right" />
-                            <flux:callout class="flex flex-col text-center" color="red">
-                                <flux:heading>Requested</flux:heading>
-                                <flux:text>Delete</flux:text>
-                            </flux:callout>
-                        </div>
-
-                        <div class="mt-4">
-                            <flux:heading size="lg">Reason</flux:heading>
-                            <flux:text>{{ $request->reason }}</flux:text>
-                        </div>
-
-                        <div class="mb-4 mt-4">
-                            <flux:heading size="lg">Requested By:</flux:heading>
-                            <flux:text>{{ $request->requestedBy->name }}</flux:text>
-                        </div>
-
-                        <flux:separator />
-
-                        <div class="mt-4 grid grid-cols-2 gap-3">
-                            <flux:button
-                                @click="$dispatch('approve-delete', {
-                                    violationId: {{ $request->violation->id }},
-                                    violationRequestId: {{ $request->id }},
-                                });"
-                                icon="arrow-path"
-                                variant="primary"
-                            >
-                                Approve
-                            </flux:button>
-                            <flux:button
-                                @click.stop="$dispatch('reject-delete', { violationRequestId: {{ $request->id }} });"
-                                icon="x-mark"
-                                variant="danger"
-                            >
-                                Reject
-                            </flux:button>
-                        </div>
-                    </div>
-                </flux:card>
-            @empty
-                <div class="flex flex-col items-center gap-3 text-center">
-                    <flux:icon class="h-12 w-12 text-gray-400" name="check-circle" />
-                    <flux:heading size="xl">No pending requests</flux:heading>
-                    <flux:text class="text-xl">All delete requests have been reviewed</flux:text>
-                </div>
-            @endforelse
+                    {{ $this->requests->count() }} pending
+                </span>
+            @endif
         </div>
+
+        <div>
+            <flux:table>
+                <flux:table.columns class="bg-blue-100 px-6 dark:bg-zinc-800">
+                    <flux:table.column class="p-0! px-4! w-10 border-r"><strong>ID</strong></flux:table.column>
+                    <flux:table.column class="w-52">Student</flux:table.column>
+                    <flux:table.column class="w-64">Violation</flux:table.column>
+                    <flux:table.column class="w-24">Action</flux:table.column>
+                    <flux:table.column>Reason</flux:table.column>
+                    <flux:table.column class="w-36">Requested by</flux:table.column>
+                    <flux:table.column class="w-36">Date</flux:table.column>
+                    <flux:table.column align="center" class="w-16">Actions</flux:table.column>
+                </flux:table.columns>
+
+                <flux:table.rows>
+                    @forelse ($this->requests as $request)
+                        <flux:table.row wire:key="request-{{ $request->id }}">
+
+                            <flux:table.cell class="px-0! pl-4! border-r border-zinc-800/10 dark:border-white/20"
+                                variant="strong"
+                            >
+                                {{ $request->id }}
+                            </flux:table.cell>
+
+                            <flux:table.cell class="flex items-center gap-3">
+                                <flux:avatar
+                                    name="{{ $request->violation->st_last_name }} {{ $request->violation->st_first_name }}"
+                                    size="xs"
+                                />
+                                <div>
+                                    <div class="truncate font-medium leading-snug">
+                                        {{ Str::title($request->violation->st_last_name) }},
+                                        {{ Str::title($request->violation->st_first_name) }}{{ $request->violation->st_mi ? ' ' . Str::upper($request->violation->st_mi) . '.' : '' }}
+                                    </div>
+                                    <div class="mt-0.5 text-xs text-zinc-400">
+                                        <flux:link
+                                            class="tabular-nums"
+                                            href="{{ route('staff.violations.student', $request->violation->student_id) }}"
+                                            wire:navigate
+                                        >
+                                            {{ $request->violation->student_id }}
+                                        </flux:link>
+                                    </div>
+                                </div>
+                            </flux:table.cell>
+
+                            <flux:table.cell>
+                                <flux:tooltip>
+                                    <div class="w-64">
+                                        <div class="flex items-baseline gap-1 truncate">
+                                            <span class="shrink-0 text-sm font-medium text-blue-600 dark:text-blue-400">
+                                                {{ $request->violation->type_code }}
+                                            </span>
+                                            <span class="truncate text-sm">{{ $request->violation->type_name }}</span>
+                                        </div>
+                                        @if ($request->violation->remark)
+                                            <div class="mt-0.5 truncate text-xs text-zinc-400">
+                                                {{ $request->violation->remark }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <flux:tooltip.content class="max-w-xs">
+                                        <p class="text-sm font-medium">{{ $request->violation->type_code }} —
+                                            {{ $request->violation->type_name }}</p>
+                                        @if ($request->violation->remark)
+                                            <p class="text-sm text-zinc-400">{{ $request->violation->remark }}</p>
+                                        @endif
+                                    </flux:tooltip.content>
+                                </flux:tooltip>
+                            </flux:table.cell>
+
+                            <flux:table.cell>
+                                <flux:badge
+                                    color="red"
+                                    rounded
+                                    size="sm"
+                                >Delete</flux:badge>
+                            </flux:table.cell>
+
+                            <flux:table.cell>
+                                <p class="text-sm text-zinc-700 dark:text-zinc-300">{{ $request->reason }}</p>
+                            </flux:table.cell>
+
+                            <flux:table.cell class="whitespace-nowrap">
+                                <div class="text-sm">{{ $request->requestedBy->name }}</div>
+                            </flux:table.cell>
+
+                            <flux:table.cell class="whitespace-nowrap tabular-nums">
+                                <div class="text-sm">{{ $request->created_at->format('M j, Y') }}</div>
+                                <div class="text-xs text-zinc-400">{{ $request->created_at->format('h:i:s A') }}</div>
+                            </flux:table.cell>
+
+                            <flux:table.cell align="center" class="pr-4!">
+                                <div class="flex items-center gap-4">
+                                    <flux:button
+                                        @click="$dispatch('approve-delete', {
+                                        violationId: {{ $request->violation->id }},
+                                        violationRequestId: {{ $request->id }},
+                                    })"
+                                        class="w-full"
+                                        icon="check"
+                                        size="sm"
+                                        variant="primary"
+                                    >Approve</flux:button>
+                                    <flux:button
+                                        @click="$dispatch('reject-delete', { violationRequestId: {{ $request->id }} })"
+                                        class="w-full"
+                                        icon="x-mark"
+                                        size="sm"
+                                        variant="danger"
+                                    >Reject</flux:button>
+                                </div>
+                            </flux:table.cell>
+
+                        </flux:table.row>
+                    @empty
+                        <flux:table.row>
+                            <flux:table.cell class="py-12 text-center" colspan="8">
+                                <div class="flex flex-col items-center gap-3">
+                                    <flux:icon class="h-14 w-14 text-zinc-300" name="inbox" />
+                                    <div>
+                                        <flux:text class="font-medium text-zinc-500">No pending requests</flux:text>
+                                        <flux:text class="mt-1 text-sm text-zinc-400">All delete requests have been
+                                            reviewed.</flux:text>
+                                    </div>
+                                </div>
+                            </flux:table.cell>
+                        </flux:table.row>
+                    @endforelse
+                </flux:table.rows>
+            </flux:table>
+        </div>
+
+        <x-slot:actions>
+            <flux:button class="w-full" icon="archive-box">
+                Resolved Requests
+            </flux:button>
+        </x-slot>
+
     </x-table-wrapper>
 
     @teleport('body')
         <div>
-            <livewire:modals.violations.reject-delete />
             <livewire:modals.violations.approve-delete />
+            <livewire:modals.violations.reject-delete />
         </div>
     @endteleport
 </div>

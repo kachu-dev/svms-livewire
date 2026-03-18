@@ -23,7 +23,7 @@ new #[Layout('layouts::auth', ['heading' => 'Student Registration'])] class exte
     {
         $this->validate();
 
-        $student = Student::select('studentid', 'studentid', 'rfidtag', 'firstname', 'lastname')
+        $student = Student::select('studentid', 'rfidtag', 'firstname', 'lastname')
             ->where('studentid', $this->username)
             ->first();
 
@@ -48,6 +48,14 @@ new #[Layout('layouts::auth', ['heading' => 'Student Registration'])] class exte
         ]);
 
         event(new Registered($user));
+
+        activity('auth')
+            ->causedBy($user)
+            ->withProperties([
+                'ip' => request()->ip(),
+                'student_id' => $student->studentid,
+            ])
+            ->log('Student account registered');
 
         auth()->login($user);
 

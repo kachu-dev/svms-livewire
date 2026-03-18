@@ -5,9 +5,9 @@
         @include('partials.head')
     </head>
 
-    <body class="min-h-screen bg-zinc-100 antialiased dark:bg-zinc-800">
+    <body class="min-h-screen bg-white antialiased dark:bg-zinc-800">
         <flux:sidebar
-            class="border-r border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
+            class="border-r border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900"
             collapsible
             sticky
         >
@@ -25,96 +25,42 @@
             </flux:sidebar.header>
 
             <flux:sidebar.nav>
-                <flux:sidebar.group
-                    class="grid"
-                    expandable
-                    heading="Violations"
-                    icon:variant="solid"
+                <flux:sidebar.item
+                    href="{{ route('staff.dashboard') }}"
+                    icon="chart-bar"
+                    wire:navigate
+                >Dashboard</flux:sidebar.item>
+
+                <flux:sidebar.item
+                    href="{{ route('staff.violations.index') }}"
                     icon="exclamation-triangle"
-                >
-                    <flux:sidebar.item href="{{ route('staff.violations.create') }}" wire:navigate>
-                        Create Violation
-                    </flux:sidebar.item>
-                    <flux:sidebar.item href="{{ route('staff.violations.index') }}" wire:navigate>
-                        Pending Violations
-                    </flux:sidebar.item>
-                    <flux:sidebar.item href="{{ route('staff.violations.complete') }}" wire:navigate>
-                        Completed Violations
-                    </flux:sidebar.item>
-                    <flux:sidebar.item href="{{ route('staff.violations.deleted') }}" wire:navigate>
-                        Deleted Violations
-                    </flux:sidebar.item>
-                    <flux:sidebar.item href="{{ route('staff.violations.requests') }}" wire:navigate>
-                        Delete Requests
-                    </flux:sidebar.item>
-                    <flux:sidebar.item href="{{ route('staff.dashboard') }}" wire:navigate>
-                        Dashboard
-                    </flux:sidebar.item>
-                </flux:sidebar.group>
+                    wire:navigate
+                >Violations</flux:sidebar.item>
 
-                <flux:sidebar.group
-                    class="grid"
-                    expandable
-                    heading="Policy"
-                    icon:variant="solid"
+                <flux:sidebar.item
+                    href="{{ route('staff.policy.index') }}"
                     icon="document-text"
-                >
-                    <flux:sidebar.item href="{{ route('staff.policy.index') }}" wire:navigate>
-                        All Policies
-                    </flux:sidebar.item>
-                    <flux:sidebar.item href="{{ route('staff.policy.deleted') }}" wire:navigate>
-                        Deactivated Policies
-                    </flux:sidebar.item>
-                </flux:sidebar.group>
+                    wire:navigate
+                >Policy</flux:sidebar.item>
 
-                <flux:sidebar.group
-                    class="grid"
-                    expandable
-                    heading="User Management"
-                    icon:variant="solid"
+                <flux:sidebar.item
+                    href="{{ route('staff.users-mgt.index') }}"
                     icon="user-group"
-                >
-                    <flux:sidebar.item href="{{ route('staff.users-mgt.index') }}" wire:navigate>
-                        All Users
-                    </flux:sidebar.item>
-                    <flux:sidebar.item href="{{ route('staff.users-mgt.deleted') }}" wire:navigate>
-                        Deactivated Users
-                    </flux:sidebar.item>
-                </flux:sidebar.group>
+                    wire:navigate
+                >User Management</flux:sidebar.item>
 
-                <flux:button
-                    aria-label="Toggle dark mode"
-                    icon="moon"
-                    variant="subtle"
-                    x-data
-                    x-on:click="$flux.dark = ! $flux.dark"
-                />
+                <flux:sidebar.item
+                    href="{{ route('staff.logs') }}"
+                    icon="queue-list"
+                    wire:navigate
+                >Logs</flux:sidebar.item>
             </flux:sidebar.nav>
 
-            <flux:sidebar.spacer />
-
-            <flux:dropdown
-                align="start"
-                class="max-lg:hidden"
-                position="top"
-            >
-                <flux:sidebar.profile name="{{ Auth::user()->name }}" />
-                <flux:menu>
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <flux:menu.item
-                            as="button"
-                            icon="arrow-right-start-on-rectangle"
-                            type="submit"
-                        >
-                            Logout
-                        </flux:menu.item>
-                    </form>
-                </flux:menu>
-            </flux:dropdown>
         </flux:sidebar>
 
-        <flux:header class="block! border-b border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
+        <flux:header
+            class="block! border-b border-zinc-200 bg-white lg:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900"
+        >
             <flux:navbar class="w-full lg:hidden">
                 <flux:sidebar.toggle
                     class="lg:hidden"
@@ -122,33 +68,66 @@
                     inset="left"
                 />
                 <flux:spacer />
-                <flux:heading class="flex-1 text-center" size="lg">{{ $title }}</flux:heading>
+            </flux:navbar>
+
+            <flux:navbar scrollable>
+                @if (request()->routeIs('staff.violations.*'))
+                    <flux:navbar.item href="{{ route('staff.violations.create') }}" wire:navigate>Create
+                    </flux:navbar.item>
+                    <flux:navbar.item href="{{ route('staff.violations.index') }}" wire:navigate>Pending
+                    </flux:navbar.item>
+                    <flux:navbar.item href="{{ route('staff.violations.complete') }}" wire:navigate>Completed
+                    </flux:navbar.item>
+                    <flux:navbar.item href="{{ route('staff.violations.deleted') }}" wire:navigate>Archived
+                    </flux:navbar.item>
+                    <flux:navbar.item href="{{ route('staff.violations.delete-requests') }}" wire:navigate>Delete
+                        Requests</flux:navbar.item>
+                    <flux:navbar.item href="{{ route('staff.violations.update-requests') }}" wire:navigate>Update
+                        Requests</flux:navbar.item>
+                @elseif (request()->routeIs('staff.policy.*'))
+                    <flux:navbar.item href="{{ route('staff.policy.index') }}" wire:navigate>Active</flux:navbar.item>
+                    <flux:navbar.item href="{{ route('staff.policy.deleted') }}" wire:navigate>Deactivated
+                    </flux:navbar.item>
+                    <flux:navbar.item href="{{ route('staff.policy.template') }}" wire:navigate>Template
+                    </flux:navbar.item>
+                @elseif (request()->routeIs('staff.users-mgt.*'))
+                    <flux:navbar.item href="{{ route('staff.users-mgt.index') }}" wire:navigate>Active
+                    </flux:navbar.item>
+                    <flux:navbar.item href="{{ route('staff.users-mgt.deleted') }}" wire:navigate>Deactivated
+                    </flux:navbar.item>
+                @endif
+
                 <flux:spacer />
-                <flux:dropdown align="start" position="top">
-                    <flux:profile name="{{ Auth::user()->name }}" />
+
+                <livewire:notifications />
+
+                <flux:dropdown align="end" position="top">
+                    <flux:profile
+                        avatar:size="xs"
+                        class="py-0.5"
+                        name="{{ Auth::user()->name }}"
+                    />
                     <flux:menu>
+                        <flux:radio.group
+                            variant="segmented"
+                            x-data
+                            x-model="$flux.appearance"
+                        >
+                            <flux:radio icon="sun" value="light"></flux:radio>
+                            <flux:radio icon="moon" value="dark"></flux:radio>
+                            <flux:radio icon="computer-desktop" value="system"></flux:radio>
+                        </flux:radio.group>
+                        <flux:menu.separator />
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
                             <flux:menu.item
                                 as="button"
                                 icon="arrow-right-start-on-rectangle"
                                 type="submit"
-                            >
-                                Logout
-                            </flux:menu.item>
+                            >Logout</flux:menu.item>
                         </form>
                     </flux:menu>
                 </flux:dropdown>
-            </flux:navbar>
-
-            <flux:navbar class="hidden lg:flex">
-                <flux:heading class="flex-1" size="xl">{{ $title }}</flux:heading>
-                <flux:spacer />
-                <div class="flex items-center gap-2">
-                    <flux:text class="text-xl" id="current-date"></flux:text>
-                    <flux:separator vertical />
-                    <flux:text class="text-xl tabular-nums" id="current-time"></flux:text>
-                </div>
             </flux:navbar>
         </flux:header>
 

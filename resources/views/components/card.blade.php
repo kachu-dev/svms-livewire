@@ -3,20 +3,20 @@
     'icon' => 'information-circle',
 ])
 
-<div class="h-full w-full rounded-xl border border-zinc-200 bg-zinc-50 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-    <div class="flex items-center gap-3 border-b border-zinc-200 px-6 py-4 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 rounded-t-xl">
-        <div class="flex items-center justify-center rounded-lg bg-zinc-200 p-1.5 dark:bg-zinc-700">
+<flux:card class="p-0! h-full w-full rounded-2xl">
+    <div class="flex items-center gap-3 rounded-t-2xl bg-zinc-100 px-6 py-5 dark:border-white/10 dark:bg-white/5">
+        <div class="bg-accent flex items-center justify-center rounded-lg p-2 text-white">
             <flux:icon
-                class="size-5 text-zinc-600 dark:text-zinc-400"
+                class="size-5"
                 name="{{ $icon }}"
-                variant="solid"
+                variant="outline"
             />
         </div>
-        <h3 class="text-lg font-semibold tracking-wide text-zinc-800 dark:text-zinc-100">
+        <h3 class="text-2xl font-bold uppercase tracking-widest">
             {{ $header }}
         </h3>
     </div>
-    <div {{ $attributes->merge(['class' => 'p-6']) }}>
+    <div {{ $attributes->merge(['class' => 'p-8']) }}>
         {{ $slot }}
     </div>
-</div>
+</flux:card>

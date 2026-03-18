@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Helpers\SchoolYearHelper;
 use App\Mail\ViolationRecorded;
 use App\Models\Student;
 use App\Models\Violation;
@@ -45,12 +46,9 @@ class ViolationService
         ];
     }
 
-    public function create(
-        Student $student,
-        array $violationData,
-    ): Violation {
+    public function create(Student $student, array $violationData): Violation
+    {
         return DB::transaction(function () use ($student, $violationData) {
-            // Re-check inside transaction with lock to prevent race conditions
             if (! $violationData['isEscalated'] && $violationData['classification'] === 'Minor' && $this->shouldEscalate($student->studentid, lock: true)) {
                 $violationData = $this->buildEscalatedPayload(
                     originalTypeCode: $violationData['typeCode'],
@@ -71,12 +69,27 @@ class ViolationService
                 'type_name' => $violationData['typeName'],
                 'remark' => $violationData['remarkLabel'],
                 'is_escalated' => $violationData['isEscalated'],
+                'school_year' => SchoolYearHelper::current(),
                 'recorded_by' => auth()->id(),
             ]);
 
             $this->createStages($violation);
 
             Mail::to($student->studentid.'@adzu.edu.ph')->queue(new ViolationRecorded($violation));
+
+            activity('violation')
+                ->causedBy(auth()->user())
+                ->performedOn($violation)
+                ->withProperties([
+                    'student_id' => $student->studentid,
+                    'student_name' => $student->firstname.' '.$student->lastname,
+                    'type_code' => $violationData['typeCode'],
+                    'type_name' => $violationData['typeName'],
+                    'classification' => $violationData['classification'],
+                    'remark' => $violationData['remarkLabel'],
+                    'is_escalated' => $violationData['isEscalated'],
+                ])
+                ->log('Violation recorded');
 
             return $violation;
         });
@@ -86,14 +99,53 @@ class ViolationService
     {
         return Violation::where('student_id', $studentId)
             ->where('type_code', $typeCode)
+            ->where('school_year', SchoolYearHelper::current())
             ->whereDate('created_at', now(config('app.timezone')))
             ->exists();
+    }
+
+    public function checkAndEscalateForStudent(int $studentId, string $schoolYear): void
+    {
+        $threshold = self::MINOR_ESCALATION_THRESHOLD;
+
+        $allMinors = Violation::where('student_id', $studentId)
+            ->where('school_year', $schoolYear)
+            ->where('classification', 'Minor')
+            ->where('is_active', true)
+            ->orderBy('created_at')
+            ->orderBy('id')
+            ->get();
+
+        if ($allMinors->count() <= $threshold) {
+            return;
+        }
+
+        $toEscalate = $allMinors->slice($threshold);
+
+        $escalationType = ViolationType::where('code', self::ESCALATION_CODE)->firstOrFail();
+
+        foreach ($toEscalate as $v) {
+            if ($v->is_escalated) {
+                continue;
+            }
+
+            DB::transaction(function () use ($v, $escalationType) {
+                $v->update([
+                    'is_escalated' => true,
+                    'classification' => $escalationType->classification ?? 'Major - Suspension',
+                ]);
+                $v->stages()->delete();
+                $this->createStages($v);
+            });
+        }
     }
 
     private function shouldEscalate(int $studentId, bool $lock = false): bool
     {
         $query = Violation::where('student_id', $studentId)
-            ->where('classification', 'Minor');
+            ->where('classification', 'Minor')
+            ->where('school_year', SchoolYearHelper::current())
+            ->where('is_active', true);
 
         if ($lock) {
             $query->lockForUpdate();
@@ -131,9 +183,9 @@ class ViolationService
         $escalationType = ViolationType::where('code', self::ESCALATION_CODE)->firstOrFail();
 
         return [
-            'typeCode' => $originalTypeCode,       // keep original — what they actually did
-            'typeName' => $originalTypeName,       // keep original — what they actually did
-            'remarkLabel' => $originalRemarkLabel,    // keep original — untouched
+            'typeCode' => $originalTypeCode,
+            'typeName' => $originalTypeName,
+            'remarkLabel' => $originalRemarkLabel,
             'classification' => $escalationType->classification ?? 'Major - Suspension',
             'isEscalated' => true,
         ];
@@ -162,6 +214,19 @@ class ViolationService
         $stage->save();
 
         $this->updateViolationStatus($violation, $stage);
+
+        $action = $stage->is_complete ? 'completed' : 'reopened';
+
+        activity('violation_stage')
+            ->causedBy(auth()->user())
+            ->performedOn($violation)
+            ->withProperties([
+                'stage_id' => $stage->id,
+                'stage_name' => $stage->name,
+                'stage_order' => $stage->order,
+                'action' => $action,
+            ])
+            ->log("Stage \"{$stage->name}\" was {$action}");
 
         return $stage->is_complete ? 'completed' : 'incomplete';
     }

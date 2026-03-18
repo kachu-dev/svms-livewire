@@ -1,19 +1,22 @@
 <x-card header="Step 1: Search for Student" icon="magnifying-glass">
-    <form class="flex flex-col gap-4" wire:submit="findStudent">
-        <flux:input
-            autocomplete="off"
-            autofocus
-            label:size="lg"
-            label="Student ID"
-            placeholder="Input Student ID or Scan RFID"
-            size="accessible"
-            variant="accessible"
-            wire:model="studentId"
-        />
+    <form class="flex flex-col gap-6" wire:submit="findStudent">
+        <div>
+            <flux:field>
+                <flux:input
+                    autocomplete="off"
+                    autofocus
+                    placeholder="Click Here and Type Student ID or Scan RFID"
+                    size="{{ $size }}"
+                    wire:model="studentId"
+                />
+                <flux:error name="studentId" />
+            </flux:field>
+        </div>
 
         <flux:button
+            class="w-full"
             icon="magnifying-glass"
-            size="lg"
+            size="{{ $size }}"
             type="submit"
             variant="primary"
         >
@@ -21,18 +24,5 @@
             <span wire:loading wire:target="findStudent">Searching...</span>
         </flux:button>
 
-        @if ($foundStudentId)
-            <flux:callout
-                heading="Student Found"
-                icon="check-circle"
-                variant="success"
-            />
-        @elseif ($notFound)
-            <flux:callout
-                heading="Student Not Found"
-                icon="x-circle"
-                variant="danger"
-            />
-        @endif
     </form>
 </x-card>

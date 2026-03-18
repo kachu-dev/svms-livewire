@@ -11,6 +11,13 @@ new class extends Component
 
     public $notFound = false;
 
+    public $size;
+
+    public function mount($size = 'guard'): void
+    {
+        $this->size = $size;
+    }
+
     public function findStudent(): void
     {
         $this->validate(['studentId' => 'required']);

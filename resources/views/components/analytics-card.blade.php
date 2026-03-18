@@ -20,7 +20,7 @@
     };
 @endphp
 
-<flux:card class="relative flex flex-col gap-2 overflow-hidden p-4">
+<flux:card class="relative flex flex-col gap-2 overflow-hidden rounded-lg p-4 dark:bg-zinc-900">
     <flux:text class="text-xs font-semibold uppercase tracking-widest">
         {{ $heading }}
     </flux:text>
@@ -47,13 +47,4 @@
     <div class="absolute right-0 top-0 pr-2 pt-2">
         {{ $slot }}
     </div>
-
-    {{--    <select class="text-xs">
-        <option></option>
-        <option>Today</option>
-        <option>This Week</option>
-        <option>This Month</option>
-        <option>This Year</option>
-        <option>All Time</option>
-    </select> --}}
 </flux:card>

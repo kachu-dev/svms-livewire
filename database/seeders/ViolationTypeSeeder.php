@@ -28,6 +28,7 @@ class ViolationTypeSeeder extends Seeder
             ['code' => 'C.1.12', 'name' => 'Public display of intimacy and other such acts that offend the sensibilities of the community', 'classification' => 'Minor'],
             ['code' => 'C.1.13', 'name' => 'Use of classroom and other school facilities without reservation or permission', 'classification' => 'Minor'],
             ['code' => 'C.1.14', 'name' => 'Eating in the Laboratories', 'classification' => 'Minor'],
+            ['code' => 'C.1.15', 'name' => 'Dress Code', 'classification' => 'Minor'],
 
             // MAJOR VIOLATIONS - SUSPENSION
             ['code' => 'C.3.1', 'name' => 'Any form of cheating or academic dishonesty on an examination', 'classification' => 'Major - Suspension'],

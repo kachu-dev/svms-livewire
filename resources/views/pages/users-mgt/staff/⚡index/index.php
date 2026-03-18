@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
@@ -12,37 +13,59 @@ new #[Layout('layouts::app', ['title' => 'User Management'])] class extends Comp
 {
     use WithoutUrlPagination, WithPagination;
 
-    public $search = '';
+    public string $sortBy = 'name';
 
-    public $role;
+    public string $sortDirection = 'asc';
 
-    public $gate;
+    public string $search = '';
 
-    #[Computed]
-    public function users()
+    public ?string $role = null;
+
+    public ?string $gate = null;
+
+    public function sort(string $column): void
     {
-        return User::query()
-            ->where('role', '!=', 'student')
-            ->when($this->search, fn ($q) => $q->search($this->search))
-            ->when($this->role, fn ($q) => $q->where('role', $this->role))
-            ->when($this->gate, fn ($q) => $q->where('assigned_gate', $this->gate))
-            ->paginate(11);
+        if ($this->sortBy === $column) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $column;
+            $this->sortDirection = 'asc';
+        }
     }
 
-    public function delete($userId): void
+    public function updating(string $property): void
     {
-        $user = User::findOrFail($userId);
-        $user->delete();
-    }
-
-    public function updatedSearch(): void
-    {
-        $this->resetPage();
+        if (in_array($property, ['search', 'role', 'gate'])) {
+            $this->resetPage();
+        }
     }
 
     public function resetFilters(): void
     {
         $this->reset(['search', 'role', 'gate']);
+        $this->resetPage();
+    }
+
+    private function baseQuery(): Builder
+    {
+        return User::query()
+            ->where('role', '!=', 'student')
+            ->when($this->search, fn (Builder $q) => $q->search($this->search))
+            ->when($this->role, fn (Builder $q) => $q->where('role', $this->role))
+            ->when($this->gate, fn (Builder $q) => $q->where('assigned_gate', $this->gate));
+    }
+
+    #[Computed]
+    public function users()
+    {
+        return $this->baseQuery()
+            ->orderBy($this->sortBy, $this->sortDirection)
+            ->paginate(12);
+    }
+
+    public function delete(int $userId): void
+    {
+        User::findOrFail($userId)->delete();
     }
 
     #[Computed]

@@ -1,46 +1,41 @@
 <x-card header="Step 3: Choose Violation Details" icon="exclamation-triangle">
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-10">
         @if ($studentId)
-            <flux:modal.trigger name="set-violation">
-                <flux:input
-                    label:size="lg"
-                    label="Type of Violation"
-                    placeholder="Click to choose violation"
-                    readonly
-                    size="accessible"
-                    variant="accessible"
-                    wire:model="selectedTypeLabel"
-                />
-            </flux:modal.trigger>
-
-            @if ($selectedTypeId)
-                <flux:modal.trigger name="set-remark">
+            <div class="flex flex-col gap-2">
+                <flux:modal.trigger name="set-violation">
                     <flux:input
-                        label:size="lg"
-                        label="Remarks"
-                        placeholder="Click to choose remark"
+                        placeholder="Click to choose violation"
                         readonly
-                        size="accessible"
-                        variant="accessible"
-                        wire:model="selectedRemarkLabel"
+                        size="{{ $size }}"
+                        wire:model="selectedTypeLabel"
                     />
                 </flux:modal.trigger>
-            @else
-                <flux:input
-                    disabled
-                    label:size="lg"
-                    label="Remarks"
-                    placeholder="Choose a violation type first"
-                    readonly
-                    size="accessible"
-                    variant="accessible"
-                />
-            @endif
+            </div>
+
+            <div class="flex flex-col gap-2">
+                @if ($selectedTypeId)
+                    <flux:modal.trigger name="set-remark">
+                        <flux:input
+                            placeholder="Click to choose remark"
+                            readonly
+                            size="{{ $size }}"
+                            wire:model="selectedRemarkLabel"
+                        />
+                    </flux:modal.trigger>
+                @else
+                    <flux:input
+                        placeholder="Choose a violation type first"
+                        readonly
+                        size="{{ $size }}"
+                    />
+                @endif
+            </div>
 
             <flux:button
                 :disabled="!$selectedTypeId"
+                class="w-full"
                 icon="paper-airplane"
-                size="lg"
+                size="{{ $size }}"
                 variant="primary"
                 wire:click="confirmViolation"
             >
@@ -49,11 +44,9 @@
             </flux:button>
         @else
             <div class="flex flex-col items-center justify-center gap-3 py-12 text-center">
-                <flux:icon class="h-12 w-12 text-gray-400" name="x-mark" />
-                <flux:heading size="xl">No student selected</flux:heading>
-                <flux:text class="text-xl">
-                    Scan or search for a student first before recording a violation.
-                </flux:text>
+                <flux:icon class="size-14" name="user-circle" />
+                <p class="text-2xl font-semibold">No student selected</p>
+                <p class="text-xl">Complete Step 1 first to enable this section.</p>
             </div>
         @endif
     </div>
