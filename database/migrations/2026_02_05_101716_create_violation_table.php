@@ -48,12 +48,6 @@ return new class extends Migration
             $table->index('created_at');
             $table->index(['status', 'classification', 'deleted_at']);
             $table->index(['classification', 'student_id', 'created_at', 'id']);
-            $table->index([
-                'status',
-                'school_year',
-                'is_active',
-                'deleted_at',
-            ]);
         });
     }
 

@@ -23,4 +23,5 @@ class ViolationStages extends Model
         'is_complete' => 'boolean',
         'completed_at' => 'datetime',
     ];
+
 }

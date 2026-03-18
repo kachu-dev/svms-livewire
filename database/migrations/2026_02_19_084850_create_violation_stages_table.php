@@ -27,11 +27,6 @@ return new class extends Migration
         });
     }
 
-    protected $casts = [
-        'isComplete' => 'boolean',
-        'completed_at' => 'datetime',
-    ];
-
     /**
      * Reverse the migrations.
      */

@@ -14,6 +14,13 @@ return new class extends Migration
         Schema::table('violations', function (Blueprint $table) {
             $table->string('school_year', 9)->default('2025-2026')->after('status');
             $table->boolean('is_active')->default(true)->after('school_year');
+
+            $table->index([
+                'status',
+                'school_year',
+                'is_active',
+                'deleted_at',
+            ]);
         });
     }
 
