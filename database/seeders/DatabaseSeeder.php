@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
             'username' => 'ramos.hart',
             'role' => 'osa',
             'assigned_gate' => null,
-            'password' => Hash::make('password'),
+            'password' => Hash::make('supersecurepassword123321'),
         ]);
 
         User::create([
@@ -66,7 +66,6 @@ class DatabaseSeeder extends Seeder
             ViolationTypeSeeder::class,
             ViolationRemarkSeeder::class,
             ViolationStageTemplateSeeder::class,
-            /* ViolationSeeder::class, */
             ViolationRequestReasonSeeder::class,
         ]);
     }
