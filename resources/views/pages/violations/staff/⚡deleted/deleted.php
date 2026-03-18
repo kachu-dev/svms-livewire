@@ -12,19 +12,19 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
 {
     use WithoutUrlPagination, WithPagination;
 
-    public $sortBy = 'created_at';
+    public string $sortBy = 'created_at';
 
-    public $sortDirection = 'desc';
+    public string $sortDirection = 'desc';
 
-    public $search = '';
+    public string $search = '';
 
-    public $classification;
+    public ?string $classification = null;
 
-    public $dateFrom;
+    public ?string $dateFrom = null;
 
-    public $dateTo;
+    public ?string $dateTo = null;
 
-    public function sort($column): void
+    public function sort(string $column): void
     {
         if ($this->sortBy === $column) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
@@ -44,7 +44,7 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
             ->when($this->dateFrom, fn ($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
             ->when($this->dateTo, fn ($q) => $q->whereDate('created_at', '<=', $this->dateTo))
             ->orderBy($this->sortBy, $this->sortDirection)
-            ->paginate(8);
+            ->paginate(9);
     }
 
     #[Computed]
@@ -59,18 +59,13 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
     public function resetFilters(): void
     {
         $this->reset(['search', 'classification', 'dateFrom', 'dateTo']);
+        $this->resetPage();
     }
 
     #[On('refresh-del-violation')]
     public function refreshTable(): void {}
 
-    public function restore($violationId): void
-    {
-        $violation = Violation::onlyTrashed()->findOrFail($violationId);
-        $violation->restore();
-    }
-
-    public function updating($property, $value): void
+    public function updating(string $property): void
     {
         if (in_array($property, ['search', 'classification', 'dateFrom', 'dateTo'])) {
             $this->resetPage();

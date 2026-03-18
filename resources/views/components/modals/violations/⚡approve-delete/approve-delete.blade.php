@@ -9,34 +9,32 @@
 
         <flux:separator />
 
-        <div class="space-y-3">
-            <div class="grid grid-cols-[120px_1fr] gap-2">
-                <flux:text variant="strong">Student ID:</flux:text>
-                <flux:text>{{ $studentId }}</flux:text>
+        @if ($studentId)
+            <div class="space-y-3">
+                <div class="grid grid-cols-[120px_1fr] gap-2">
+                    <flux:text variant="strong">Student ID:</flux:text>
+                    <flux:text>{{ $studentId }}</flux:text>
+                </div>
+                <div class="grid grid-cols-[120px_1fr] gap-2">
+                    <flux:text variant="strong">Student Name:</flux:text>
+                    <flux:text>{{ $studentName }}</flux:text>
+                </div>
+                <div class="grid grid-cols-[120px_1fr] gap-2">
+                    <flux:text variant="strong">Violation:</flux:text>
+                    <flux:text>{{ $type }}</flux:text>
+                </div>
+                <div class="grid grid-cols-[120px_1fr] gap-2">
+                    <flux:text variant="strong">Remark:</flux:text>
+                    <flux:text>{{ $remark ?? 'N/A' }}</flux:text>
+                </div>
+                <div class="grid grid-cols-[120px_1fr] gap-2">
+                    <flux:text variant="strong">Status:</flux:text>
+                    <flux:text>{{ $status ?? 'N/A' }}</flux:text>
+                </div>
             </div>
 
-            <div class="grid grid-cols-[120px_1fr] gap-2">
-                <flux:text variant="strong">Student Name:</flux:text>
-                <flux:text>{{ $studentName }}</flux:text>
-            </div>
-
-            <div class="grid grid-cols-[120px_1fr] gap-2">
-                <flux:text variant="strong">Violation:</flux:text>
-                <flux:text>{{ $type }}</flux:text>
-            </div>
-
-            <div class="grid grid-cols-[120px_1fr] gap-2">
-                <flux:text variant="strong">Remark:</flux:text>
-                <flux:text>{{ $remark ?? 'N/A' }}</flux:text>
-            </div>
-
-            <div class="grid grid-cols-[120px_1fr] gap-2">
-                <flux:text variant="strong">Status:</flux:text>
-                <flux:text>{{ $status ?? 'N/A' }}</flux:text>
-            </div>
-        </div>
-
-        <flux:separator />
+            <flux:separator />
+        @endif
 
         <div class="flex gap-2">
             <flux:spacer />

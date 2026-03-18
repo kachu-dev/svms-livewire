@@ -35,8 +35,8 @@
                     >
                     <div>
                         <flux:heading size="xl">{{ $heading }}</flux:heading>
-                        <flux:text class="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">
-                            Student Violation Management System
+                        <flux:text class="mt-0.5 text-sm italic text-zinc-500 dark:text-zinc-400">
+                            "Student Violation Management System"
                         </flux:text>
                     </div>
                 </div>

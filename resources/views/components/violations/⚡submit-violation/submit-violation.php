@@ -23,6 +23,13 @@ new class extends Component
 
     public $selectedRemarkLabel;
 
+    public $size;
+
+    public function mount($size = 'guard'): void
+    {
+        $this->size = $size;
+    }
+
     public function confirmViolation(): void
     {
         $this->validate([

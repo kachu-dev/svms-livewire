@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\Student;
+use App\Models\User;
+use App\Notifications\DatabaseNotification;
 use App\Services\ViolationService;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Computed;
@@ -88,6 +90,15 @@ new class extends Component
                 violationData: $this->resolvedData,
             );
 
+            User::osa()->get()->each->notify(new DatabaseNotification(
+                title: 'Violation Recorded',
+                message: "{$student->studentid}: {$this->selectedTypeLabel}",
+                type: 'warning',
+                actionUrl: route('staff.violations.student', $student->studentid),
+                actionText: 'View Student',
+                meta: ['student_name' => $student->full_name, 'type_code' => $this->selectedTypeCode],
+            ));
+
             $this->dispatch('show-result', type: 'success', message: 'Violation recorded successfully.');
             $this->dispatch('violation-created');
             $this->modal('duplicate-warning')->close();
@@ -101,7 +112,7 @@ new class extends Component
             ]);
 
             $this->dispatch('show-result', type: 'error',
-                message: 'Failed to save violation. Please contact support.');
+                message: 'Failed to save violation. Please contact support.'.$e->getMessage());
             $this->modal('confirm-violation')->close();
             $this->modal('duplicate-warning')->close();
         }

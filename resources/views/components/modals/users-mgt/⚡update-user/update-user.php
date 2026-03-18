@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -19,7 +20,7 @@ new class extends Component
     #[Validate('required|string')]
     public string $role = '';
 
-    #[Validate('string')]
+    #[Validate('nullable|string')]
     public ?string $assigned_gate = null;
 
     #[Validate('nullable|string|min:8|confirmed')]
@@ -62,13 +63,24 @@ new class extends Component
             );
 
             if ($this->password !== '' && $this->password !== '0') {
-                $this->user->update([
-                    'password' => Hash::make($this->password),
-                ]);
+                $this->user->update(['password' => Hash::make($this->password)]);
             }
+
+            activity('user')
+                ->causedBy(auth()->user())
+                ->performedOn($this->user)
+                ->withProperties([
+                    'name' => $this->name,
+                    'username' => $this->username,
+                    'role' => $this->role,
+                    'assigned_gate' => $this->assigned_gate,
+                    'password_changed' => $this->password !== '',
+                ])
+                ->log('User account updated');
 
             $this->modal('update-user')->close();
             $this->dispatch('refresh-user');
+            Toaster::success('User updated successfully.');
         } catch (Exception) {
             Toaster::error('Failed to update user. Please try again.');
         }

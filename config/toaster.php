@@ -16,7 +16,7 @@ return [
      *
      * Supported: "bottom", "middle" or "top"
      */
-    'alignment' => 'bottom',
+    'alignment' => 'top',
 
     /**
      * Allow users to close toast messages prematurely.
@@ -37,7 +37,7 @@ return [
      *
      * Supported: "center", "left" or "right"
      */
-    'position' => 'right',
+    'position' => 'center',
 
     /**
      * New toasts immediately replace similar ones, ensuring only one toast of a kind is visible at any time.
@@ -45,14 +45,14 @@ return [
      *
      * Supported: true | false
      */
-    'replace' => false,
+    'replace' => true,
 
     /**
      * Prevent the display of duplicate toast messages.
      *
      * Supported: true | false
      */
-    'suppress' => false,
+    'suppress' => true,
 
     /**
      * Whether messages passed as translation keys should be translated automatically.

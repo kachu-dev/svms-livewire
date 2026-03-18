@@ -12,7 +12,7 @@
             This is to inform you that you have been recorded for
             a <strong>({{ $violation->type_code }} {{ $violation->type_name }})</strong>
             under the AdZU policy
-            on {{ $violation->created_at->format('F d, Y h:i A') }}
+            on {{ $violation->created_at->format('F d, Y h:i:s A') }}
         </p>
 
         @if ($violation->remark)

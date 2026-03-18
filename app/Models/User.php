@@ -14,11 +14,23 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes;
+    use HasFactory, LogsActivity, Notifiable, SoftDeletes;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('user')
+            ->logOnly(['name', 'username', 'email', 'role', 'assigned_gate'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->setDescriptionForEvent(fn (string $event) => "User account was {$event}");
+    }
 
     protected $fillable = [
         'name',
@@ -82,6 +94,12 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isStudent(): bool
     {
         return $this->role === 'student';
+    }
+
+    #[Scope]
+    protected function osa($query)
+    {
+        return $query->where('role', 'osa');
     }
 
     public function getRoleLabelAttribute(): string

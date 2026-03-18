@@ -82,6 +82,16 @@ class ViolationRemarkSeeder extends Seeder
                 'Food brought inside lab',
                 'Eating during laboratory session',
             ],
+            'C.1.15' => [
+                'Revealing outfit',
+                'No uniform',
+                'Incomplete uniform',
+                'Improper uniform',
+                'No school ID',
+                'Improper footwear',
+                'Wearing slippers',
+                'Colored socks',
+            ],
         ];
 
         foreach ($data as $code => $remarks) {

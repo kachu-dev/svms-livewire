@@ -207,7 +207,7 @@ class ViolationSeeder extends Seeder
             }
         }
 
-        for ($i = 0; $i < 70; $i++) {
+        for ($i = 0; $i < 1000; $i++) {
             $student = $students[array_rand($students)];
             $studentId = $student['studentid'];
             $classification = $weightedClassifications[array_rand($weightedClassifications)];

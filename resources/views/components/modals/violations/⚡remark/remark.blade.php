@@ -62,9 +62,9 @@
                     wire:key="remark-{{ $remark->id }}"
                 >
                     <div class="flex items-center justify-between">
-                        <flux:heading>
+                        <p class="text-base">
                             {{ $remark->label }}
-                        </flux:heading>
+                        </p class="text-base">
                         <flux:icon
                             class="h-5 w-5 text-blue-500"
                             name="check-circle"

@@ -1,7 +1,11 @@
 <?php
 
 use App\Exports\AllViolationExport;
+use App\Helpers\SchoolYearHelper;
 use App\Models\Violation;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
@@ -15,19 +19,34 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
 {
     use WithoutUrlPagination, WithPagination;
 
-    public $sortBy = 'created_at';
+    public string $sortBy = 'created_at';
 
-    public $sortDirection = 'desc';
+    public string $sortDirection = 'desc';
 
-    public $search = '';
+    public string $search = '';
 
-    public $classification;
+    public ?string $classification = null;
 
-    public $dateFrom;
+    public ?string $dateFrom = null;
 
-    public $dateTo;
+    public ?string $dateTo = null;
 
-    public function sort($column): void
+    public ?string $schoolYear = null;
+
+    public string $password = '';
+
+    public bool $passwordConfirmed = false;
+
+    public string $newYearFrom = '';
+
+    public string $newYearTo = '';
+
+    public function mount(): void
+    {
+        $this->schoolYear = SchoolYearHelper::current();
+    }
+
+    public function sort(string $column): void
     {
         if ($this->sortBy === $column) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
@@ -37,38 +56,89 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
         }
     }
 
-    #[Computed]
-    public function violations()
+    public function updating(string $property): void
     {
-        $violations = Violation::with(['stages', 'student', 'recordedBy'])
-            ->where('status', '!=', 'Complete')
-            ->when($this->search, fn ($q) => $q->search($this->search))
-            ->when($this->classification, fn ($q) => $q->where('classification', $this->classification))
-            ->when($this->dateFrom, fn ($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
-            ->when($this->dateTo, fn ($q) => $q->whereDate('created_at', '<=', $this->dateTo))
-            ->orderBy($this->sortBy, $this->sortDirection)
-            ->paginate(9);
+        if (in_array($property, ['search', 'classification', 'dateFrom', 'dateTo', 'schoolYear'])) {
+            $this->resetPage();
+        }
+    }
 
-        $studentIds = $violations->getCollection()
+    public function resetFilters(): void
+    {
+        $this->reset(['search', 'classification', 'dateFrom', 'dateTo', 'schoolYear']);
+        $this->resetPage();
+    }
+
+    private function baseQuery(): Builder
+    {
+        return Violation::where('status', '!=', 'Complete')
+            ->when($this->schoolYear, fn ($q) => $q->where('school_year', $this->schoolYear))
+            ->where('is_active', true)
+            ->when($this->search, fn (Builder $q) => $q->search($this->search))
+            ->when($this->classification, fn (Builder $q) => $q->where('classification', $this->classification))
+            ->when($this->dateFrom, fn (Builder $q) => $q->whereDate('created_at', '>=', $this->dateFrom))
+            ->when($this->dateTo, fn (Builder $q) => $q->whereDate('created_at', '<=', $this->dateTo));
+    }
+
+    private function applyMinorOffenseNumbers($collection): void
+    {
+        $studentIds = $collection
             ->where('classification', 'Minor')
+            ->where('is_active', true)
             ->pluck('student_id')
             ->unique();
 
+        if ($studentIds->isEmpty()) {
+            return;
+        }
+
         $minorsByStudent = Violation::where('classification', 'Minor')
             ->whereIn('student_id', $studentIds)
+            ->when($this->schoolYear, fn ($q) => $q->where('school_year', $this->schoolYear))
+            ->where('is_active', true)
             ->orderBy('created_at')
             ->orderBy('id')
             ->get(['id', 'student_id'])
             ->groupBy('student_id')
             ->map(fn ($group) => $group->pluck('id'));
 
-        $violations->getCollection()->transform(function ($violation) use ($minorsByStudent) {
-            $violation->minor_offense_number = $violation->classification === 'Minor'
-                ? ($minorsByStudent[$violation->student_id]->search($violation->id) + 1)
-                : null;
+        $collection->transform(function ($violation) use ($minorsByStudent) {
+            if ($violation->classification !== 'Minor') {
+                $violation->minor_offense_number = null;
+
+                return $violation;
+            }
+
+            $studentViolations = $minorsByStudent[$violation->student_id] ?? collect();
+            $position = $studentViolations->search($violation->id);
+
+            $violation->minor_offense_number = $position !== false ? $position + 1 : null;
 
             return $violation;
         });
+    }
+
+    #[Computed]
+    public function violations()
+    {
+        $sortColumn = $this->sortBy === 'count' ? 'created_at' : $this->sortBy;
+
+        $violations = $this->baseQuery()
+            ->with(['stages', 'recordedBy'])
+            ->orderBy($sortColumn, $this->sortDirection)
+            ->paginate(9);
+
+        $this->applyMinorOffenseNumbers($violations->getCollection());
+
+        if ($this->sortBy === 'count') {
+            $sorted = $violations->getCollection()->sortBy(
+                'minor_offense_number',
+                SORT_REGULAR,
+                $this->sortDirection === 'desc'
+            )->values();
+
+            $violations->setCollection($sorted);
+        }
 
         return $violations;
     }
@@ -76,41 +146,39 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
     #[Computed]
     public function classifications()
     {
-        return Violation::distinct()
-            ->where('status', '!=', 'Complete')
-            ->pluck('classification')
-            ->sortDesc();
+        return cache()->remember(
+            "violation_classifications_{$this->schoolYear}",
+            60,
+            fn () => Violation::distinct()
+                ->where('status', '!=', 'Complete')
+                ->where('school_year', $this->schoolYear)
+                ->where('is_active', true)
+                ->pluck('classification')
+                ->sortDesc()
+        );
     }
 
-    public function resetFilters(): void
+    #[Computed]
+    public function availableYears(): array
     {
-        $this->reset(['search', 'classification', 'dateFrom', 'dateTo']);
+        return Violation::select('school_year')
+            ->distinct()
+            ->where('is_active', true)
+            ->orderByDesc('school_year')
+            ->pluck('school_year')
+            ->toArray();
     }
 
-    public function delete($violationId): void
+    public function delete(int $violationId): void
     {
-        $violation = Violation::findOrFail($violationId);
-        $violation->delete();
+        Violation::findOrFail($violationId)->delete();
+        cache()->forget("violation_classifications_{$this->schoolYear}");
     }
-
-    public function updating($property, $value): void
-    {
-        if (in_array($property, ['search', 'classification', 'dateFrom', 'dateTo'])) {
-            $this->resetPage();
-        }
-    }
-
-    #[On('refresh-violation')]
-    public function refreshTable(): void {}
 
     public function exportExcel()
     {
-        $violations = Violation::with('stages')
-            ->where('status', '!=', 'Complete')
-            ->when($this->search, fn ($q) => $q->search($this->search))
-            ->when($this->classification, fn ($q) => $q->where('classification', $this->classification))
-            ->when($this->dateFrom, fn ($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
-            ->when($this->dateTo, fn ($q) => $q->whereDate('created_at', '<=', $this->dateTo))
+        $violations = $this->baseQuery()
+            ->with('stages')
             ->orderBy($this->sortBy, $this->sortDirection)
             ->get();
 
@@ -120,25 +188,7 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
             return;
         }
 
-        $studentIds = $violations->where('classification', 'Minor')
-            ->pluck('student_id')
-            ->unique();
-
-        $minorsByStudent = Violation::where('classification', 'Minor')
-            ->whereIn('student_id', $studentIds)
-            ->orderBy('created_at')
-            ->orderBy('id')
-            ->get(['id', 'student_id'])
-            ->groupBy('student_id')
-            ->map(fn ($group) => $group->pluck('id'));
-
-        $violations->transform(function ($violation) use ($minorsByStudent) {
-            $violation->minor_offense_number = $violation->classification === 'Minor'
-                ? ($minorsByStudent[$violation->student_id]->search($violation->id) + 1)
-                : null;
-
-            return $violation;
-        });
+        $this->applyMinorOffenseNumbers($violations);
 
         Toaster::success('Violations Exported!');
 
@@ -146,5 +196,60 @@ new #[Layout('layouts::app', ['title' => 'Violation Management'])] class extends
             new AllViolationExport($violations),
             'violations-'.date('Y-m-d').'.xlsx'
         );
+    }
+
+    #[On('refresh-violation')]
+    public function refreshTable(): void {}
+
+    public function confirmPassword(): void
+    {
+        $this->validate([
+            'password' => 'required',
+        ]);
+
+        if (! Hash::check($this->password, auth()->user()->password)) {
+            $this->addError('password', 'Incorrect password.');
+
+            return;
+        }
+
+        $this->password = '';
+        $this->passwordConfirmed = true;
+
+        // Pre-fill inputs with current year parts
+        [$from, $to] = explode('-', (string) $this->schoolYear);
+        $this->newYearFrom = $from;
+        $this->newYearTo = $to;
+    }
+
+    public function updateSchoolYear(): void
+    {
+        $this->validate([
+            'newYearFrom' => ['required', 'digits:4', 'integer'],
+            'newYearTo' => ['required', 'digits:4', 'integer', 'gt:newYearFrom'],
+        ]);
+
+        $newYear = $this->newYearFrom.'-'.$this->newYearTo;
+
+        DB::table('settings')
+            ->where('key', 'school_year')
+            ->update(['value' => $newYear]);
+
+        cache()->forget('setting_school_year');
+
+        $this->schoolYear = $newYear;
+        $this->resetPasswordConfirmation();
+        $this->modal('update-school-year')->close();
+        $this->dispatch('close-modal', 'update-school-year');
+
+        Toaster::success("School year updated to {$newYear}!");
+    }
+
+    public function resetPasswordConfirmation(): void
+    {
+        $this->password = '';
+        $this->passwordConfirmed = false;
+        $this->newYearFrom = '';
+        $this->newYearTo = '';
     }
 };

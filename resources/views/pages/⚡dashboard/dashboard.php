@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\SchoolYearHelper;
 use App\Models\Violation;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -11,9 +12,9 @@ new #[Layout('layouts::app', ['title' => 'Dashboard'])] class extends Component
 {
     public string $period = 'today';
 
-    public $dateFrom;
+    public ?string $dateFrom = null;
 
-    public $dateTo;
+    public ?string $dateTo = null;
 
     public string $filterProgram = '';
 
@@ -21,25 +22,94 @@ new #[Layout('layouts::app', ['title' => 'Dashboard'])] class extends Component
 
     public string $filterClassification = '';
 
-    // ── Base Query ───────────────────────────────────────────────────────────
+    public string $schoolYear = '';
+
+    // ── Lifecycle ────────────────────────────────────────────────────────────
+
+    public function mount(): void
+    {
+        $this->schoolYear = SchoolYearHelper::current();
+    }
+
+    public function updatedPeriod(): void
+    {
+        $this->dateFrom = $this->dateTo = null;
+        $this->refresh();
+    }
+
+    public function updatedDateFrom(): void
+    {
+        $this->period = '';
+        $this->refresh();
+    }
+
+    public function updatedDateTo(): void
+    {
+        $this->period = '';
+        $this->refresh();
+    }
+
+    public function updatedSchoolYear(): void
+    {
+        $this->refresh();
+    }
+
+    public function updatedFilterProgram(): void
+    {
+        $this->refresh();
+    }
+
+    public function updatedFilterYear(): void
+    {
+        $this->refresh();
+    }
+
+    public function updatedFilterClassification(): void
+    {
+        $this->refresh();
+    }
+
+    public function resetFilters(): void
+    {
+        $this->reset(['dateFrom', 'dateTo', 'filterProgram', 'filterYear', 'filterClassification']);
+        $this->period = 'today';
+        $this->schoolYear = SchoolYearHelper::current();
+        $this->refresh();
+    }
+
+    // ── Queries ──────────────────────────────────────────────────────────────
 
     protected function baseQuery(): Builder
     {
-        $query = Violation::period($this->period, $this->dateFrom, $this->dateTo);
+        return Violation::period($this->period, $this->dateFrom, $this->dateTo)
+            ->when($this->schoolYear, fn ($q) => $q->where('school_year', $this->schoolYear))
+            ->when($this->filterProgram, fn ($q) => $q->where('st_program', $this->filterProgram))
+            ->when($this->filterYear, fn ($q) => $q->where('st_year', $this->filterYear))
+            ->when($this->filterClassification, fn ($q) => $q->where('classification', $this->filterClassification))
+            ->where('is_active', true);
+    }
 
-        if ($this->filterProgram !== '') {
-            $query->where('st_program', $this->filterProgram);
+    protected function previousQuery(): Builder
+    {
+        $q = Violation::query();
+
+        if ($this->dateFrom && $this->dateTo) {
+            $from = Carbon::parse($this->dateFrom);
+            $days = $from->diffInDays(Carbon::parse($this->dateTo)) + 1;
+
+            return $q->whereBetween('created_at', [
+                $from->copy()->subDays($days)->startOfDay(),
+                $from->copy()->subDay()->endOfDay(),
+            ]);
         }
 
-        if ($this->filterYear !== '') {
-            $query->where('st_year', $this->filterYear);
-        }
-
-        if ($this->filterClassification !== '') {
-            $query->where('classification', $this->filterClassification);
-        }
-
-        return $query;
+        return match ($this->period) {
+            'today' => $q->whereDate('created_at', today()->subDay()),
+            'week' => $q->whereBetween('created_at', [now()->subWeek()->startOfWeek(), now()->subWeek()->endOfWeek()]),
+            'month' => $q->whereMonth('created_at', now()->subMonth()->month)->whereYear('created_at', now()->subMonth()->year),
+            'year' => $q->whereYear('created_at', now()->subYear()->year),
+            default => $q->whereRaw('0 = 1'),
+        };
     }
 
     // ── Filter Options ───────────────────────────────────────────────────────
@@ -47,109 +117,59 @@ new #[Layout('layouts::app', ['title' => 'Dashboard'])] class extends Component
     #[Computed]
     public function programs(): array
     {
-        return Violation::query()
-            ->selectRaw('DISTINCT st_program')
-            ->whereNotNull('st_program')
-            ->orderBy('st_program')
-            ->pluck('st_program')
-            ->toArray();
-    }
-
-    // ── Stat Cards ───────────────────────────────────────────────────────────
-
-    #[Computed]
-    public function total(): int
-    {
-        return $this->baseQuery()->total();
+        return Violation::query()->selectRaw('DISTINCT st_program')
+            ->whereNotNull('st_program')->orderBy('st_program')
+            ->pluck('st_program')->toArray();
     }
 
     #[Computed]
-    public function pending(): int
+    public function years(): array
     {
-        return $this->baseQuery()->pending();
+        return Violation::query()->selectRaw('DISTINCT st_year')
+            ->whereNotNull('st_year')->orderBy('st_year')
+            ->pluck('st_year')->toArray();
     }
 
     #[Computed]
-    public function resolved(): int
+    public function availableYears(): array
     {
-        return $this->baseQuery()->resolved();
+        return Violation::select('school_year')->distinct()
+            ->orderByDesc('school_year')->pluck('school_year')->toArray();
     }
 
-    #[Computed]
-    public function minor(): int
-    {
-        return $this->baseQuery()->minor();
-    }
+    // ── Stats ─────────────────────────────────────────────────────────────────
+    // Single computed that runs all counts in one pass, keyed by name.
 
     #[Computed]
-    public function majorSuspension(): int
+    public function stats(): array
     {
-        return $this->baseQuery()->majorSuspension();
-    }
+        $base = $this->baseQuery();
+        $prev = $this->previousQuery();
 
-    #[Computed]
-    public function majorDismissal(): int
-    {
-        return $this->baseQuery()->majorDismissal();
-    }
+        $counts = [
+            'total' => $base->count(),
+            'pending' => (clone $base)->pending()->count(),
+            'resolved' => (clone $base)->resolved()->count(),
+            'minor' => (clone $base)->minor()->count(),
+            'majorSuspension' => (clone $base)->majorSuspension()->count(),
+            'majorDismissal' => (clone $base)->majorDismissal()->count(),
+            'majorExpulsion' => (clone $base)->majorExpulsion()->count(),
+        ];
 
-    #[Computed]
-    public function majorExpulsion(): int
-    {
-        return $this->baseQuery()->majorExpulsion();
-    }
+        $prevCounts = [
+            'total' => $prev->count(),
+            'pending' => (clone $prev)->where('status', '!=', 'Complete')->count(),
+            'resolved' => (clone $prev)->where('status', 'Complete')->count(),
+            'minor' => (clone $prev)->where('classification', 'Minor')->count(),
+            'majorSuspension' => (clone $prev)->where('classification', 'Major - Suspension')->count(),
+            'majorDismissal' => (clone $prev)->where('classification', 'Major - Dismissal')->count(),
+            'majorExpulsion' => (clone $prev)->where('classification', 'Major - Expulsion')->count(),
+        ];
 
-    // ── Change Indicators ────────────────────────────────────────────────────
-
-    #[Computed]
-    public function totalChange(): ?string
-    {
-        return $this->formatChange($this->total, $this->previousQuery()->count());
-    }
-
-    #[Computed]
-    public function pendingChange(): ?string
-    {
-        return $this->formatChange($this->pending, $this->previousQuery()->where('status', '!=', 'Complete')->count());
-    }
-
-    #[Computed]
-    public function resolvedChange(): ?string
-    {
-        return $this->formatChange($this->resolved, $this->previousQuery()->where('status', 'Complete')->count());
-    }
-
-    #[Computed]
-    public function minorChange(): ?string
-    {
-        return $this->formatChange($this->minor, $this->previousQuery()->where('classification', 'Minor')->count());
-    }
-
-    #[Computed]
-    public function majorSuspensionChange(): ?string
-    {
-        return $this->formatChange(
-            $this->majorSuspension,
-            $this->previousQuery()->where('classification', 'Major - Suspension')->count()
-        );
-    }
-
-    #[Computed]
-    public function majorDismissalChange(): ?string
-    {
-        return $this->formatChange(
-            $this->majorDismissal,
-            $this->previousQuery()->where('classification', 'Major - Dismissal')->count()
-        );
-    }
-
-    #[Computed]
-    public function majorExpulsionChange(): ?string
-    {
-        return $this->formatChange(
-            $this->majorExpulsion,
-            $this->previousQuery()->where('classification', 'Major - Expulsion')->count()
-        );
+        return collect($counts)->map(fn (int $val, $key) => [
+            'value' => $val,
+            'change' => $this->formatChange($val, $prevCounts[$key]),
+        ])->toArray();
     }
 
     // ── Chart Data ───────────────────────────────────────────────────────────
@@ -157,26 +177,7 @@ new #[Layout('layouts::app', ['title' => 'Dashboard'])] class extends Component
     #[Computed]
     public function violationsOverTime(): array
     {
-        // Determine format based on period or date range span
-        if ($this->dateFrom && $this->dateTo) {
-            $days = Carbon::parse($this->dateFrom)->diffInDays(Carbon::parse($this->dateTo)) + 1;
-
-            $format = match (true) {
-                $days <= 2 => '%H:00',      // hourly
-                $days <= 31 => '%b %d',      // Mar 01, Mar 02...
-                $days <= 365 => '%b %Y',      // Mar 2025, Apr 2025...
-                default => '%Y',         // 2024, 2025...
-            };
-        } else {
-            $format = match ($this->period) {
-                'today' => '%H:00',
-                'week' => '%a',
-                'month' => '%d',
-                'year' => '%b',
-                'all' => '%Y',
-                default => '%b %Y',
-            };
-        }
+        $format = $this->resolveTimeFormat();
 
         $results = $this->baseQuery()
             ->selectRaw("DATE_FORMAT(created_at, '{$format}') as label, COUNT(*) as count")
@@ -188,24 +189,18 @@ new #[Layout('layouts::app', ['title' => 'Dashboard'])] class extends Component
             $months = collect(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']);
             $filled = $months->mapWithKeys(fn ($m) => [$m => $results->get($m, 0)]);
 
-            return [
-                'labels' => $filled->keys()->toArray(),
-                'data' => $filled->values()->toArray(),
-            ];
+            return ['labels' => $filled->keys()->toArray(), 'data' => $filled->values()->toArray()];
         }
 
-        return [
-            'labels' => $results->keys()->toArray(),
-            'data' => $results->values()->toArray(),
-        ];
+        return ['labels' => $results->keys()->toArray(), 'data' => $results->values()->toArray()];
     }
 
     #[Computed]
     public function byStatus(): array
     {
         return [
-            'pending' => $this->baseQuery()->pending(),
-            'resolved' => $this->baseQuery()->resolved(),
+            'pending' => $this->baseQuery()->pending()->count(),
+            'resolved' => $this->baseQuery()->resolved()->count(),
         ];
     }
 
@@ -213,10 +208,10 @@ new #[Layout('layouts::app', ['title' => 'Dashboard'])] class extends Component
     public function byClassification(): array
     {
         return [
-            'minor' => $this->baseQuery()->minor(),
-            'suspension' => $this->baseQuery()->majorSuspension(),
-            'dismissal' => $this->baseQuery()->majorDismissal(),
-            'expulsion' => $this->baseQuery()->majorExpulsion(),
+            'minor' => $this->baseQuery()->minor()->count(),
+            'suspension' => $this->baseQuery()->majorSuspension()->count(),
+            'dismissal' => $this->baseQuery()->majorDismissal()->count(),
+            'expulsion' => $this->baseQuery()->majorExpulsion()->count(),
         ];
     }
 
@@ -230,10 +225,7 @@ new #[Layout('layouts::app', ['title' => 'Dashboard'])] class extends Component
             ->orderByDesc('count')
             ->pluck('count', 'label');
 
-        return [
-            'labels' => $results->keys()->toArray(),
-            'data' => $results->values()->toArray(),
-        ];
+        return ['labels' => $results->keys()->toArray(), 'data' => $results->values()->toArray()];
     }
 
     #[Computed]
@@ -243,17 +235,13 @@ new #[Layout('layouts::app', ['title' => 'Dashboard'])] class extends Component
 
         $results = $this->baseQuery()
             ->selectRaw('st_year as label, COUNT(*) as count')
-            ->whereNotNull('st_year')
-            ->whereIn('st_year', $levels)
+            ->whereNotNull('st_year')->whereIn('st_year', $levels)
             ->groupBy('st_year')
             ->pluck('count', 'label');
 
         $filled = collect($levels)->mapWithKeys(fn ($y) => [$y => $results->get($y, 0)]);
 
-        return [
-            'labels' => $filled->keys()->toArray(),
-            'data' => $filled->values()->toArray(),
-        ];
+        return ['labels' => $filled->keys()->toArray(), 'data' => $filled->values()->toArray()];
     }
 
     #[Computed]
@@ -268,7 +256,7 @@ new #[Layout('layouts::app', ['title' => 'Dashboard'])] class extends Component
             ->get();
 
         return [
-            'labels' => $results->map(fn ($r) => $r->type_code.' – '.str($r->type_name)->limit(30))->toArray(),
+            'labels' => $results->pluck('type_code')->toArray(),
             'names' => $results->pluck('type_name')->toArray(),
             'data' => $results->pluck('count')->toArray(),
         ];
@@ -276,27 +264,26 @@ new #[Layout('layouts::app', ['title' => 'Dashboard'])] class extends Component
 
     // ── Helpers ──────────────────────────────────────────────────────────────
 
-    protected function previousQuery(): Builder
+    protected function resolveTimeFormat(): string
     {
-        $query = Violation::query();
-
         if ($this->dateFrom && $this->dateTo) {
-            $from = Carbon::parse($this->dateFrom);
-            $to = Carbon::parse($this->dateTo);
-            $days = $from->diffInDays($to) + 1;
+            $days = Carbon::parse($this->dateFrom)->diffInDays(Carbon::parse($this->dateTo)) + 1;
 
-            return $query->whereBetween('created_at', [
-                $from->copy()->subDays($days)->startOfDay(),
-                $from->copy()->subDay()->endOfDay(),
-            ]);
+            return match (true) {
+                $days <= 2 => '%H:00',
+                $days <= 31 => '%b %d',
+                $days <= 365 => '%b %Y',
+                default => '%Y',
+            };
         }
 
         return match ($this->period) {
-            'today' => $query->whereDate('created_at', today()->subDay()),
-            'week' => $query->whereBetween('created_at', [now()->subWeek()->startOfWeek(), now()->subWeek()->endOfWeek()]),
-            'month' => $query->whereMonth('created_at', now()->subMonth()->month)->whereYear('created_at', now()->subMonth()->year),
-            'year' => $query->whereYear('created_at', now()->subYear()->year),
-            default => $query->whereRaw('0 = 1'),
+            'today' => '%H:00',
+            'week' => '%a',
+            'month' => '%d',
+            'year' => '%b',
+            'all' => '%Y',
+            default => '%b %Y',
         };
     }
 
@@ -312,71 +299,26 @@ new #[Layout('layouts::app', ['title' => 'Dashboard'])] class extends Component
         return ($diff >= 0 ? '+' : '').$pct.'%';
     }
 
-    protected function dispatchChartUpdates(): void
+    protected function refresh(): void
     {
+        // Clear all memoised computeds at once
         unset(
+            $this->stats,
             $this->violationsOverTime,
             $this->byStatus,
             $this->byClassification,
             $this->byProgram,
-            $this->byViolationType,
             $this->byYearLevel,
-            $this->total,
-            $this->pending,
-            $this->resolved,
-            $this->minor,
-            $this->majorSuspension,
-            $this->majorDismissal,
-            $this->majorExpulsion,
+            $this->byViolationType,
         );
 
-        $this->dispatch('violations-over-time-updated', ...$this->violationsOverTime);
-        $this->dispatch('by-status-updated', ...$this->byStatus);
-        $this->dispatch('by-classification-updated', ...$this->byClassification);
-        $this->dispatch('by-program-updated', ...$this->byProgram);
-        $this->dispatch('by-violation-type-updated', ...$this->byViolationType);
-        $this->dispatch('by-year-level-updated', ...$this->byYearLevel);
-    }
-
-    // ── Lifecycle ────────────────────────────────────────────────────────────
-
-    public function updatedPeriod(): void
-    {
-        $this->dateFrom = null;
-        $this->dateTo = null;
-        $this->dispatchChartUpdates();
-    }
-
-    public function updatedDateFrom(): void
-    {
-        $this->period = '';
-        $this->dispatchChartUpdates();
-    }
-
-    public function updatedDateTo(): void
-    {
-        $this->period = '';
-        $this->dispatchChartUpdates();
-    }
-
-    public function updatedFilterProgram(): void
-    {
-        $this->dispatchChartUpdates();
-    }
-
-    public function updatedFilterYear(): void
-    {
-        $this->dispatchChartUpdates();
-    }
-
-    public function updatedFilterClassification(): void
-    {
-        $this->dispatchChartUpdates();
-    }
-
-    public function resetFilters(): void
-    {
-        $this->reset(['dateFrom', 'dateTo', 'filterProgram', 'filterYear', 'filterClassification']);
-        $this->dispatchChartUpdates();
+        $this->dispatch('chart-data-updated', [
+            'violationsOverTime' => $this->violationsOverTime,
+            'byStatus' => $this->byStatus,
+            'byClassification' => $this->byClassification,
+            'byProgram' => $this->byProgram,
+            'byYearLevel' => $this->byYearLevel,
+            'byViolationType' => $this->byViolationType,
+        ]);
     }
 };

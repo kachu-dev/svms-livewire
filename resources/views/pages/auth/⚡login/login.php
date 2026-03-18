@@ -25,20 +25,30 @@ new #[Layout('layouts::auth', ['heading' => 'Login'])] class extends Component
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
+            activity('auth')
+                ->causedBy($user)
+                ->withProperties(['ip' => request()->ip()])
+                ->log('User logged in');
+
             if ($user->role === 'student') {
                 return $this->redirect(route('student.violations.index'));
             }
-
             if ($user->role === 'osa') {
-                return $this->redirect(route('staff.violations.index'));
+                return $this->redirect(route('staff.dashboard'));
             }
-
             if ($user->role === 'guard') {
                 return $this->redirect(route('guard.violations.create'));
             }
 
             return $this->redirect(route('home'));
         }
+
+        activity('auth')
+            ->withProperties([
+                'ip' => request()->ip(),
+                'username' => $this->username,
+            ])
+            ->log('Failed login attempt');
 
         $this->addError('credentials', 'Credentials are incorrect.');
         $this->reset(['username', 'password']);

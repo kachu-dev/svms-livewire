@@ -1,24 +1,35 @@
 <div class="space-y-4">
     <form class="space-y-4" wire:submit="register">
-        <flux:input
-            icon="identification"
-            label="Student ID"
-            placeholder="Enter Student ID"
-            type="text"
-            wire:model="username"
-        />
+        <flux:field>
+            <flux:label>Student ID</flux:label>
+            <flux:input.group>
+                <flux:input
+                    icon="identification"
+                    placeholder="Enter Student ID"
+                    type="text"
+                    wire:model="username"
+                />
+
+                <flux:input.group.suffix>@adzu.edu.ph</flux:input.group.suffix>
+            </flux:input.group>
+            <flux:error name="username" />
+        </flux:field>
+
         <flux:input
             icon="lock-closed"
             label="Password"
             placeholder="Enter password"
             type="password"
+            viewable
             wire:model="password"
         />
+
         <flux:input
             icon="lock-closed"
             label="Confirm Password"
             placeholder="Confirm password"
             type="password"
+            viewable
             wire:model="password_confirmation"
         />
 

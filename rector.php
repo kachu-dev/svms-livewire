@@ -25,6 +25,7 @@ return RectorConfig::configure()
         __DIR__.'/storage',
         __DIR__.'/vendor',
         __DIR__.'/resources/views/flux',
+        __DIR__.'/resources/views/vendor/toaster',
         AddClosureVoidReturnTypeWhereNoReturnRector::class,
         ReturnTypeFromStrictTypedCallRector::class,
         ReturnUnionTypeRector::class,
