@@ -28,6 +28,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if ($this->app->isProduction()) {
+            \URL::forceScheme('https');
+        }
+
         $this->configureDefaults();
 
         Gate::define('access-staff-area', fn (User $user) => $user->role === 'osa'

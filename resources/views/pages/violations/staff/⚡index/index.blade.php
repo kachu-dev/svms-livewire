@@ -371,6 +371,7 @@
                         label="Password"
                         placeholder="Enter your password"
                         type="password"
+                        viewable
                         wire:keydown.enter="confirmPassword"
                         wire:model="password"
                     />

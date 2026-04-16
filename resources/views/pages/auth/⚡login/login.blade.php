@@ -12,6 +12,7 @@
             label="Password"
             placeholder="Your password"
             type="password"
+            viewable
             wire:model="password"
         />
     </div>

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', HomeController::class)->name('home');
+Route::get('/svms', HomeController::class)->name('home');
 
 Route::middleware('guest')->group(function () {
     Route::livewire('/login', 'pages::auth.login')->name('login');
@@ -91,11 +91,14 @@ Route::middleware(['auth', 'verified', 'can:access-student-area'])
     });
 
 Route::livewire('/email/verify', 'pages::auth.verify-email')->middleware('auth')->name('verification.notice');
+
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+
     $request->fulfill();
 
     return redirect()->route('student.violations.index');
 })->middleware(['auth', 'signed'])->name('verification.verify');
+
 Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
 
