@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -17,6 +18,13 @@ class Student extends Model
     protected $primaryKey = 'studentid';
 
     protected $hidden = ['cmdate'];
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope('group', function (Builder $builder) {
+            $builder->where('grouptag', 'co');
+        });
+    }
 
     public function getProgram(): ?string
     {

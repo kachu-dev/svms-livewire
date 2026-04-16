@@ -22,6 +22,7 @@ new class extends Component
         $student = Student::select('studentid', 'firstname', 'lastname', 'mi', 'grouptag')
             ->find($this->studentId);
 
+        // get student image, cache if first time
         if ($student) {
             $student->photo = Cache::remember(
                 "student:{$student->studentid}:photo",

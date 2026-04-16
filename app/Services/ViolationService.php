@@ -75,7 +75,7 @@ class ViolationService
 
             $this->createStages($violation);
 
-            Mail::to($student->studentid.'@adzu.edu.ph')->queue(new ViolationRecorded($violation));
+            /*Mail::to($student->studentid.'@adzu.edu.ph')->queue(new ViolationRecorded($violation));*/
 
             activity('violation')
                 ->causedBy(auth()->user())
